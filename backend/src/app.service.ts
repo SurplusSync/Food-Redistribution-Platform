@@ -1,12 +1,8 @@
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
-<<<<<<< HEAD
 export class AppService {
   getHello(): string {
-    return 'Hello World!';
+    return 'Food Redistribution API';
   }
 }
-=======
-export class AppService {}
->>>>>>> feat/api-integration-setup
