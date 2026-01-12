@@ -1,0 +1,18 @@
+# Dependency directories
+node_modules/
+dist/
+build/
+*.log
+
+# Environment Variables (CRITICAL)
+.env
+.env.local
+.env.*.local
+
+# Docker volumes (if they were created locally)
+postgres_data/
+
+# IDE settings
+.vscode/
+.idea/
+*.DS_Store
