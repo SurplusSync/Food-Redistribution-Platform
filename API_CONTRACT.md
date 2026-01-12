@@ -1,13 +1,13 @@
 # API Contract - Food Redistribution Platform
 
-## 📍 Base URLs
+## Base URLs
 - **Backend (Development):** `http://localhost:3000`
 - **Frontend (Development):** `http://localhost:5173`
 - **API Documentation:** `http://localhost:3000/api`
 
 ---
 
-## 🔐 Authentication
+## Authentication
 
 Protected endpoints require a Bearer token in the header:
 ```http
@@ -16,7 +16,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
 ---
 
-## 📚 API Endpoints
+## API Endpoints
 
 ### 1. Register New User
 
@@ -177,7 +177,7 @@ Content-Type: application/json
 
 ---
 
-## 🚨 Standard Error Response Format
+## Standard Error Response Format
 
 All API errors follow this structure:
 ```json
@@ -191,7 +191,7 @@ All API errors follow this structure:
 
 ---
 
-## 📊 HTTP Status Codes
+## HTTP Status Codes
 
 | Code | Meaning | When Used |
 |------|---------|-----------|
@@ -205,7 +205,7 @@ All API errors follow this structure:
 
 ---
 
-## 🧪 Testing with Swagger
+## Testing with Swagger
 
 ### How to Test Endpoints:
 
@@ -234,7 +234,7 @@ All API errors follow this structure:
 
 ---
 
-## 📝 For Frontend Team (Keshav)
+## For Frontend Team (Keshav)
 
 ### How to Import Shared Types:
 ```typescript
@@ -302,7 +302,7 @@ async function createDonation(donation: CreateDonationDto) {
 
 ---
 
-## 📝 For Backend Team (Mayuka)
+## For Backend Team (Mayuka)
 
 ### How to Use DTOs in Controllers:
 ```typescript
@@ -361,7 +361,7 @@ throw new BadRequestException({
 
 ---
 
-## 🔗 Quick Reference Links
+## Quick Reference Links
 
 - **Swagger UI:** http://localhost:3000/api
 - **Backend Server:** http://localhost:3000
@@ -369,7 +369,7 @@ throw new BadRequestException({
 
 ---
 
-## 📞 Support
+## Support
 
 If you encounter issues:
 1. Check this documentation first
