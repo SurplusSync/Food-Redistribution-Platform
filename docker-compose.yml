@@ -56,6 +56,7 @@ services:
     volumes:
       - ./backend:/app
       - /app/node_modules
+      - ./shared:/shared
 
   # FRONTEND (React + Vite)
   frontend:
