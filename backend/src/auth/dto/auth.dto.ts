@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsString, MinLength, IsEnum, IsOptional } from 'class-validator';
+// Importing UserRole directly from shared types to avoid duplication
 import { UserRole } from '../../../../shared/types/user.types';
-
 
 export class RegisterDto {
   @ApiProperty({ 
