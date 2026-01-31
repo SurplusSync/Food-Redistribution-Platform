@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsString, MinLength, IsEnum, IsOptional } from 'class-validator';
-// Importing UserRole directly from shared types to avoid duplication
 import { UserRole } from '../../../../shared/types/user.types';
 
 export class RegisterDto {
@@ -41,7 +40,34 @@ export class RegisterDto {
   })
   @IsOptional()
   @IsString()
-  phoneNumber?: string;
+  phone?: string; // Renamed from phoneNumber to match Frontend
+
+  @ApiProperty({ 
+    required: false, 
+    example: 'Green Foods Ltd', 
+    description: 'Name of the business or NGO' 
+  })
+  @IsOptional()
+  @IsString()
+  organizationName?: string;
+
+  @ApiProperty({ 
+    required: false, 
+    example: 'Restaurant', 
+    description: 'Type of organization' 
+  })
+  @IsOptional()
+  @IsString()
+  organizationType?: string;
+
+  @ApiProperty({ 
+    required: false, 
+    example: '123 Main St, Delhi', 
+    description: 'Physical address' 
+  })
+  @IsOptional()
+  @IsString()
+  address?: string;
 }
 
 export class LoginDto {

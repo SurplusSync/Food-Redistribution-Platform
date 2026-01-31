@@ -16,21 +16,23 @@ export class User {
   email: string;
 
   @Column()
-  password: string; // Will store Hashed Password
+  password: string;
 
   @Column({ type: 'enum', enum: UserRole, default: UserRole.DONOR })
   role: UserRole;
 
   @Column()
+  name: string;
+
+  @Column({ nullable: true }) // Make this nullable if not every user has one
   organizationName: string;
 
-  @Column()
+  @Column({ nullable: true }) // Make nullable to prevent errors on existing data
   phone: string;
 
-  @Column()
+  @Column({ nullable: true }) // Make nullable
   address: string;
 
-  // For Epic 1/3 (Location)
   @Column('float', { nullable: true })
   latitude: number;
 

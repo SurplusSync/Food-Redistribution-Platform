@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { LayoutDashboard, PlusCircle, Map, History, LogOut, Bell, TrendingUp, User } from 'lucide-react'
-import { getNotifications, checkExpiringDonations } from '../services/api'
+import { getNotifications, checkExpiringDonations } from "../services/api";
 
 export default function DashboardLayout() {
   const navigate = useNavigate()
@@ -9,8 +9,8 @@ export default function DashboardLayout() {
   const [unreadCount, setUnreadCount] = useState(0)
 
   const user = JSON.parse(localStorage.getItem('user') || '{}')
-  const userRole = user.role || 'donor'
-
+  const userRole = (user.role || 'donor').toLowerCase()
+  
   useEffect(() => {
     loadNotifications()
     const interval = setInterval(() => {
