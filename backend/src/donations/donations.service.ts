@@ -1,127 +1,69 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { CreateDonationDto, ClaimDonationDto } from './dto/donations.dto';
+import { Donation, DonationStatus } from './entities/donation.entity';
 
 @Injectable()
 export class DonationsService {
-  private donations: any[] = [];
+  constructor(
+    @InjectRepository(Donation)
+    private donationsRepository: Repository<Donation>,
+  ) {}
 
-  create(createDonationDto: CreateDonationDto) {
-    const donation = {
-      id: Date.now().toString(),
-      foodType: createDonationDto.foodType,
-      quantity: createDonationDto.quantity,
-      unit: createDonationDto.unit,
-      preparationTime: createDonationDto.preparationTime,
-      location: {
-        latitude: createDonationDto.latitude,
-        longitude: createDonationDto.longitude,
-        address: createDonationDto.address,
-      },
-      imageUrl: createDonationDto.imageUrl,
-      specialInstructions: createDonationDto.specialInstructions,
-      status: 'AVAILABLE',
-      donor: {
-        id: 'mock-donor-id',
-        name: 'Mock Donor',
-        trustScore: 4.5,
-      },
-      createdAt: new Date(),
-    };
-
-    this.donations.push(donation);
-
-    return {
-      success: true,
-      data: donation,
-      message: 'Donation created successfully',
-    };
+  async create(createDonationDto: CreateDonationDto) {
+    // Creates a new entry in the 'donation' table
+    const donation = this.donationsRepository.create({
+      ...createDonationDto,
+      donorId: 'temp-donor-id', // TODO: In the future, get this from req.user.id
+      status: DonationStatus.AVAILABLE,
+    });
+    
+    // Saves to Postgres
+    return await this.donationsRepository.save(donation);
   }
 
-  findAll(latitude?: number, longitude?: number, radius: number = 5) {
-    let availableDonations = this.donations.filter(
-      d => d.status === 'AVAILABLE'
-    );
-
-    // Simple distance calculation (mock - in real app use PostGIS)
-    if (latitude && longitude) {
-      availableDonations = availableDonations.map(donation => {
-        const distance = this.calculateDistance(
-          latitude,
-          longitude,
-          donation.location.latitude,
-          donation.location.longitude,
-        );
-        
-        return { ...donation, distance };
-      }).filter(d => d.distance <= radius);
+  async findAll(latitude?: number, longitude?: number, radius: number = 5) {
+    // 1. If no location provided, just return everything
+    if (!latitude || !longitude) {
+      return this.donationsRepository.find({
+        where: { status: DonationStatus.AVAILABLE },
+        order: { createdAt: 'DESC' },
+      });
     }
 
-    // Sort by newest first
-    availableDonations.sort(
-      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    );
-
-    return {
-      success: true,
-      data: availableDonations,
-      message: 'Food listings retrieved successfully',
-    };
+    // 2. THE "MEDIUM COMPLEXITY" ALGORITHM
+    // This runs a raw SQL query to calculate distance on the database server.
+    // It finds food within 'radius' km and sorts by closest first.
+    return this.donationsRepository
+      .createQueryBuilder('donation')
+      .where('donation.status = :status', { status: DonationStatus.AVAILABLE })
+      .addSelect(
+        `(6371 * acos(cos(radians(:lat)) * cos(radians(donation.latitude)) * cos(radians(donation.longitude) - radians(:lon)) + sin(radians(:lat)) * sin(radians(donation.latitude))))`,
+        'distance',
+      )
+      .having('distance < :radius')
+      .setParameters({ lat: latitude, lon: longitude, radius })
+      .orderBy('distance', 'ASC')
+      .getMany();
   }
 
-  claim(id: string, claimDto: ClaimDonationDto) {
-    const donation = this.donations.find(d => d.id === id);
+  async claim(id: string, claimDto: ClaimDonationDto) {
+    // 1. Find the donation in the DB
+    const donation = await this.donationsRepository.findOne({ where: { id } });
 
+    // 2. Checks
     if (!donation) {
-      throw new NotFoundException({
-        success: false,
-        message: 'Donation not found',
-        statusCode: 404,
-      });
+        throw new NotFoundException('Donation not found');
+    }
+    if (donation.status !== DonationStatus.AVAILABLE) {
+      throw new BadRequestException('Donation already claimed');
     }
 
-    if (donation.status === 'CLAIMED') {
-      throw new BadRequestException({
-        success: false,
-        message: 'This donation has already been claimed',
-        errors: ['Food status is CLAIMED. Cannot claim again.'],
-        statusCode: 400,
-      });
-    }
-
-    donation.status = 'CLAIMED';
-    donation.claimedAt = new Date();
-    donation.estimatedPickupTime = claimDto.estimatedPickupTime;
-    donation.claimedBy = {
-      id: 'mock-ngo-id',
-      name: 'Mock NGO',
-      contactNumber: '+919876543210',
-    };
-
-    return {
-      success: true,
-      data: donation,
-      message: 'Food donation claimed successfully',
-    };
-  }
-
-  // Simple distance calculation (Haversine formula)
-  private calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
-    const R = 6371; // Earth's radius in km
-    const dLat = this.toRad(lat2 - lat1);
-    const dLon = this.toRad(lon2 - lon1);
+    // 3. Update status to CLAIMED
+    donation.status = DonationStatus.CLAIMED;
+    donation.claimedById = 'temp-ngo-id'; // TODO: Replace with real User ID later
     
-    const a = 
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(this.toRad(lat1)) * Math.cos(this.toRad(lat2)) *
-      Math.sin(dLon / 2) * Math.sin(dLon / 2);
-    
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    const distance = R * c;
-    
-    return Math.round(distance * 10) / 10; // Round to 1 decimal
-  }
-
-  private toRad(degrees: number): number {
-    return degrees * (Math.PI / 180);
+    return await this.donationsRepository.save(donation);
   }
 }
