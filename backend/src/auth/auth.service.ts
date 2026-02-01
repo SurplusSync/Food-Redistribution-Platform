@@ -2,9 +2,9 @@ import { Injectable, UnauthorizedException, ConflictException } from '@nestjs/co
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
+import * as bcrypt from 'bcrypt'; 
 import { RegisterDto, LoginDto } from './dto/auth.dto';
 import { User } from './entities/user.entity';
-// import * as bcrypt from 'bcrypt'; // Uncomment if installed bcrypt
 
 @Injectable()
 export class AuthService {
@@ -15,7 +15,7 @@ export class AuthService {
   ) {}
 
   async register(registerDto: RegisterDto) {
-    // 1. Check if user exists in the Real Database
+    // 1. Check if user exists
     const existingUser = await this.usersRepository.findOne({ 
       where: { email: registerDto.email } 
     });
@@ -24,16 +24,18 @@ export class AuthService {
       throw new ConflictException('Email already exists');
     }
 
-    // 2. Create User (For Sprint 1 MVP, we will skip hashing if bcrypt isn't installed)
+    // 2. Hash the password (Salt rounds: 10)
+    const hashedPassword = await bcrypt.hash(registerDto.password, 10);
+
+    // 3. Create User with Hashed Password
     const user = this.usersRepository.create({
       ...registerDto,
-      password: registerDto.password, // TODO: Add bcrypt.hash() here
+      password: hashedPassword, // Storing Hash
     });
     
-    // 3. Save to Postgres
     await this.usersRepository.save(user);
 
-    // 4. Generate Real JWT Token
+    // 4. Generate Token
     const token = this.jwtService.sign({ 
       sub: user.id, 
       email: user.email, 
@@ -56,17 +58,17 @@ export class AuthService {
   }
 
   async login(loginDto: LoginDto) {
-    // 1. Find User in Postgres
+    // 1. Find User
     const user = await this.usersRepository.findOne({ 
       where: { email: loginDto.email } 
     });
 
-    // 2. Validate Password
-    if (!user || user.password !== loginDto.password) {
+    // 2. Compare candidate password with stored Hash
+    if (!user || !(await bcrypt.compare(loginDto.password, user.password))) {
       throw new UnauthorizedException('Invalid email or password');
     }
 
-    // 3. Generate Real JWT Token
+    // 3. Generate Token
     const token = this.jwtService.sign({ 
       sub: user.id, 
       email: user.email, 

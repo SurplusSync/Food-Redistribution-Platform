@@ -7,8 +7,24 @@ export default function Impact() {
     const [badges, setBadges] = useState<Badge[]>([])
     const [loading, setLoading] = useState(true)
 
-    const currentUser = JSON.parse(localStorage.getItem('user') || '{}')
+    const safeParseUser = () => {
+        const raw = localStorage.getItem('user')
+        if (!raw) return null
+        try {
+            return JSON.parse(raw)
+        } catch {
+            return null
+        }
+    }
+
+    const currentUser = safeParseUser() || { id: 'guest', role: 'donor' }
     const userRole = currentUser.role || 'donor'
+
+    const fallbackBadges: Badge[] = [
+        { id: '1', name: 'Newcomer', icon: '🌱', description: 'Joined the platform', earned: true, requirement: 1 },
+        { id: '2', name: 'First Donation', icon: '🥫', description: 'Shared your first donation', earned: false, requirement: 1 },
+        { id: '3', name: 'Community Hero', icon: '🏅', description: 'Helped 50 people', earned: false, requirement: 10 },
+    ]
 
     useEffect(() => {
         const load = async () => {
@@ -19,7 +35,9 @@ export default function Impact() {
                     getBadges(currentUser.id)
                 ])
                 setUser(profileData)
-                setBadges(badgesData)
+                setBadges(badgesData?.length ? badgesData : fallbackBadges)
+            } catch {
+                setBadges(fallbackBadges)
             } finally {
                 setLoading(false)
             }
@@ -391,6 +409,38 @@ export default function Impact() {
                         <p className="text-3xl font-bold text-amber-400">{user?.trustScore?.toFixed(1) || '0.0'}</p>
                         <p className="text-xs text-slate-500 mt-1">Trust score</p>
                     </div>
+                </div>
+            </div>
+
+            {/* Badges */}
+            <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6 backdrop-blur-sm">
+                <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-lg font-semibold text-white flex items-center gap-2">
+                        <Trophy className="w-5 h-5 text-amber-400" />
+                        Achievements
+                    </h2>
+                    <span className="text-sm text-slate-500">
+                        {earnedBadges.length} / {badges.length} earned
+                    </span>
+                </div>
+
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                    {badges.map((badge) => (
+                        <div
+                            key={badge.id}
+                            className={`p-5 rounded-2xl border text-center transition-all ${
+                                badge.earned
+                                    ? 'bg-slate-800/50 border-slate-700'
+                                    : 'bg-slate-900/30 border-slate-800/50 opacity-40'
+                            }`}
+                        >
+                            <div className="text-4xl mb-3">{badge.icon}</div>
+                            <p className={`text-sm font-semibold mb-1 ${badge.earned ? 'text-white' : 'text-slate-600'}`}>
+                                {badge.name}
+                            </p>
+                            <p className="text-xs text-slate-500">{badge.description}</p>
+                        </div>
+                    ))}
                 </div>
             </div>
 

@@ -29,7 +29,6 @@ export interface User {
   name: string;
   role: UserRole;
   token?: string;
-  // Optional props to satisfy Dashboard components
   verified?: boolean;
   phone?: string;
   organizationName?: string;
@@ -56,6 +55,8 @@ export type Badge = {
   name: string;
   icon: string;
   description: string;
+  earned?: boolean;
+  requirement?: number;
 }
 
 //  REAL API CALLS (Connected to Backend)
@@ -70,7 +71,6 @@ export const registerUser = async (data: any) => {
   const payload = {
     ...data,
     role: data.role.toUpperCase(), 
-    // phone is passed directly, no renaming needed
   };
   const response = await api.post('/auth/register', payload);
   return response.data.data;
@@ -78,16 +78,47 @@ export const registerUser = async (data: any) => {
 
 export const getDonations = async () => {
   const response = await api.get('/donations');
-  return response.data;
+  
+  // ADAPTER: Bulletproof Data Conversion
+  return response.data.map((item: any) => ({
+    ...item,
+    
+    // SAFETY 1: Force ID to String to prevent "1" === 1 failures
+    id: String(item.id),
+
+    // SAFETY 2: Force Quantity to String (Frontend expects string from previous mocks)
+    quantity: String(item.quantity),
+    
+    // SAFETY 3: Default missing location data
+    location: {
+      lat: Number(item.latitude) || 0,
+      lng: Number(item.longitude) || 0,
+      address: item.address || 'Unknown Location'
+    },
+
+    // SAFETY 4: Default missing Donor/Hygiene data
+    donorName: item.donorName || "Community Donor",
+    donorTrustScore: Number(item.donorTrustScore) || 5.0, 
+    hygiene: item.hygiene || { keptCovered: true, containerClean: true },
+    foodType: item.foodType || 'cooked',
+
+    // SAFETY 5: Safe Date Parsing
+    expiryTime: item.expiryTime ? new Date(item.expiryTime) : new Date(Date.now() + 24*60*60*1000),
+    preparationTime: item.preparationTime ? new Date(item.preparationTime) : new Date(),
+    createdAt: item.createdAt ? new Date(item.createdAt) : new Date(),
+  }));
 };
 
 export const createDonation = async (data: any) => {
+  const { location, ...cleanData } = data;
+
   const payload = {
-    ...data,
+    ...cleanData,
     quantity: parseFloat(data.quantity),
     latitude: data.location?.lat || 0,
     longitude: data.location?.lng || 0,
   };
+
   const response = await api.post('/donations', payload);
   return response.data;
 };
@@ -97,8 +128,7 @@ export const claimDonation = async (id: string) => {
   return response.data;
 };
 
-//  MOCK HELPERS (To Fix Dashboard/Maps)
-// These functions don't hit the backend yet but keep the UI running.
+//  MOCK HELPERS (Safe Defaults)
 
 export const getNotifications = async (userId: string): Promise<Notification[]> => {
   return [
@@ -122,16 +152,35 @@ export const checkExpiringDonations = () => {
 
 export const getBadges = async (userId: string): Promise<Badge[]> => {
   return [
-    { id: '1', name: 'Newcomer', icon: '🌱', description: 'Joined the platform' }
+    { id: '1', name: 'Newcomer', icon: '🌱', description: 'Joined the platform', earned: true, requirement: 1  }
   ];
 };
 
 export const getUserProfile = async (userId: string): Promise<User | null> => {
   const userStr = localStorage.getItem('user');
-  return userStr ? JSON.parse(userStr) : null;
+  if (!userStr) return null;
+
+  const user = JSON.parse(userStr);
+
+  // SAFETY 6: Ensure impactStats exists to prevent Profile crash
+  return {
+    ...user,
+    impactStats: user.impactStats || {
+      totalDonations: 0,
+      mealsProvided: 0,
+      kgSaved: 0
+    }
+  };
 };
 
 export const updateUserProfile = async (userId: string, data: any) => {
+  // Mock Update: Save to LocalStorage so user sees changes immediately
+  const userStr = localStorage.getItem('user');
+  if (userStr) {
+    const updatedUser = { ...JSON.parse(userStr), ...data };
+    localStorage.setItem('user', JSON.stringify(updatedUser));
+    return updatedUser;
+  }
   return data;
 };
 
