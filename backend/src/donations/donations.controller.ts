@@ -1,50 +1,64 @@
-import { Controller, Get, Post, Patch, Param, Body, Query } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
+import { Controller, Get, Post, Patch, Param, Body, Query, UseInterceptors, UploadedFiles } from '@nestjs/common';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import { DonationsService } from './donations.service';
+import { S3Service } from '../common/s3.service';
 import { CreateDonationDto, ClaimDonationDto } from './dto/donations.dto';
+import { ApiTags, ApiOperation, ApiResponse, ApiQuery, ApiConsumes } from '@nestjs/swagger';
 
 @ApiTags('Donations')
 @Controller('donations')
 export class DonationsController {
-  constructor(private readonly donationsService: DonationsService) {}
+  constructor(
+    private readonly donationsService: DonationsService,
+    private readonly s3Service: S3Service,
+  ) { }
 
   @Post()
   @ApiOperation({ summary: 'Create a new food donation' })
-  @ApiResponse({ 
-    status: 201, 
-    description: 'Donation created successfully' 
+  @ApiResponse({
+    status: 201,
+    description: 'Donation created successfully'
   })
-  @ApiResponse({ 
-    status: 400, 
-    description: 'Validation error' 
+  @ApiResponse({
+    status: 400,
+    description: 'Validation error'
   })
-  create(@Body() createDonationDto: CreateDonationDto) {
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(FilesInterceptor('images', 5)) // Allow up to 5 images
+  async create(
+    @Body() createDonationDto: CreateDonationDto,
+    @UploadedFiles() files: Array<Express.Multer.File>,
+  ) {
+    if (files && files.length > 0) {
+      const imageUrls = await this.s3Service.uploadFiles(files);
+      createDonationDto.imageUrls = imageUrls;
+    }
     return this.donationsService.create(createDonationDto);
   }
 
   @Get()
   @ApiOperation({ summary: 'Get all available food donations' })
-  @ApiQuery({ 
-    name: 'latitude', 
-    required: false, 
+  @ApiQuery({
+    name: 'latitude',
+    required: false,
     type: Number,
     description: 'NGO latitude for distance filtering'
   })
-  @ApiQuery({ 
-    name: 'longitude', 
-    required: false, 
+  @ApiQuery({
+    name: 'longitude',
+    required: false,
     type: Number,
     description: 'NGO longitude for distance filtering'
   })
-  @ApiQuery({ 
-    name: 'radius', 
-    required: false, 
+  @ApiQuery({
+    name: 'radius',
+    required: false,
     type: Number,
     description: 'Search radius in km (default: 5)'
   })
-  @ApiResponse({ 
-    status: 200, 
-    description: 'List of available donations' 
+  @ApiResponse({
+    status: 200,
+    description: 'List of available donations'
   })
   findAll(
     @Query('latitude') latitude?: number,
@@ -56,17 +70,17 @@ export class DonationsController {
 
   @Patch(':id/claim')
   @ApiOperation({ summary: 'Claim a food donation (NGO only)' })
-  @ApiResponse({ 
-    status: 200, 
-    description: 'Donation claimed successfully' 
+  @ApiResponse({
+    status: 200,
+    description: 'Donation claimed successfully'
   })
-  @ApiResponse({ 
-    status: 400, 
-    description: 'Donation already claimed' 
+  @ApiResponse({
+    status: 400,
+    description: 'Donation already claimed'
   })
-  @ApiResponse({ 
-    status: 404, 
-    description: 'Donation not found' 
+  @ApiResponse({
+    status: 404,
+    description: 'Donation not found'
   })
   claim(
     @Param('id') id: string,

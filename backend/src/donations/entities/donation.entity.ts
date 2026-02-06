@@ -33,8 +33,8 @@ export class Donation {
   @Column({ nullable: true })
   address: string;
 
-  @Column({ nullable: true })
-  imageUrl: string;
+  @Column('simple-array', { nullable: true })
+  imageUrls: string[];
 
   @Column({ nullable: true })
   specialInstructions: string;

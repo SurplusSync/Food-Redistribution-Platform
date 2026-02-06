@@ -35,7 +35,7 @@ export class CreateDonationDto {
   @IsOptional()
   // @ValidateNested() // Uncomment if you want strict validation
   // @Type(() => HygieneDto)
-  hygiene?: any; 
+  hygiene?: any;
 
   @ApiProperty({ required: false, description: 'Donor trust score' })
   @IsOptional()
@@ -72,14 +72,14 @@ export class CreateDonationDto {
   @IsString()
   address?: string;
 
-  @ApiProperty({ required: false, description: 'Image URL' })
+  @ApiProperty({ required: false, description: 'Image URLs', type: [String] })
   @IsOptional()
-  @IsString()
-  imageUrl?: string;
+  @IsString({ each: true })
+  imageUrls?: string[];
 }
 
 export class ClaimDonationDto {
-  @ApiProperty({ 
+  @ApiProperty({
     example: '2025-01-30T15:00:00Z',
     description: 'Estimated pickup time'
   })
