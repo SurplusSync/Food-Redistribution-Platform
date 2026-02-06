@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsString, MinLength, IsEnum, IsOptional } from 'class-validator';
+import { IsEmail, IsString, MinLength, IsEnum, IsOptional, IsNumber } from 'class-validator';
 import { UserRole } from '../../../../shared/types/user.types';
 
 export class RegisterDto {
@@ -114,11 +114,11 @@ export class UpdateProfileDto {
 
   @ApiProperty({ required: false })
   @IsOptional()
-  @IsString()
+  @IsNumber()
   latitude?: number;
 
   @ApiProperty({ required: false })
   @IsOptional()
-  @IsString()
+  @IsNumber()
   longitude?: number;
 }
