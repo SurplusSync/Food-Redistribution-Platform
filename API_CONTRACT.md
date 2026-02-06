@@ -322,6 +322,106 @@ Content-Type: application/json
 
 ---
 
+### 6. Update Donation Status (Volunteer Workflow)
+
+**Endpoint:** `PATCH /donations/:id/status`  
+**Authentication:** Required (Bearer Token - Volunteer role only)
+
+**URL Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| id | string (UUID) | Yes | The donation ID to update |
+
+**Request Body:**
+```json
+{
+  "status": "PICKED_UP"
+}
+```
+
+**Valid Status Values:**
+- `PICKED_UP` - When volunteer picks up food from donor
+- `DELIVERED` - When volunteer delivers food to NGO
+
+**Status Flow:**
+```
+AVAILABLE → CLAIMED → PICKED_UP → DELIVERED
+                ↑ You are here  ↑
+```
+
+**Example Request:**
+```http
+PATCH /donations/660e8400-e29b-41d4-a716-446655440001/status
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+Content-Type: application/json
+
+{
+  "status": "PICKED_UP"
+}
+```
+
+**Success Response (200 OK):**
+```json
+{
+  "success": true,
+  "data": {
+    "id": "660e8400-e29b-41d4-a716-446655440001",
+    "foodType": "Vegetable Biryani",
+    "quantity": 50,
+    "unit": "servings",
+    "status": "PICKED_UP",
+    "pickedUpAt": "2025-02-06T14:30:00Z",
+    "volunteer": {
+      "id": "880e8400-e29b-41d4-a716-446655440020",
+      "name": "Ravi Kumar"
+    },
+    "donor": {
+      "name": "Annapurna Restaurant",
+      "address": "Beach Road, Visakhapatnam"
+    }
+  },
+  "message": "Status updated successfully"
+}
+```
+
+**Error Response (400 Bad Request - Invalid Transition):**
+```json
+{
+  "success": false,
+  "message": "Invalid status transition",
+  "errors": ["Cannot change from AVAILABLE to DELIVERED. Must follow: CLAIMED → PICKED_UP → DELIVERED"],
+  "statusCode": 400
+}
+```
+
+**Error Response (404 Not Found):**
+```json
+{
+  "success": false,
+  "message": "Donation not found",
+  "statusCode": 404
+}
+```
+
+**Error Response (403 Forbidden):**
+```json
+{
+  "success": false,
+  "message": "Only volunteers can update donation status",
+  "statusCode": 403
+}
+```
+
+**Business Rules:**
+- Only users with role `VOLUNTEER` can update status
+- Status must follow proper flow: CLAIMED → PICKED_UP → DELIVERED
+- Cannot skip steps (e.g., cannot go from CLAIMED directly to DELIVERED)
+- Timestamps are automatically recorded:
+  - `pickedUpAt` when status becomes PICKED_UP
+  - `deliveredAt` when status becomes DELIVERED
+
+---
+
 **Error Response (400 Bad Request):**
 ```json
 {
@@ -552,6 +652,105 @@ async function claimDonation(
 // const donations = await getAvailableDonations(myLat, myLong, 10);
 // await claimDonation(donation.id, '2025-01-12T15:00:00Z');
 ```
+### Example: Update Donation Status (Volunteer)
+```typescript
+import { DonationStatus } from '../../../shared/types/donation.types';
+
+/**
+ * Update donation status in volunteer workflow
+ * @param donationId - The donation to update
+ * @param status - New status ('PICKED_UP' or 'DELIVERED')
+ */
+async function updateDonationStatus(
+  donationId: string, 
+  status: 'PICKED_UP' | 'DELIVERED'
+) {
+  const token = localStorage.getItem('token');
+  
+  const response = await fetch(
+    `http://localhost:3000/donations/${donationId}/status`, 
+    {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ status })
+    }
+  );
+
+  const data = await response.json();
+  
+  if (!data.success) {
+    // Handle specific errors
+    if (data.statusCode === 400) {
+      throw new Error('Invalid status transition: ' + data.message);
+    } else if (data.statusCode === 403) {
+      throw new Error('Only volunteers can update status');
+    }
+    throw new Error(data.message || 'Failed to update status');
+  }
+  
+  return data.data;
+}
+
+// Usage in Volunteer Component:
+// Step 1: Volunteer picks up food from donor
+await updateDonationStatus(donation.id, 'PICKED_UP');
+
+// Step 2: Volunteer delivers food to NGO
+await updateDonationStatus(donation.id, 'DELIVERED');
+```
+
+### Example: Volunteer Task List Component
+```typescript
+function VolunteerTasks() {
+  const [tasks, setTasks] = useState([]);
+
+  const handlePickup = async (donationId: string) => {
+    try {
+      await updateDonationStatus(donationId, 'PICKED_UP');
+      toast.success('Pickup confirmed!');
+      // Refresh task list
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
+  const handleDelivery = async (donationId: string) => {
+    try {
+      await updateDonationStatus(donationId, 'DELIVERED');
+      toast.success('Delivery completed!');
+      // Refresh task list
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
+  return (
+    <div>
+      {tasks.map(task => (
+        <div key={task.id}>
+          <h3>{task.foodType}</h3>
+          <p>Status: {task.status}</p>
+          
+          {task.status === 'CLAIMED' && (
+            <button onClick={() => handlePickup(task.id)}>
+              Confirm Pickup
+            </button>
+          )}
+          
+          {task.status === 'PICKED_UP' && (
+            <button onClick={() => handleDelivery(task.id)}>
+              Confirm Delivery
+            </button>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+```
 
 ---
 
@@ -687,6 +886,123 @@ export class DonationsController {
   }
 }
 ```
+### Example: Update Status Controller
+```typescript
+import { Controller, Patch, Param, Body, UseGuards } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { UpdateStatusDto } from './dto/donation.dto';
+
+@ApiTags('Donations')
+@Controller('donations')
+export class DonationsController {
+  
+  @Patch(':id/status')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Update donation status (Volunteer workflow)' })
+  @ApiResponse({ status: 200, description: 'Status updated successfully' })
+  @ApiResponse({ status: 400, description: 'Invalid status transition' })
+  @ApiResponse({ status: 404, description: 'Donation not found' })
+  async updateStatus(
+    @Param('id') id: string,
+    @Body() dto: UpdateStatusDto,
+  ) {
+    const updated = await this.donationsService.updateStatus(id, dto.status);
+    
+    return {
+      success: true,
+      data: updated,
+      message: 'Status updated successfully'
+    };
+  }
+}
+```
+
+### New DTO Required: UpdateStatusDto
+
+Add to `backend/src/donations/dto/donation.dto.ts`:
+```typescript
+import { ApiProperty } from '@nestjs/swagger';
+import { IsEnum } from 'class-validator';
+
+export enum DonationStatus {
+  AVAILABLE = 'AVAILABLE',
+  CLAIMED = 'CLAIMED',
+  PICKED_UP = 'PICKED_UP',
+  DELIVERED = 'DELIVERED',
+  EXPIRED = 'EXPIRED',
+}
+
+export class UpdateStatusDto {
+  @ApiProperty({ 
+    enum: DonationStatus,
+    example: DonationStatus.PICKED_UP,
+    description: 'New status for the donation'
+  })
+  @IsEnum(DonationStatus)
+  status: DonationStatus;
+}
+```
+
+### Service Method Implementation
+
+Add to `backend/src/donations/donations.service.ts`:
+```typescript
+async updateStatus(id: string, status: string) {
+  const donation = this.donations.find(d => d.id === id);
+
+  if (!donation) {
+    throw new NotFoundException({
+      success: false,
+      message: 'Donation not found',
+      statusCode: 404,
+    });
+  }
+
+  // Define valid status transitions
+  const validTransitions = {
+    'CLAIMED': ['PICKED_UP'],
+    'PICKED_UP': ['DELIVERED'],
+  };
+
+  const currentStatus = donation.status;
+  const allowedNext = validTransitions[currentStatus] || [];
+
+  if (!allowedNext.includes(status)) {
+    throw new BadRequestException({
+      success: false,
+      message: 'Invalid status transition',
+      errors: [
+        `Cannot change from ${currentStatus} to ${status}. ` +
+        `Valid next status: ${allowedNext.join(', ') || 'none'}`
+      ],
+      statusCode: 400,
+    });
+  }
+
+  // Update status and record timestamp
+  donation.status = status;
+  
+  if (status === 'PICKED_UP') {
+    donation.pickedUpAt = new Date();
+    donation.volunteer = {
+      id: 'mock-volunteer-id',
+      name: 'Mock Volunteer'
+    };
+  } else if (status === 'DELIVERED') {
+    donation.deliveredAt = new Date();
+  }
+
+  return donation;
+}
+```
+
+**Key Points for Implementation:**
+- Status can only move forward: CLAIMED → PICKED_UP → DELIVERED
+- Each transition records a timestamp
+- Invalid transitions throw clear error messages
+- Volunteer information is attached when status becomes PICKED_UP
 
 ### New DTO Required: ClaimDonationDto
 
