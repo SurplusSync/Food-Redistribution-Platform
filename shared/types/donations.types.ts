@@ -21,10 +21,10 @@ export interface FoodListing {
   location: Location;
   imageUrl?: string;
   specialInstructions?: string;
-  status: DonationStatus; // ← CHANGED: Now uses enum
+  status: DonationStatus; // uses enum
   claimedBy?: string;
   claimedAt?: Date;
-  pickedUpAt?: Date; // ← NEW: When volunteer picks up
-  deliveredAt?: Date; // ← NEW: When volunteer delivers
+  pickedUpAt?: Date; // When volunteer picks up
+  deliveredAt?: Date; // When volunteer delivers
   createdAt: Date;
 }
