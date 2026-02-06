@@ -27,6 +27,9 @@ export class User {
   @Column({ nullable: true }) // Make this nullable if not every user has one
   organizationName: string;
 
+  @Column({ nullable: true })
+  organizationType: string;
+
   @Column({ nullable: true }) // Make nullable to prevent errors on existing data
   phone: string;
 

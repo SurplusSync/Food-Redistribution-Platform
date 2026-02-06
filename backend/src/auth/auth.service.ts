@@ -2,7 +2,7 @@ import { Injectable, UnauthorizedException, ConflictException } from '@nestjs/co
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
-import * as bcrypt from 'bcrypt'; 
+import * as bcrypt from 'bcrypt';
 import { RegisterDto, LoginDto } from './dto/auth.dto';
 import { User } from './entities/user.entity';
 
@@ -12,12 +12,12 @@ export class AuthService {
     @InjectRepository(User)
     private usersRepository: Repository<User>,
     private jwtService: JwtService,
-  ) {}
+  ) { }
 
   async register(registerDto: RegisterDto) {
     // 1. Check if user exists
-    const existingUser = await this.usersRepository.findOne({ 
-      where: { email: registerDto.email } 
+    const existingUser = await this.usersRepository.findOne({
+      where: { email: registerDto.email }
     });
 
     if (existingUser) {
@@ -32,25 +32,25 @@ export class AuthService {
       ...registerDto,
       password: hashedPassword, // Storing Hash
     });
-    
+
     await this.usersRepository.save(user);
 
     // 4. Generate Token
-    const token = this.jwtService.sign({ 
-      sub: user.id, 
-      email: user.email, 
-      role: user.role 
+    const token = this.jwtService.sign({
+      sub: user.id,
+      email: user.email,
+      role: user.role
     });
 
     return {
       success: true,
       data: {
         token,
-        user: { 
-          id: user.id, 
-          email: user.email, 
-          name: user.name, 
-          role: user.role 
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          role: user.role
         },
       },
       message: 'User registered successfully',
@@ -59,8 +59,8 @@ export class AuthService {
 
   async login(loginDto: LoginDto) {
     // 1. Find User
-    const user = await this.usersRepository.findOne({ 
-      where: { email: loginDto.email } 
+    const user = await this.usersRepository.findOne({
+      where: { email: loginDto.email }
     });
 
     // 2. Compare candidate password with stored Hash
@@ -69,24 +69,38 @@ export class AuthService {
     }
 
     // 3. Generate Token
-    const token = this.jwtService.sign({ 
-      sub: user.id, 
-      email: user.email, 
-      role: user.role 
+    const token = this.jwtService.sign({
+      sub: user.id,
+      email: user.email,
+      role: user.role
     });
 
     return {
       success: true,
       data: {
         token,
-        user: { 
-          id: user.id, 
-          email: user.email, 
-          name: user.name, 
-          role: user.role 
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          role: user.role
         },
       },
       message: 'Login successful',
     };
+  }
+
+  async getProfile(userId: string) {
+    const user = await this.usersRepository.findOne({ where: { id: userId } });
+    if (!user) throw new UnauthorizedException('User not found');
+
+    // Remove password from response
+    const { password, ...result } = user;
+    return result;
+  }
+
+  async updateProfile(userId: string, updateData: any) {
+    await this.usersRepository.update(userId, updateData);
+    return this.getProfile(userId);
   }
 }
