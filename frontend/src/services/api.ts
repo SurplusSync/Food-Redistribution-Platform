@@ -112,6 +112,7 @@ export const getDonations = async (filters?: { status?: string[]; role?: string;
     ...item,
     id: String(item.id),
     quantity: String(item.quantity),
+    status: item.status || 'AVAILABLE',
     location: {
       lat: Number(item.latitude) || 0,
       lng: Number(item.longitude) || 0,
@@ -172,7 +173,9 @@ export const createDonation = async (data: any, images: File[] = []) => {
 };
 
 export const claimDonation = async (id: string) => {
-  const response = await api.patch(`/donations/${id}/claim`);
+  const response = await api.patch(`/donations/${id}/claim`, {
+    estimatedPickupTime: new Date().toISOString()
+  });
   return response.data;
 };
 

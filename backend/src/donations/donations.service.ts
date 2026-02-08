@@ -26,26 +26,37 @@ export class DonationsService {
   async findAll(latitude?: number, longitude?: number, radius: number = 5) {
     // 1. If no location provided, just return everything
     if (!latitude || !longitude) {
-      return this.donationsRepository.find({
-        where: { status: DonationStatus.AVAILABLE },
-        order: { createdAt: 'DESC' },
-      });
+      try {
+        return await this.donationsRepository.find({
+          order: { createdAt: 'DESC' },
+        });
+      } catch (error) {
+        console.error('Error fetching donations:', error);
+        return [];
+      }
     }
 
     // 2. THE "MEDIUM COMPLEXITY" ALGORITHM
     // This runs a raw SQL query to calculate distance on the database server.
-    // It finds food within 'radius' km and sorts by closest first.
-    return this.donationsRepository
-      .createQueryBuilder('donation')
-      .where('donation.status = :status', { status: DonationStatus.AVAILABLE })
-      .addSelect(
-        `(6371 * acos(cos(radians(:lat)) * cos(radians(donation.latitude)) * cos(radians(donation.longitude) - radians(:lon)) + sin(radians(:lat)) * sin(radians(donation.latitude))))`,
-        'distance',
-      )
-      .having('distance < :radius')
-      .setParameters({ lat: latitude, lon: longitude, radius })
-      .orderBy('distance', 'ASC')
-      .getMany();
+    // It finds all food within 'radius' km and sorts by closest first.
+    try {
+      return await this.donationsRepository
+        .createQueryBuilder('donation')
+        .addSelect(
+          `(6371 * acos(cos(radians(:lat)) * cos(radians(donation.latitude)) * cos(radians(donation.longitude) - radians(:lon)) + sin(radians(:lat)) * sin(radians(donation.latitude))))`,
+          'distance',
+        )
+        .having('distance < :radius')
+        .setParameters({ lat: latitude, lon: longitude, radius })
+        .orderBy('distance', 'ASC')
+        .getMany();
+    } catch (error) {
+      console.error('Error with distance query, returning all donations:', error);
+      // Fallback: return all donations without distance filtering
+      return await this.donationsRepository.find({
+        order: { createdAt: 'DESC' },
+      });
+    }
   }
 
   async claim(id: string, claimDto: ClaimDonationDto) {

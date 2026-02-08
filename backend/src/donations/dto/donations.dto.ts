@@ -79,8 +79,10 @@ export class CreateDonationDto {
 export class ClaimDonationDto {
   @ApiProperty({
     example: '2025-01-30T15:00:00Z',
-    description: 'Estimated pickup time'
+    description: 'Estimated pickup time',
+    required: false
   })
+  @IsOptional()
   @IsDateString()
-  estimatedPickupTime: string;
+  estimatedPickupTime?: string;
 }
