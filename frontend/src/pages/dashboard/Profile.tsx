@@ -74,7 +74,7 @@ export default function Profile() {
             ngo: { bg: 'bg-blue-500/10', text: 'text-blue-400', label: 'NGO' },
             volunteer: { bg: 'bg-purple-500/10', text: 'text-purple-400', label: 'Volunteer' }
         }
-        return badges[user.role as keyof typeof badges] || badges.donor
+        return badges[(user.role?.toLowerCase()) as keyof typeof badges] || badges.donor
     }
 
     const badge = getRoleBadge()
@@ -204,7 +204,7 @@ export default function Profile() {
                         )}
                     </div>
 
-                    {(user.role === 'donor' || user.role === 'ngo') && (
+                    {(user.role?.toLowerCase() === 'donor' || user.role?.toLowerCase() === 'ngo') && (
                         <>
                             <div>
                                 <label className="flex items-center gap-2 text-sm text-slate-400 mb-2">
@@ -255,7 +255,7 @@ export default function Profile() {
             </div>
 
             {/* Verification Status */}
-            {!user.verified && user.role === 'ngo' && (
+            {!user.verified && user.role?.toLowerCase() === 'ngo' && (
                 <div className="mt-6 p-4 bg-amber-500/10 border border-amber-500/20 rounded-lg">
                     <p className="text-sm text-amber-400 mb-2">⏳ Verification Pending</p>
                     <p className="text-xs text-slate-400">

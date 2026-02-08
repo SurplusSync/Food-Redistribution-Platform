@@ -18,7 +18,7 @@ export default function Impact() {
     }
 
     const currentUser = safeParseUser() || { id: 'guest', role: 'donor' }
-    const userRole = currentUser.role || 'donor'
+    const userRole = (currentUser.role || 'donor').toLowerCase()
 
     const fallbackBadges: Badge[] = [
         { id: '1', name: 'Newcomer', icon: '🌱', description: 'Joined the platform', earned: true, requirement: 1 },

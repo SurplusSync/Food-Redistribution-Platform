@@ -4,7 +4,7 @@ import type { Donation } from '../../services/api'
 
 export default function History() {
     const [donations, setDonations] = useState<Donation[]>([])
-    const [filter, setFilter] = useState<'all' | 'ACTIVE' | 'CLAIMED' | 'DELIVERED'>('all')
+    const [filter, setFilter] = useState<'all' | 'AVAILABLE' | 'CLAIMED' | 'DELIVERED'>('all')
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
@@ -24,16 +24,16 @@ export default function History() {
 
     const getStatusStyle = (status: string) => {
         const styles: Record<string, string> = {
-            ACTIVE: 'bg-emerald-500/10 text-emerald-400',
+            AVAILABLE: 'bg-emerald-500/10 text-emerald-400',
             CLAIMED: 'bg-amber-500/10 text-amber-400',
             DELIVERED: 'bg-slate-500/10 text-slate-400',
         }
-        return styles[status] || styles.ACTIVE
+        return styles[status] || styles.AVAILABLE
     }
 
     const counts = {
         all: donations.length,
-        ACTIVE: donations.filter(d => d.status === 'ACTIVE').length,
+        AVAILABLE: donations.filter(d => d.status === 'AVAILABLE').length,
         CLAIMED: donations.filter(d => d.status === 'CLAIMED').length,
         DELIVERED: donations.filter(d => d.status === 'DELIVERED').length,
     }
@@ -55,7 +55,7 @@ export default function History() {
 
             {/* Filters */}
             <div className="flex gap-2 mb-6">
-                {(['all', 'ACTIVE', 'CLAIMED', 'DELIVERED'] as const).map((status) => (
+                {(['all', 'AVAILABLE', 'CLAIMED', 'DELIVERED'] as const).map((status) => (
                     <button
                         key={status}
                         onClick={() => setFilter(status)}

@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Patch, Param, Body, Query, UseInterceptors, UploadedFiles } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { DonationsService } from './donations.service';
-import { S3Service } from '../common/s3.service';
+import { CloudinaryService } from '../common/cloudinary.service';
 import { CreateDonationDto, ClaimDonationDto } from './dto/donations.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiQuery, ApiConsumes } from '@nestjs/swagger';
 
@@ -10,7 +10,7 @@ import { ApiTags, ApiOperation, ApiResponse, ApiQuery, ApiConsumes } from '@nest
 export class DonationsController {
   constructor(
     private readonly donationsService: DonationsService,
-    private readonly s3Service: S3Service,
+    private readonly cloudinaryService: CloudinaryService,
   ) { }
 
   @Post()
@@ -30,7 +30,7 @@ export class DonationsController {
     @UploadedFiles() files: Array<Express.Multer.File>,
   ) {
     if (files && files.length > 0) {
-      const imageUrls = await this.s3Service.uploadFiles(files);
+      const imageUrls = await this.cloudinaryService.uploadImages(files);
       createDonationDto.imageUrls = imageUrls;
     }
     return this.donationsService.create(createDonationDto);

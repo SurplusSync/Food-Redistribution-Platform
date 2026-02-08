@@ -1,19 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNumber, IsDateString, IsOptional, Min, IsBoolean, ValidateNested, IsObject } from 'class-validator';
-import { Type } from 'class-transformer';
-
-class HygieneDto {
-  @ApiProperty()
-  @IsBoolean()
-  keptCovered: boolean;
-
-  @ApiProperty()
-  @IsBoolean()
-  containerClean: boolean;
-}
+import { IsString, IsNumber, IsDateString, IsOptional, Min, IsBoolean } from 'class-validator';
+import { Type, Transform } from 'class-transformer';
 
 export class CreateDonationDto {
-  // --- NEW FIELDS (Required by Frontend) ---
   @ApiProperty({ example: 'Vegetable Biryani', description: 'Name of the food item' })
   @IsString()
   name: string;
@@ -33,20 +22,27 @@ export class CreateDonationDto {
 
   @ApiProperty({ description: 'Hygiene checklist' })
   @IsOptional()
-  // @ValidateNested() // Uncomment if you want strict validation
-  // @Type(() => HygieneDto)
-  hygiene?: any;
+  // Automatically parse the JSON string from FormData back to an Object
+  @Transform(({ value }) => {
+    if (typeof value === 'string') {
+      try { return JSON.parse(value); } catch { return value; }
+    }
+    return value;
+  })
+  hygiene?: any; 
 
   @ApiProperty({ required: false, description: 'Donor trust score' })
   @IsOptional()
+  @Type(() => Number)
   donorTrustScore?: number;
 
-  // --- EXISTING FIELDS ---
+
   @ApiProperty({ example: 'cooked', description: 'Type of food' })
   @IsString()
   foodType: string;
 
   @ApiProperty({ example: 50, description: 'Quantity' })
+  @Type(() => Number)
   @IsNumber()
   @Min(0.1)
   quantity: number;
@@ -60,10 +56,12 @@ export class CreateDonationDto {
   preparationTime: string;
 
   @ApiProperty({ example: 17.6868, description: 'Latitude' })
+  @Type(() => Number)
   @IsNumber()
   latitude: number;
 
   @ApiProperty({ example: 83.2185, description: 'Longitude' })
+  @Type(() => Number)
   @IsNumber()
   longitude: number;
 
