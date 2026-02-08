@@ -3,7 +3,7 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { getDonations, claimDonation, type Donation } from '../../services/api'
-import { Clock, Shield, AlertTriangle } from 'lucide-react'
+import { Clock, Shield, AlertTriangle, X, Image as ImageIcon, MapPin, CheckCircle2 } from 'lucide-react'
 
 // Fix for default marker icons
 delete (L.Icon.Default.prototype as any)._getIconUrl
@@ -26,13 +26,14 @@ const claimedIcon = createIcon('#f59e0b')
 const urgentIcon = createIcon('#ef4444')
 
 export default function DiscoveryMap() {
-    const [filter, setFilter] = useState<'all' | 'ACTIVE' | 'CLAIMED'>('all')
+    const [filter, setFilter] = useState<'all' | 'AVAILABLE' | 'CLAIMED'>('all')
     const [donations, setDonations] = useState<Donation[]>([])
     const [loading, setLoading] = useState(true)
     const [claiming, setClaiming] = useState<string | null>(null)
+    const [selectedDonation, setSelectedDonation] = useState<Donation | null>(null) // 🔍 State for Modal
 
     const user = JSON.parse(localStorage.getItem('user') || '{}')
-    const userRole = user.role || 'donor'
+    const userRole = (user.role || 'donor').toLowerCase()
     const canClaim = userRole === 'ngo' || userRole === 'volunteer'
 
     useEffect(() => {
@@ -54,8 +55,9 @@ export default function DiscoveryMap() {
 
         setClaiming(donationId)
         try {
-            await claimDonation(donationId, user.id)
+            await claimDonation(donationId)
             await loadDonations()
+            setSelectedDonation(null) // Close modal on success
         } catch (error: any) {
             alert(error.message || 'Failed to claim donation')
         } finally {
@@ -80,21 +82,21 @@ export default function DiscoveryMap() {
 
     const getMarkerIcon = (donation: Donation) => {
         if (donation.status === 'CLAIMED') return claimedIcon
-        
-        const timeRemaining = getTimeRemaining(donation.expiryTime)
-        if (timeRemaining.urgent) return urgentIcon
-        
+        if (donation.status === 'AVAILABLE') {
+            const timeRemaining = getTimeRemaining(donation.expiryTime)
+            if (timeRemaining.urgent) return urgentIcon
+        }
         return activeIcon
     }
 
     return (
-        <div className="h-[calc(100vh-4rem)] flex flex-col -m-8">
+        <div className="h-[calc(100vh-4rem)] flex flex-col -m-8 relative">
             {/* Header */}
             <div className="p-4 border-b border-slate-800 bg-slate-950">
                 <div className="flex items-center justify-between mb-3">
                     <h1 className="text-lg font-semibold text-white">Discovery Map</h1>
                     <div className="flex gap-2">
-                        {(['all', 'ACTIVE', 'CLAIMED'] as const).map((f) => (
+                        {(['all', 'AVAILABLE', 'CLAIMED'] as const).map((f) => (
                             <button
                                 key={f}
                                 onClick={() => setFilter(f)}
@@ -104,37 +106,15 @@ export default function DiscoveryMap() {
                                         : 'bg-slate-800 text-slate-400 hover:text-white'
                                 }`}
                             >
-                                {f === 'ACTIVE' ? 'Available' : f.toLowerCase()}
+                                {f === 'AVAILABLE' ? 'Available' : f.toLowerCase()}
                             </button>
                         ))}
-                    </div>
-                </div>
-
-                {/* Stats */}
-                <div className="flex gap-4 text-xs">
-                    <div className="flex items-center gap-1.5">
-                        <div className="w-3 h-3 rounded-full bg-emerald-500" />
-                        <span className="text-slate-400">
-                            {donations.filter(d => d.status === 'ACTIVE' && !getTimeRemaining(d.expiryTime).urgent).length} Available
-                        </span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                        <div className="w-3 h-3 rounded-full bg-red-500" />
-                        <span className="text-slate-400">
-                            {donations.filter(d => d.status === 'ACTIVE' && getTimeRemaining(d.expiryTime).urgent).length} Urgent
-                        </span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                        <div className="w-3 h-3 rounded-full bg-amber-500" />
-                        <span className="text-slate-400">
-                            {donations.filter(d => d.status === 'CLAIMED').length} Claimed
-                        </span>
                     </div>
                 </div>
             </div>
 
             {/* Map */}
-            <div className="flex-1 relative">
+            <div className="flex-1 relative z-0">
                 {loading ? (
                     <div className="absolute inset-0 flex items-center justify-center bg-slate-950">
                         <p className="text-slate-500">Loading donations...</p>
@@ -157,128 +137,172 @@ export default function DiscoveryMap() {
                                 icon={getMarkerIcon(donation)}
                             >
                                 <Popup>
-                                    <div className="p-3 min-w-[220px]">
-                                        {/* Food Info */}
-                                        <div className="mb-3">
-                                            <p className="font-semibold text-white mb-1">
-                                                {donation.name}
-                                            </p>
-                                            <p className="text-xs text-slate-400">
-                                                {donation.quantity} {donation.unit}
-                                            </p>
-                                            {donation.description && (
-                                                <p className="text-xs text-slate-500 mt-1 line-clamp-2">
-                                                    {donation.description}
-                                                </p>
+                                    <div className="p-2 min-w-[200px]">
+                                        <div className="mb-2">
+                                            <p className="font-semibold text-white mb-0.5">{donation.name}</p>
+                                            <p className="text-xs text-slate-400">{donation.quantity} {donation.unit} • {donation.foodType}</p>
+                                        </div>
+                                        
+                                        {/* Status Badge */}
+                                        <div className="mb-3 flex items-center gap-2">
+                                            <span className={`inline-block px-2 py-0.5 rounded text-[10px] font-medium capitalize ${
+                                                donation.status === 'AVAILABLE'
+                                                    ? 'bg-emerald-500/20 text-emerald-400'
+                                                    : 'bg-amber-500/20 text-amber-400'
+                                            }`}>
+                                                {donation.status === 'AVAILABLE' ? 'available' : donation.status.toLowerCase()}
+                                            </span>
+                                            {donation.status === 'AVAILABLE' && (
+                                                <span className={`text-[10px] font-medium ${
+                                                    getTimeRemaining(donation.expiryTime).urgent ? 'text-red-400' : 'text-emerald-400'
+                                                }`}>
+                                                    {getTimeRemaining(donation.expiryTime).text} left
+                                                </span>
                                             )}
                                         </div>
 
-                                        {/* Donor Info */}
-                                        <div className="mb-3 pb-3 border-b border-slate-800">
-                                            <p className="text-xs text-slate-400 mb-1">
-                                                Donor: {donation.donorName}
-                                            </p>
-                                            <div className="flex items-center gap-2">
-                                                <Shield className="w-3 h-3 text-emerald-400" />
-                                                <span className="text-xs text-emerald-400">
-                                                    Trust: {donation.donorTrustScore.toFixed(1)}/5.0
-                                                </span>
-                                            </div>
-                                        </div>
-
-                                        {/* Time & Safety */}
-                                        {donation.status === 'ACTIVE' && (
-                                            <div className="mb-3">
-                                                <div className={`flex items-center gap-2 p-2 rounded ${
-                                                    getTimeRemaining(donation.expiryTime).urgent
-                                                        ? 'bg-red-500/10'
-                                                        : 'bg-emerald-500/10'
-                                                }`}>
-                                                    {getTimeRemaining(donation.expiryTime).urgent ? (
-                                                        <AlertTriangle className="w-3 h-3 text-red-400" />
-                                                    ) : (
-                                                        <Clock className="w-3 h-3 text-emerald-400" />
-                                                    )}
-                                                    <span className={`text-xs font-medium ${
-                                                        getTimeRemaining(donation.expiryTime).urgent
-                                                            ? 'text-red-400'
-                                                            : 'text-emerald-400'
-                                                    }`}>
-                                                        {getTimeRemaining(donation.expiryTime).text} remaining
-                                                    </span>
-                                                </div>
-
-                                                <div className="flex gap-1 mt-2">
-                                                    {donation.hygiene.keptCovered && (
-                                                        <span className="text-xs px-1.5 py-0.5 bg-emerald-500/10 text-emerald-400 rounded">
-                                                            ✓ Covered
-                                                        </span>
-                                                    )}
-                                                    {donation.hygiene.containerClean && (
-                                                        <span className="text-xs px-1.5 py-0.5 bg-emerald-500/10 text-emerald-400 rounded">
-                                                            ✓ Clean
-                                                        </span>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        )}
-
-                                        {/* Status Badge */}
-                                        <span className={`inline-block px-2 py-1 rounded text-xs font-medium capitalize mb-3 ${
-                                            donation.status === 'ACTIVE'
-                                                ? 'bg-emerald-500/20 text-emerald-400'
-                                                : 'bg-amber-500/20 text-amber-400'
-                                        }`}>
-                                            {donation.status.toLowerCase()}
-                                        </span>
-
-                                        {/* Action Buttons */}
-                                        {donation.status === 'ACTIVE' && canClaim && (
-                                            <button
-                                                onClick={() => handleClaim(donation.id)}
-                                                disabled={claiming === donation.id}
-                                                className="w-full py-2 bg-emerald-500 hover:bg-emerald-400 disabled:bg-slate-700 text-white text-xs rounded font-medium transition-colors"
-                                            >
-                                                {claiming === donation.id ? 'Claiming...' : 'Claim Food'}
-                                            </button>
-                                        )}
-                                        
-                                        {donation.status === 'ACTIVE' && !canClaim && (
-                                            <p className="text-xs text-slate-500 text-center">
-                                                Only NGOs and volunteers can claim
-                                            </p>
-                                        )}
-
-                                        {donation.status === 'CLAIMED' && donation.claimedBy === user.id && (
-                                            <div className="text-xs text-slate-400 text-center">
-                                                You claimed this food
-                                            </div>
-                                        )}
+                                        {/* View Details Button - Triggers Modal */}
+                                        <button
+                                            onClick={() => setSelectedDonation(donation)}
+                                            className="w-full py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs rounded font-medium transition-colors border border-slate-700"
+                                        >
+                                            View Details & Image
+                                        </button>
                                     </div>
                                 </Popup>
                             </Marker>
                         ))}
                     </MapContainer>
                 )}
+            </div>
 
-                {/* Legend */}
-                <div className="absolute bottom-4 right-4 bg-slate-900/95 border border-slate-800 rounded-lg p-3 z-[1000]">
-                    <div className="space-y-2 text-xs">
-                        <div className="flex items-center gap-2">
-                            <div className="w-3 h-3 rounded-full bg-emerald-500" />
-                            <span className="text-slate-400">Available</span>
+            {/* 🔍 DETAIL MODAL */}
+            {selectedDonation && (
+                <div className="fixed inset-0 z-[2000] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
+                    <div className="bg-slate-900 border border-slate-800 rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl flex flex-col md:flex-row">
+                        
+                        {/* LEFT: Image Section */}
+                        <div className="w-full md:w-1/2 bg-slate-950 h-64 md:h-auto relative">
+                            {selectedDonation.imageUrls && selectedDonation.imageUrls.length > 0 ? (
+                                <img 
+                                    src={selectedDonation.imageUrls[0]} 
+                                    alt={selectedDonation.name} 
+                                    className="w-full h-full object-cover"
+                                />
+                            ) : (
+                                <div className="w-full h-full flex flex-col items-center justify-center text-slate-600">
+                                    <ImageIcon className="w-12 h-12 mb-2 opacity-50" />
+                                    <span className="text-sm">No image uploaded</span>
+                                </div>
+                            )}
+                            
+                            {/* Urgent Badge Overlay */}
+                            {selectedDonation.status === 'AVAILABLE' && getTimeRemaining(selectedDonation.expiryTime).urgent && (
+                                <div className="absolute top-4 left-4 bg-red-500 text-white text-xs px-2 py-1 rounded-md font-medium flex items-center gap-1 shadow-lg">
+                                    <AlertTriangle className="w-3 h-3" />
+                                    Urgent: Expiring Soon
+                                </div>
+                            )}
                         </div>
-                        <div className="flex items-center gap-2">
-                            <div className="w-3 h-3 rounded-full bg-red-500" />
-                            <span className="text-slate-400">Urgent (&lt;3h)</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <div className="w-3 h-3 rounded-full bg-amber-500" />
-                            <span className="text-slate-400">Claimed</span>
+
+                        {/* RIGHT: Details Section */}
+                        <div className="w-full md:w-1/2 p-6 flex flex-col">
+                            <div className="flex justify-between items-start mb-4">
+                                <div>
+                                    <h2 className="text-xl font-bold text-white mb-1">{selectedDonation.name}</h2>
+                                    <p className="text-emerald-400 font-medium">{selectedDonation.quantity} {selectedDonation.unit} • {selectedDonation.foodType}</p>
+                                </div>
+                                <button onClick={() => setSelectedDonation(null)} className="p-1 hover:bg-slate-800 rounded-full text-slate-400 transition-colors">
+                                    <X className="w-5 h-5" />
+                                </button>
+                            </div>
+
+                            <div className="space-y-4 flex-1">
+                                {/* Donor Info */}
+                                <div className="p-3 bg-slate-800/50 rounded-lg border border-slate-800">
+                                    <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Donor</p>
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-white font-medium">{selectedDonation.donorName}</span>
+                                        <div className="flex items-center gap-1.5 bg-emerald-500/10 px-2 py-0.5 rounded text-emerald-400 text-xs">
+                                            <Shield className="w-3 h-3" />
+                                            <span>Trust: {selectedDonation.donorTrustScore.toFixed(1)}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Description */}
+                                {selectedDonation.description && (
+                                    <div>
+                                        <p className="text-xs text-slate-400 mb-1">Description</p>
+                                        <p className="text-sm text-slate-300 leading-relaxed">{selectedDonation.description}</p>
+                                    </div>
+                                )}
+
+                                {/* Hygiene */}
+                                <div>
+                                    <p className="text-xs text-slate-400 mb-2">Safety Check</p>
+                                    <div className="flex gap-2">
+                                        {selectedDonation.hygiene.keptCovered ? (
+                                            <span className="flex items-center gap-1 text-xs bg-emerald-500/10 text-emerald-400 px-2 py-1 rounded border border-emerald-500/20">
+                                                <CheckCircle2 className="w-3 h-3" /> Kept Covered
+                                            </span>
+                                        ) : (
+                                            <span className="flex items-center gap-1 text-xs bg-red-500/10 text-red-400 px-2 py-1 rounded border border-red-500/20">
+                                                <X className="w-3 h-3" /> Not Covered
+                                            </span>
+                                        )}
+                                        {selectedDonation.hygiene.containerClean ? (
+                                            <span className="flex items-center gap-1 text-xs bg-emerald-500/10 text-emerald-400 px-2 py-1 rounded border border-emerald-500/20">
+                                                <CheckCircle2 className="w-3 h-3" /> Clean Container
+                                            </span>
+                                        ) : (
+                                            <span className="flex items-center gap-1 text-xs bg-red-500/10 text-red-400 px-2 py-1 rounded border border-red-500/20">
+                                                <X className="w-3 h-3" /> Dirty Container
+                                            </span>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Time */}
+                                <div className="flex items-center gap-2 text-sm text-slate-400">
+                                    <Clock className="w-4 h-4" />
+                                    <span>Prepared: {new Date(selectedDonation.preparationTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                                </div>
+                            </div>
+
+                            {/* Action Button */}
+                            <div className="mt-6 pt-4 border-t border-slate-800">
+                                {selectedDonation.status === 'AVAILABLE' ? (
+                                    canClaim ? (
+                                        <button
+                                            onClick={() => handleClaim(selectedDonation.id)}
+                                            disabled={claiming === selectedDonation.id}
+                                            className="w-full py-3 bg-emerald-500 hover:bg-emerald-400 disabled:bg-slate-700 text-white rounded-lg font-semibold transition-all shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2"
+                                        >
+                                            {claiming === selectedDonation.id ? (
+                                                <>Claiming...</>
+                                            ) : (
+                                                <>
+                                                    <MapPin className="w-4 h-4" />
+                                                    Claim This Food
+                                                </>
+                                            )}
+                                        </button>
+                                    ) : (
+                                        <div className="text-center p-3 bg-slate-800 rounded-lg text-slate-400 text-sm">
+                                            Log in as NGO or Volunteer to claim
+                                        </div>
+                                    )
+                                ) : (
+                                    <div className="text-center p-3 bg-amber-500/10 text-amber-400 rounded-lg font-medium border border-amber-500/20">
+                                        Already Claimed
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            )}
         </div>
     )
 }

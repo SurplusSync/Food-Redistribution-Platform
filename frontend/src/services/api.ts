@@ -1,6 +1,6 @@
 import axios, { type InternalAxiosRequestConfig } from 'axios';
 
-// 1. Setup Axios (Real Backend Connection)
+// 1. Setup Axios
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 const api = axios.create({
@@ -10,7 +10,7 @@ const api = axios.create({
   },
 });
 
-// 2. Auth Interceptor (Attaches Token)
+// 2. Auth Interceptor
 api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   const token = localStorage.getItem('token');
   if (token) {
@@ -20,8 +20,37 @@ api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
 });
 
 // --- TYPES ---
-export type UserRole = 'donor' | 'ngo' | 'volunteer'
-export type DonationStatus = 'AVAILABLE' | 'CLAIMED' | 'PICKED_UP'
+export type UserRole = 'donor' | 'ngo' | 'volunteer';
+export type DonationStatus = 'AVAILABLE' | 'CLAIMED' | 'PICKED_UP' | 'DELIVERED';
+export type FoodType = 'cooked' | 'raw' | 'packaged' | 'fruits' | 'bakery' | 'dairy';
+
+// ✅ NEW: Explicit Donation Interface
+export interface Donation {
+  id: string;
+  name: string;
+  foodType: FoodType;
+  quantity: string;
+  unit: string;
+  description?: string;
+  donorId: string;
+  donorName: string;
+  donorTrustScore: number;
+  location: {
+    lat: number;
+    lng: number;
+    address: string;
+  };
+  hygiene: {
+    keptCovered: boolean;
+    containerClean: boolean;
+  };
+  preparationTime: Date;
+  expiryTime: Date;
+  createdAt: Date;
+  status: DonationStatus;
+  claimedBy?: string;
+  imageUrls: string[]; // 👈 Critical for the modal
+}
 
 export interface User {
   id: string;
@@ -59,7 +88,7 @@ export type Badge = {
   requirement?: number;
 }
 
-//  REAL API CALLS (Connected to Backend)
+// --- API CALLS ---
 
 export const loginUser = async (email: string, password?: string) => {
   if (!password) throw new Error("Password is required");
@@ -76,50 +105,69 @@ export const registerUser = async (data: any) => {
   return response.data.data;
 };
 
-export const getDonations = async () => {
+export const getDonations = async (filters?: { status?: string[]; role?: string; userId?: string }) => {
   const response = await api.get('/donations');
 
-  // ADAPTER: Bulletproof Data Conversion
-  return response.data.map((item: any) => ({
+  let data = response.data.map((item: any) => ({
     ...item,
-
-    // SAFETY 1: Force ID to String to prevent "1" === 1 failures
     id: String(item.id),
-
-    // SAFETY 2: Force Quantity to String (Frontend expects string from previous mocks)
     quantity: String(item.quantity),
-
-    // SAFETY 3: Default missing location data
     location: {
       lat: Number(item.latitude) || 0,
       lng: Number(item.longitude) || 0,
       address: item.address || 'Unknown Location'
     },
-
-    // SAFETY 4: Default missing Donor/Hygiene data
     donorName: item.donorName || "Community Donor",
     donorTrustScore: Number(item.donorTrustScore) || 5.0,
-    hygiene: item.hygiene || { keptCovered: true, containerClean: true },
+    hygiene: typeof item.hygiene === 'string' ? JSON.parse(item.hygiene) : (item.hygiene || { keptCovered: true, containerClean: true }),
     foodType: item.foodType || 'cooked',
-
-    // SAFETY 5: Safe Date Parsing
     expiryTime: item.expiryTime ? new Date(item.expiryTime) : new Date(Date.now() + 24 * 60 * 60 * 1000),
     preparationTime: item.preparationTime ? new Date(item.preparationTime) : new Date(),
     createdAt: item.createdAt ? new Date(item.createdAt) : new Date(),
+    imageUrls: Array.isArray(item.imageUrls) ? item.imageUrls : (typeof item.imageUrls === 'string' && item.imageUrls ? item.imageUrls.split(',') : []),
   }));
+
+  if (filters?.status) {
+    data = data.filter((d: any) => filters.status?.includes(d.status));
+  }
+
+  return data;
 };
 
-export const createDonation = async (data: any) => {
-  const { location, ...cleanData } = data;
+export const createDonation = async (data: any, images: File[] = []) => {
+  const formData = new FormData();
 
-  const payload = {
-    ...cleanData,
-    quantity: parseFloat(data.quantity),
-    latitude: data.location?.lat || 0,
-    longitude: data.location?.lng || 0,
-  };
+  formData.append('name', data.name);
+  formData.append('foodType', data.foodType);
+  formData.append('quantity', data.quantity.toString());
+  formData.append('unit', data.unit);
+  formData.append('description', data.description || '');
+  
+  const prepTime = data.preparationTime instanceof Date ? data.preparationTime.toISOString() : data.preparationTime;
+  formData.append('preparationTime', prepTime);
+  
+  if (data.donorId) formData.append('donorId', data.donorId);
+  if (data.donorName) formData.append('donorName', data.donorName);
+  if (data.donorTrustScore) formData.append('donorTrustScore', data.donorTrustScore.toString());
 
-  const response = await api.post('/donations', payload);
+  if (data.location) {
+    formData.append('latitude', data.location.lat.toString());
+    formData.append('longitude', data.location.lng.toString());
+  }
+
+  if (data.hygiene) {
+    formData.append('hygiene', JSON.stringify(data.hygiene));
+  }
+
+  images.forEach((file) => {
+    formData.append('images', file); 
+  });
+
+  const response = await api.post('/donations', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
   return response.data;
 };
 
@@ -128,67 +176,34 @@ export const claimDonation = async (id: string) => {
   return response.data;
 };
 
-//  MOCK HELPERS (Safe Defaults)
+export const updateDonationStatus = async (id: string, status: string) => {
+  const response = await api.patch(`/donations/${id}/status`, { status });
+  return response.data;
+};
 
+// --- MOCK HELPERS ---
 export const getNotifications = async (_userId: string): Promise<Notification[]> => {
-  return [
-    {
-      id: '1',
-      title: 'Welcome!',
-      message: 'Welcome to SurplusSync. Start donating today!',
-      read: false,
-      createdAt: new Date()
-    }
-  ];
+  return [{ id: '1', title: 'Welcome!', message: 'Welcome to SurplusSync.', read: false, createdAt: new Date() }];
 };
-
-export const markNotificationRead = async (_id: string) => {
-  return;
-};
-
-export const checkExpiringDonations = () => {
-  return;
-};
-
+export const markNotificationRead = async (_id: string) => { return; };
+export const checkExpiringDonations = () => { return; };
 export const getBadges = async (_userId: string): Promise<Badge[]> => {
-  return [
-    { id: '1', name: 'Newcomer', icon: '🌱', description: 'Joined the platform', earned: true, requirement: 1 }
-  ];
+  return [{ id: '1', name: 'Newcomer', icon: '🌱', description: 'Joined the platform', earned: true, requirement: 1 }];
 };
-
 export const getUserProfile = async (_userId: string): Promise<User | null> => {
   try {
-    // Call the backend profile endpoint
-    // Note: The backend identifies the user from the JWT token, so we don't need to pass the ID in the URL for the current user
     const response = await api.get('/auth/profile');
-
-    // The backend returns the user object directly (based on AuthController.getProfile)
     const user = response.data;
-
     if (!user) return null;
-
-    // Make sure we carry over the token if it's needed in state
-    // (Usually token is stored separately, but keeping existing type structure)
-    return {
-      ...user,
-      impactStats: user.impactStats || {
-        totalDonations: 0,
-        mealsProvided: 0,
-        kgSaved: 0
-      }
-    };
+    return { ...user, impactStats: user.impactStats || { totalDonations: 0, mealsProvided: 0, kgSaved: 0 } };
   } catch (error) {
     console.error("Failed to fetch profile:", error);
     return null;
   }
 };
-
 export const updateUserProfile = async (_userId: string, data: any) => {
   try {
-    // Exclude impactStats from update payload if present, as backend doesn't expect it in DTO
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { impactStats, token: _token, ...updateData } = data;
-
     const response = await api.patch('/auth/profile', updateData);
     return response.data;
   } catch (error) {

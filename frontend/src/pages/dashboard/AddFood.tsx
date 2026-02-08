@@ -4,7 +4,7 @@ import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { createDonation, type FoodType } from '../../services/api'
-import { AlertTriangle, Clock, CheckCircle2 } from 'lucide-react'
+import { AlertTriangle, Clock, CheckCircle2, Upload } from 'lucide-react'
 
 // Fix for default marker
 delete (L.Icon.Default.prototype as any)._getIconUrl
@@ -34,6 +34,8 @@ export default function AddFood() {
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [location, setLocation] = useState<LatLng | null>(null)
     const [error, setError] = useState<string | null>(null)
+    const [images, setImages] = useState<File[]>([]) // NEW: Image State
+    
     const [formData, setFormData] = useState({
         foodType: '' as FoodType | '',
         foodName: '',
@@ -69,6 +71,13 @@ export default function AddFood() {
         })
         setError(null)
     }
+
+    // Handle File Selection
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files) {
+            setImages(Array.from(e.target.files));
+        }
+    };
 
     const getRemainingTime = () => {
         if (!formData.preparationTime || !selectedFoodType) return null
@@ -118,7 +127,8 @@ export default function AddFood() {
         setIsSubmitting(true)
 
         try {
-            await createDonation({
+            // Correctly constructing the payload and passing images
+            const payload = {
                 name: formData.foodName,
                 foodType: formData.foodType as FoodType,
                 quantity: formData.quantity,
@@ -133,11 +143,15 @@ export default function AddFood() {
                     containerClean: formData.containerClean,
                 },
                 preparationTime: new Date(formData.preparationTime),
-            })
+            };
+
+            // Call API with payload and images
+            await createDonation(payload, images);
 
             navigate('/dashboard')
         } catch (err: any) {
-            setError(err.message || 'Failed to create donation')
+            console.error(err);
+            setError(err.response?.data?.message || err.message || 'Failed to create donation')
         } finally {
             setIsSubmitting(false)
         }
@@ -155,7 +169,7 @@ export default function AddFood() {
         !timeStatus.futureTime
 
     return (
-        <div className="max-w-2xl">
+        <div className="max-w-2xl mx-auto">
             <h1 className="text-2xl font-semibold text-white mb-1">Add Food Donation</h1>
             <p className="text-slate-500 mb-8">Share surplus food with those in need</p>
 
@@ -289,6 +303,34 @@ export default function AddFood() {
                             rows={3}
                             className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-white placeholder-slate-600 focus:border-emerald-500 focus:outline-none resize-none"
                         />
+                    </div>
+
+                    {/*Image Upload Section */}
+                    <div>
+                        <label className="block text-sm text-slate-400 mb-2">Food Images (Optional)</label>
+                        <div className="relative">
+                            <input 
+                                type="file" 
+                                multiple 
+                                accept="image/*"
+                                onChange={handleImageChange}
+                                className="block w-full text-sm text-slate-400
+                                file:mr-4 file:py-2 file:px-4
+                                file:rounded-full file:border-0
+                                file:text-sm file:font-semibold
+                                file:bg-emerald-500 file:text-white
+                                hover:file:bg-emerald-600
+                                cursor-pointer bg-slate-950 rounded-lg border border-slate-800"
+                            />
+                            <div className="absolute right-3 top-2 pointer-events-none">
+                                <Upload className="w-5 h-5 text-slate-500" />
+                            </div>
+                        </div>
+                        {images.length > 0 && (
+                            <p className="text-xs text-emerald-400 mt-2">
+                                {images.length} file(s) selected
+                            </p>
+                        )}
                     </div>
                 </div>
 
