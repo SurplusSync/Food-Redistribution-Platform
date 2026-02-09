@@ -1,9 +1,10 @@
-import { Controller, Get, Post, Patch, Param, Body, Query, UseInterceptors, UploadedFiles } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Param, Body, Query, UseInterceptors, UploadedFiles, UseGuards } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { DonationsService } from './donations.service';
 import { CloudinaryService } from '../common/cloudinary.service';
 import { CreateDonationDto, ClaimDonationDto } from './dto/donations.dto';
-import { ApiTags, ApiOperation, ApiResponse, ApiQuery, ApiConsumes } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiQuery, ApiConsumes, ApiBearerAuth } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @ApiTags('Donations')
 @Controller('donations')
@@ -14,6 +15,8 @@ export class DonationsController {
   ) { }
 
   @Post()
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Create a new food donation' })
   @ApiResponse({
     status: 201,
@@ -69,6 +72,8 @@ export class DonationsController {
   }
 
   @Patch(':id/claim')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Claim a food donation (NGO only)' })
   @ApiResponse({
     status: 200,
