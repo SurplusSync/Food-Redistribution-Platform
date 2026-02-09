@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNumber, IsDateString, IsOptional, Min, IsBoolean } from 'class-validator';
+import { IsString, IsNumber, IsDateString, IsOptional, Min, IsEnum } from 'class-validator';
 import { Type, Transform } from 'class-transformer';
+import { DonationStatus } from '../entities/donation.entity';
 
 export class CreateDonationDto {
   @ApiProperty({ example: 'Vegetable Biryani', description: 'Name of the food item' })
@@ -29,7 +30,7 @@ export class CreateDonationDto {
     }
     return value;
   })
-  hygiene?: any; 
+  hygiene?: any;
 
   @ApiProperty({ required: false, description: 'Donor trust score' })
   @IsOptional()
@@ -74,6 +75,10 @@ export class CreateDonationDto {
   @IsOptional()
   @IsString({ each: true })
   imageUrls?: string[];
+
+  @ApiProperty({ example: '2025-01-31T10:00:00Z', description: 'Expiry time' })
+  @IsDateString()
+  expiryTime: string;
 }
 
 export class ClaimDonationDto {
@@ -85,4 +90,10 @@ export class ClaimDonationDto {
   @IsOptional()
   @IsDateString()
   estimatedPickupTime?: string;
+}
+
+export class UpdateDonationStatusDto {
+  @ApiProperty({ enum: DonationStatus, example: DonationStatus.PICKED_UP })
+  @IsEnum(DonationStatus)
+  status: DonationStatus;
 }

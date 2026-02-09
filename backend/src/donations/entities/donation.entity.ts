@@ -4,6 +4,7 @@ export enum DonationStatus {
   AVAILABLE = 'AVAILABLE',
   CLAIMED = 'CLAIMED',
   PICKED_UP = 'PICKED_UP',
+  DELIVERED = 'DELIVERED',
 }
 
 @Entity()
@@ -62,6 +63,9 @@ export class Donation {
 
   @Column({ nullable: true })
   claimedById: string;
+
+  @Column({ type: 'timestamp', nullable: true })
+  expiryTime: Date;
 
   @CreateDateColumn()
   createdAt: Date;
