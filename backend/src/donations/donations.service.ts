@@ -9,16 +9,16 @@ export class DonationsService {
   constructor(
     @InjectRepository(Donation)
     private donationsRepository: Repository<Donation>,
-  ) {}
+  ) { }
 
-  async create(createDonationDto: CreateDonationDto) {
+  async create(createDonationDto: CreateDonationDto, userId: string) {
     // Creates a new entry in the 'donation' table
     const donation = this.donationsRepository.create({
       ...createDonationDto,
-      donorId: 'temp-donor-id', // TODO: In the future, get this from req.user.id
+      donorId: userId, // From JWT payload
       status: DonationStatus.AVAILABLE,
     });
-    
+
     // Saves to Postgres
     return await this.donationsRepository.save(donation);
   }
@@ -59,13 +59,13 @@ export class DonationsService {
     }
   }
 
-  async claim(id: string, claimDto: ClaimDonationDto) {
+  async claim(id: string, claimDto: ClaimDonationDto, userId: string) {
     // 1. Find the donation in the DB
     const donation = await this.donationsRepository.findOne({ where: { id } });
 
     // 2. Checks
     if (!donation) {
-        throw new NotFoundException('Donation not found');
+      throw new NotFoundException('Donation not found');
     }
     if (donation.status !== DonationStatus.AVAILABLE) {
       throw new BadRequestException('Donation already claimed');
@@ -73,8 +73,8 @@ export class DonationsService {
 
     // 3. Update status to CLAIMED
     donation.status = DonationStatus.CLAIMED;
-    donation.claimedById = 'temp-ngo-id'; // TODO: Replace with real User ID later
-    
+    donation.claimedById = userId; // From JWT payload
+
     return await this.donationsRepository.save(donation);
   }
 }
