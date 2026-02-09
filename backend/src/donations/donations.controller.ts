@@ -3,6 +3,7 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 import { DonationsService } from './donations.service';
 import { CloudinaryService } from '../common/cloudinary.service';
 import { CreateDonationDto, ClaimDonationDto } from './dto/donations.dto';
+import { UpdateStatusDto } from './dto/donations.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiQuery, ApiConsumes, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
@@ -94,5 +95,17 @@ export class DonationsController {
     @Req() req: any,
   ) {
     return this.donationsService.claim(id, claimDto, req.user.userId);
+  }
+
+  @Patch(':id/status')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Update donation status (volunteer actions)' })
+  updateStatus(
+    @Param('id') id: string,
+    @Body() dto: UpdateStatusDto,
+    @Req() req: any,
+  ) {
+    return this.donationsService.updateStatus(id, dto.status, req.user.userId);
   }
 }

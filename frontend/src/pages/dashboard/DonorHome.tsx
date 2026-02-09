@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { getDonations, claimDonation, type Donation } from '../../services/api'
+import { getDonations, claimDonation, updateDonationStatus, type Donation } from '../../services/api'
 import { PlusCircle, Map, Clock, TrendingUp, AlertTriangle, X, Image as ImageIcon, Shield, CheckCircle2, MapPin } from 'lucide-react'
 
 export default function DonorHome() {
@@ -8,6 +8,7 @@ export default function DonorHome() {
   const [loading, setLoading] = useState(false)
   const [selectedDonation, setSelectedDonation] = useState<Donation | null>(null)
   const [claiming, setClaiming] = useState<string | null>(null)
+  const [processingId, setProcessingId] = useState<string | null>(null)
 
   const user = JSON.parse(localStorage.getItem('user') || '{}')
   const userRole = (user.role || 'donor').toLowerCase()
@@ -56,6 +57,32 @@ export default function DonorHome() {
       alert(error.message || 'Failed to claim donation')
     } finally {
       setClaiming(null)
+    }
+  }
+
+  const handleConfirmPickup = async (id: string) => {
+    setProcessingId(id)
+    try {
+      await updateDonationStatus(id, 'PICKED_UP')
+      await load()
+      setSelectedDonation(null)
+    } catch (error: any) {
+      alert(error.message || 'Failed to confirm pickup')
+    } finally {
+      setProcessingId(null)
+    }
+  }
+
+  const handleConfirmDelivery = async (id: string) => {
+    setProcessingId(id)
+    try {
+      await updateDonationStatus(id, 'DELIVERED')
+      await load()
+      setSelectedDonation(null)
+    } catch (error: any) {
+      alert(error.message || 'Failed to confirm delivery')
+    } finally {
+      setProcessingId(null)
     }
   }
 
@@ -379,8 +406,28 @@ export default function DonorHome() {
                     </div>
                   )
                 ) : (
-                  <div className="text-center p-3 bg-amber-500/10 text-amber-400 rounded-lg font-medium border border-amber-500/20">
-                    Already Claimed
+                  <div>
+                    {userRole === 'volunteer' && selectedDonation.status === 'CLAIMED' ? (
+                      <button
+                        onClick={() => handleConfirmPickup(selectedDonation.id)}
+                        disabled={processingId === selectedDonation.id}
+                        className="w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-white rounded-lg font-semibold transition-all"
+                      >
+                        {processingId === selectedDonation.id ? 'Processing...' : 'Confirm Pickup'}
+                      </button>
+                    ) : userRole === 'volunteer' && selectedDonation.status === 'PICKED_UP' ? (
+                      <button
+                        onClick={() => handleConfirmDelivery(selectedDonation.id)}
+                        disabled={processingId === selectedDonation.id}
+                        className="w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-white rounded-lg font-semibold transition-all"
+                      >
+                        {processingId === selectedDonation.id ? 'Processing...' : 'Confirm Delivery'}
+                      </button>
+                    ) : (
+                      <div className="text-center p-3 bg-amber-500/10 text-amber-400 rounded-lg font-medium border border-amber-500/20">
+                        Already Claimed
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

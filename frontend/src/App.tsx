@@ -9,6 +9,7 @@ import History from './pages/dashboard/History'
 import Impact from './pages/dashboard/Impact'
 import Notifications from './pages/dashboard/Notifications'
 import Profile from './pages/dashboard/Profile'
+import VolunteerDashboard from './pages/dashboard/VolunteerDashboard'
 
 export default function App() {
   return (
@@ -20,6 +21,7 @@ export default function App() {
           <Route index element={<DonorHome />} />
           <Route path="add" element={<AddFood />} />
           <Route path="map" element={<DiscoveryMap />} />
+          <Route path="volunteer" element={<VolunteerDashboard />} />
           <Route path="history" element={<History />} />
           <Route path="impact" element={<Impact />} />
           <Route path="notifications" element={<Notifications />} />

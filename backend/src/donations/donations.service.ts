@@ -77,4 +77,35 @@ export class DonationsService {
 
     return await this.donationsRepository.save(donation);
   }
+
+  async updateStatus(id: string, status: string, userId: string) {
+    const donation = await this.donationsRepository.findOne({ where: { id } });
+    if (!donation) throw new NotFoundException('Donation not found');
+
+    // Accept only known status transitions
+    const allowedStatuses = Object.values(DonationStatus) as string[];
+    if (!allowedStatuses.includes(status)) {
+      throw new BadRequestException('Invalid status');
+    }
+
+    // Simple transition rules (can be expanded):
+    // - CLAIMED -> PICKED_UP allowed
+    // - PICKED_UP -> DELIVERED allowed
+    if (status === DonationStatus.PICKED_UP) {
+      if (donation.status !== DonationStatus.CLAIMED) {
+        throw new BadRequestException('Donation must be CLAIMED before marking as PICKED_UP');
+      }
+      donation.status = DonationStatus.PICKED_UP;
+    } else if (status === DonationStatus.DELIVERED) {
+      if (donation.status !== DonationStatus.PICKED_UP) {
+        throw new BadRequestException('Donation must be PICKED_UP before marking as DELIVERED');
+      }
+      donation.status = DonationStatus.DELIVERED;
+    } else {
+      // Other transitions are not allowed here
+      throw new BadRequestException('Unsupported status transition');
+    }
+
+    return await this.donationsRepository.save(donation);
+  }
 }

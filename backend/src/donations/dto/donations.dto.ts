@@ -86,3 +86,9 @@ export class ClaimDonationDto {
   @IsDateString()
   estimatedPickupTime?: string;
 }
+
+export class UpdateStatusDto {
+  @ApiProperty({ example: 'PICKED_UP', description: 'New status for the donation' })
+  @IsString()
+  status: string;
+}
