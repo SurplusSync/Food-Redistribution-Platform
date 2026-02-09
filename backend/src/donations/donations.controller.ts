@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Patch, Param, Body, Query, UseInterceptors, UploadedFiles, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Param, Body, Query, UseInterceptors, UploadedFiles, UseGuards, Req } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { DonationsService } from './donations.service';
 import { CloudinaryService } from '../common/cloudinary.service';
@@ -31,12 +31,13 @@ export class DonationsController {
   async create(
     @Body() createDonationDto: CreateDonationDto,
     @UploadedFiles() files: Array<Express.Multer.File>,
+    @Req() req: any,
   ) {
     if (files && files.length > 0) {
       const imageUrls = await this.cloudinaryService.uploadImages(files);
       createDonationDto.imageUrls = imageUrls;
     }
-    return this.donationsService.create(createDonationDto);
+    return this.donationsService.create(createDonationDto, req.user.userId);
   }
 
   @Get()
@@ -90,7 +91,8 @@ export class DonationsController {
   claim(
     @Param('id') id: string,
     @Body() claimDto: ClaimDonationDto,
+    @Req() req: any,
   ) {
-    return this.donationsService.claim(id, claimDto);
+    return this.donationsService.claim(id, claimDto, req.user.userId);
   }
 }
