@@ -3,12 +3,15 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateDonationDto, ClaimDonationDto } from './dto/donations.dto';
 import { Donation, DonationStatus } from './entities/donation.entity';
+import { User, UserRole } from '../auth/entities/user.entity';
 
 @Injectable()
 export class DonationsService {
   constructor(
     @InjectRepository(Donation)
     private donationsRepository: Repository<Donation>,
+    @InjectRepository(User)
+    private usersRepository: Repository<User>,
   ) { }
 
   async create(createDonationDto: CreateDonationDto, userId: string) {
@@ -60,21 +63,89 @@ export class DonationsService {
   }
 
   async claim(id: string, claimDto: ClaimDonationDto, userId: string) {
-    // 1. Find the donation in the DB
-    const donation = await this.donationsRepository.findOne({ where: { id } });
+    return await this.donationsRepository.manager.transaction(async transactionalEntityManager => {
+      // 1. Find the donation and user (NGO)
+      const donation = await transactionalEntityManager.findOne(Donation, { where: { id } });
+      const user = await transactionalEntityManager.findOne(User, { where: { id: userId } });
 
-    // 2. Checks
-    if (!donation) {
-      throw new NotFoundException('Donation not found');
-    }
-    if (donation.status !== DonationStatus.AVAILABLE) {
-      throw new BadRequestException('Donation already claimed');
-    }
+      // 2. Checks
+      if (!donation) {
+        throw new NotFoundException('Donation not found');
+      }
+      if (donation.status !== DonationStatus.AVAILABLE) {
+        throw new BadRequestException('Donation already claimed');
+      }
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
 
-    // 3. Update status to CLAIMED
-    donation.status = DonationStatus.CLAIMED;
-    donation.claimedById = userId; // From JWT payload
+      // Check role
+      if (user.role !== UserRole.NGO) {
+        throw new BadRequestException('Only NGOs can claim donations');
+      }
 
-    return await this.donationsRepository.save(donation);
+      // 3. NGO Capacity Validation
+      if (user.dailyIntakeCapacity !== null && user.dailyIntakeCapacity !== undefined) {
+        // Check unit match (case-insensitive)
+        if (user.capacityUnit && donation.unit) {
+          const ngoUnit = user.capacityUnit.trim().toLowerCase();
+          const donationUnit = donation.unit.trim().toLowerCase();
+
+          if (ngoUnit !== donationUnit) {
+            throw new BadRequestException(
+              `Unit mismatch: NGO capacity is in ${user.capacityUnit}, but donation is in ${donation.unit}.`,
+            );
+          }
+        }
+
+        // Check capacity limit
+        if (user.currentIntakeLoad + donation.quantity > user.dailyIntakeCapacity) {
+          throw new BadRequestException(
+            `Claim exceeds daily intake capacity. Current load: ${user.currentIntakeLoad}, Capacity: ${user.dailyIntakeCapacity}`,
+          );
+        }
+      }
+
+      // 4. Update status and NGO current load
+      donation.status = DonationStatus.CLAIMED;
+      donation.claimedById = userId;
+
+      user.currentIntakeLoad += donation.quantity;
+
+      await transactionalEntityManager.save(user);
+      return await transactionalEntityManager.save(donation);
+    });
+  }
+
+  async markAsDelivered(id: string, userId: string) {
+    return await this.donationsRepository.manager.transaction(async transactionalEntityManager => {
+      const donation = await transactionalEntityManager.findOne(Donation, { where: { id } });
+
+      if (!donation) {
+        throw new NotFoundException('Donation not found');
+      }
+
+      if (donation.claimedById !== userId) {
+        throw new BadRequestException('You can only mark your claimed donations as delivered');
+      }
+
+      if (donation.status === DonationStatus.DELIVERED) {
+        throw new BadRequestException('Donation already marked as delivered');
+      }
+
+      const user = await transactionalEntityManager.findOne(User, { where: { id: userId } });
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+
+      // Update status to DELIVERED
+      donation.status = DonationStatus.DELIVERED;
+
+      // Decrement current intake load
+      user.currentIntakeLoad = Math.max(0, user.currentIntakeLoad - donation.quantity);
+
+      await transactionalEntityManager.save(user);
+      return await transactionalEntityManager.save(donation);
+    });
   }
 }

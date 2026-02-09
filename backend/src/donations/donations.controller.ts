@@ -95,4 +95,27 @@ export class DonationsController {
   ) {
     return this.donationsService.claim(id, claimDto, req.user.userId);
   }
+
+  @Patch(':id/deliver')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Mark a food donation as delivered' })
+  @ApiResponse({
+    status: 200,
+    description: 'Donation marked as delivered successfully'
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Donation already delivered or mismatch'
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Donation not found'
+  })
+  markAsDelivered(
+    @Param('id') id: string,
+    @Req() req: any,
+  ) {
+    return this.donationsService.markAsDelivered(id, req.user.userId);
+  }
 }
