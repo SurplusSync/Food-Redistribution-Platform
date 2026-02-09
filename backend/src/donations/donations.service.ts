@@ -15,6 +15,9 @@ export class DonationsService {
   ) { }
 
   async create(createDonationDto: CreateDonationDto, userId: string) {
+    // Perform safety validation
+    this.validateFoodSafety(createDonationDto);
+
     // Creates a new entry in the 'donation' table
     const donation = this.donationsRepository.create({
       ...createDonationDto,
@@ -24,6 +27,38 @@ export class DonationsService {
 
     // Saves to Postgres
     return await this.donationsRepository.save(donation);
+  }
+
+  private validateFoodSafety(createDonationDto: CreateDonationDto) {
+    const now = new Date();
+    const expiryDate = new Date(createDonationDto.expiryTime);
+    const preparationDate = new Date(createDonationDto.preparationTime);
+
+    // 1. Check if expiry time is in the past
+    if (expiryDate <= now) {
+      throw new BadRequestException('Donation expiry time cannot be in the past');
+    }
+
+    // 2. Check if preparation time is in the future
+    if (preparationDate > now) {
+      throw new BadRequestException('Preparation time cannot be in the future');
+    }
+
+    // 3. Define high-risk food types and their safe consumption windows
+    const highRiskFoodTypes = ['cooked', 'dairy', 'meat', 'poultry', 'seafood'];
+    const foodTypeLower = createDonationDto.foodType.toLowerCase();
+    const isHighRisk = highRiskFoodTypes.some(type => foodTypeLower.includes(type));
+
+    // Stricter rule for high-risk food: must have at least 2 hours of shelf life at create time
+    const minSafeWindowHours = isHighRisk ? 2 : 1;
+    const safeLimit = new Date(now.getTime() + minSafeWindowHours * 60 * 60 * 1000);
+
+    if (expiryDate < safeLimit) {
+      const message = isHighRisk
+        ? `High-risk food (${createDonationDto.foodType}) must have at least ${minSafeWindowHours} hours of safe consumption window remaining.`
+        : `Food must have at least ${minSafeWindowHours} hour of safe consumption window remaining.`;
+      throw new BadRequestException(message);
+    }
   }
 
   async findAll(latitude?: number, longitude?: number, radius: number = 5) {
@@ -145,6 +180,52 @@ export class DonationsService {
       user.currentIntakeLoad = Math.max(0, user.currentIntakeLoad - donation.quantity);
 
       await transactionalEntityManager.save(user);
+      return await transactionalEntityManager.save(donation);
+    });
+  }
+
+  async updateStatus(id: string, status: DonationStatus, userId: string) {
+    return await this.donationsRepository.manager.transaction(async transactionalEntityManager => {
+      const donation = await transactionalEntityManager.findOne(Donation, { where: { id } });
+
+      if (!donation) {
+        throw new NotFoundException('Donation not found');
+      }
+
+      // Authorization check
+      if (donation.donorId !== userId && donation.claimedById !== userId) {
+        throw new BadRequestException('You are not authorized to update this donation status');
+      }
+
+      const oldStatus = donation.status;
+
+      // If setting to DELIVERED, use the existing logic (which also decrements load)
+      if (status === DonationStatus.DELIVERED) {
+        if (oldStatus === DonationStatus.DELIVERED) {
+          throw new BadRequestException('Donation already marked as delivered');
+        }
+
+        const user = await transactionalEntityManager.findOne(User, { where: { id: donation.claimedById } });
+        if (user) {
+          user.currentIntakeLoad = Math.max(0, user.currentIntakeLoad - donation.quantity);
+          await transactionalEntityManager.save(user);
+        }
+
+        donation.status = DonationStatus.DELIVERED;
+        return await transactionalEntityManager.save(donation);
+      }
+
+      // If reversing a claim (CLAIMED/PICKED_UP -> AVAILABLE), decrement load
+      if (status === DonationStatus.AVAILABLE && (oldStatus === DonationStatus.CLAIMED || oldStatus === DonationStatus.PICKED_UP)) {
+        const user = await transactionalEntityManager.findOne(User, { where: { id: donation.claimedById } });
+        if (user) {
+          user.currentIntakeLoad = Math.max(0, user.currentIntakeLoad - donation.quantity);
+          await transactionalEntityManager.save(user);
+        }
+        donation.claimedById = null;
+      }
+
+      donation.status = status;
       return await transactionalEntityManager.save(donation);
     });
   }

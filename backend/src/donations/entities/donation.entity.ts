@@ -64,6 +64,9 @@ export class Donation {
   @Column({ nullable: true })
   claimedById: string;
 
+  @Column({ type: 'timestamp', nullable: true })
+  expiryTime: Date;
+
   @CreateDateColumn()
   createdAt: Date;
 }

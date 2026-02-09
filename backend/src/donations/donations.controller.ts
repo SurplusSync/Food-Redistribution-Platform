@@ -2,7 +2,7 @@ import { Controller, Get, Post, Patch, Param, Body, Query, UseInterceptors, Uplo
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { DonationsService } from './donations.service';
 import { CloudinaryService } from '../common/cloudinary.service';
-import { CreateDonationDto, ClaimDonationDto } from './dto/donations.dto';
+import { CreateDonationDto, ClaimDonationDto, UpdateDonationStatusDto } from './dto/donations.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiQuery, ApiConsumes, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
@@ -94,6 +94,30 @@ export class DonationsController {
     @Req() req: any,
   ) {
     return this.donationsService.claim(id, claimDto, req.user.userId);
+  }
+
+  @Patch(':id/status')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Update food donation status' })
+  @ApiResponse({
+    status: 200,
+    description: 'Donation status updated successfully'
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid status or unauthorized'
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Donation not found'
+  })
+  updateStatus(
+    @Param('id') id: string,
+    @Body() updateDto: UpdateDonationStatusDto,
+    @Req() req: any,
+  ) {
+    return this.donationsService.updateStatus(id, updateDto.status, req.user.userId);
   }
 
   @Patch(':id/deliver')
