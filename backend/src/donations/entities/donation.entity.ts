@@ -12,7 +12,22 @@ export class Donation {
   id: string;
 
   @Column()
-  foodType: string;  // Changed from 'foodItem' to match Frontend
+  name: string;  // Name of the food item
+
+  @Column()
+  donorName: string;  // Name of the donor
+
+  @Column({ nullable: true })
+  description: string;  // Food description
+
+  @Column('simple-json', { nullable: true })
+  hygiene: any;  // Hygiene checklist
+
+  @Column('float', { nullable: true })
+  donorTrustScore: number;  // Donor trust score
+
+  @Column()
+  foodType: string;  // Type of food (e.g., 'cooked', 'raw')
 
   @Column('float')   // Changed to Number to match Frontend
   quantity: number;
