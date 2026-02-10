@@ -12,6 +12,17 @@ export default function DashboardLayout() {
   const userRole = (user.role || 'donor').toLowerCase()
 
   useEffect(() => {
+    // Redirect to role-specific dashboard
+    if (location.pathname === '/dashboard') {
+      if (userRole === 'ngo') {
+        navigate('/dashboard/ngo', { replace: true })
+      } else if (userRole === 'volunteer') {
+        navigate('/dashboard/volunteer', { replace: true })
+      }
+    }
+  }, [userRole, location.pathname, navigate])
+
+  useEffect(() => {
     loadNotifications()
     const interval = setInterval(() => {
       checkExpiringDonations()
@@ -34,7 +45,7 @@ export default function DashboardLayout() {
   }
 
   const navLinks = [
-    { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard', roles: ['donor', 'ngo', 'volunteer'] },
+    { to: userRole === 'ngo' ? '/dashboard/ngo' : '/dashboard', icon: LayoutDashboard, label: 'Dashboard', roles: ['donor', 'ngo', 'volunteer'] },
     { to: '/dashboard/add', icon: PlusCircle, label: 'Add Food', roles: ['donor'] },
     { to: '/dashboard/map', icon: Map, label: 'Discover', roles: ['donor', 'ngo', 'volunteer'] },
     { to: '/dashboard/history', icon: History, label: 'History', roles: ['donor', 'ngo', 'volunteer'] },
