@@ -3,7 +3,7 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { getDonations, claimDonation, updateDonationStatus, type Donation } from '../../services/api'
-import { Clock, Shield, AlertTriangle, X, Image as ImageIcon, MapPin, CheckCircle2 } from 'lucide-react'
+import { Clock, Shield, AlertTriangle, X, Image as ImageIcon, MapPin, CheckCircle2, ChevronLeft, ChevronRight } from 'lucide-react'
 
 // Fix for default marker icons
 delete (L.Icon.Default.prototype as any)._getIconUrl
@@ -32,6 +32,7 @@ export default function DiscoveryMap() {
     const [claiming, setClaiming] = useState<string | null>(null)
     const [processingId, setProcessingId] = useState<string | null>(null)
     const [selectedDonation, setSelectedDonation] = useState<Donation | null>(null) // 🔍 State for Modal
+    const [currentImageIndex, setCurrentImageIndex] = useState(0)
 
     const user = JSON.parse(localStorage.getItem('user') || '{}')
     const userRole = (user.role || 'donor').toLowerCase()
@@ -59,6 +60,7 @@ export default function DiscoveryMap() {
             await claimDonation(donationId)
             await loadDonations()
             setSelectedDonation(null) // Close modal on success
+            setCurrentImageIndex(0)
         } catch (error: any) {
             alert(error.message || 'Failed to claim donation')
         } finally {
@@ -73,6 +75,7 @@ export default function DiscoveryMap() {
             await updateDonationStatus(donationId, 'PICKED_UP')
             await loadDonations()
             setSelectedDonation(null)
+            setCurrentImageIndex(0)
         } catch (error: any) {
             alert(error.message || 'Failed to confirm pickup')
         } finally {
@@ -87,6 +90,7 @@ export default function DiscoveryMap() {
             await updateDonationStatus(donationId, 'DELIVERED')
             await loadDonations()
             setSelectedDonation(null)
+            setCurrentImageIndex(0)
         } catch (error: any) {
             alert(error.message || 'Failed to confirm delivery')
         } finally {
@@ -211,13 +215,36 @@ export default function DiscoveryMap() {
                     <div className="bg-slate-900 border border-slate-800 rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl flex flex-col md:flex-row">
                         
                         {/* LEFT: Image Section */}
-                        <div className="w-full md:w-1/2 bg-slate-950 h-64 md:h-auto relative">
+                        <div className="w-full md:w-1/2 bg-slate-950 h-64 md:h-auto relative group">
                             {selectedDonation.imageUrls && selectedDonation.imageUrls.length > 0 ? (
-                                <img 
-                                    src={selectedDonation.imageUrls[0]} 
-                                    alt={selectedDonation.name} 
-                                    className="w-full h-full object-cover"
-                                />
+                                <>
+                                    <img 
+                                        src={selectedDonation.imageUrls[currentImageIndex]} 
+                                        alt={selectedDonation.name} 
+                                        className="w-full h-full object-cover"
+                                    />
+                                    {/* Image Counter */}
+                                    <div className="absolute bottom-4 right-4 bg-black/60 text-white text-xs px-3 py-1 rounded-full">
+                                        {currentImageIndex + 1} / {selectedDonation.imageUrls.length}
+                                    </div>
+                                    {/* Navigation Buttons */}
+                                    {selectedDonation.imageUrls.length > 1 && (
+                                        <>
+                                            <button
+                                                onClick={() => setCurrentImageIndex((prev) => (prev - 1 + selectedDonation.imageUrls.length) % selectedDonation.imageUrls.length)}
+                                                className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                                            >
+                                                <ChevronLeft className="w-5 h-5" />
+                                            </button>
+                                            <button
+                                                onClick={() => setCurrentImageIndex((prev) => (prev + 1) % selectedDonation.imageUrls.length)}
+                                                className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                                            >
+                                                <ChevronRight className="w-5 h-5" />
+                                            </button>
+                                        </>
+                                    )}
+                                </>
                             ) : (
                                 <div className="w-full h-full flex flex-col items-center justify-center text-slate-600">
                                     <ImageIcon className="w-12 h-12 mb-2 opacity-50" />
@@ -241,7 +268,7 @@ export default function DiscoveryMap() {
                                     <h2 className="text-xl font-bold text-white mb-1">{selectedDonation.name}</h2>
                                     <p className="text-emerald-400 font-medium">{selectedDonation.quantity} {selectedDonation.unit} • {selectedDonation.foodType}</p>
                                 </div>
-                                <button onClick={() => setSelectedDonation(null)} className="p-1 hover:bg-slate-800 rounded-full text-slate-400 transition-colors">
+                                <button onClick={() => { setSelectedDonation(null); setCurrentImageIndex(0); }} className="p-1 hover:bg-slate-800 rounded-full text-slate-400 transition-colors">
                                     <X className="w-5 h-5" />
                                 </button>
                             </div>
