@@ -187,13 +187,19 @@ export class DonationsService {
   async updateStatus(id: string, status: DonationStatus, userId: string) {
     return await this.donationsRepository.manager.transaction(async transactionalEntityManager => {
       const donation = await transactionalEntityManager.findOne(Donation, { where: { id } });
+      const user = await transactionalEntityManager.findOne(User, { where: { id: userId } });
 
       if (!donation) {
         throw new NotFoundException('Donation not found');
       }
 
       // Authorization check
-      if (donation.donorId !== userId && donation.claimedById !== userId) {
+      const isAuthorized = 
+        donation.donorId === userId || 
+        donation.claimedById === userId ||
+        (user?.role === UserRole.VOLUNTEER && donation.claimedById !== null); // Volunteers can update if donation is claimed
+      
+      if (!isAuthorized) {
         throw new BadRequestException('You are not authorized to update this donation status');
       }
 
@@ -230,65 +236,4 @@ export class DonationsService {
     });
   }
 
-  async updateStatus(id: string, status: string, userId: string) {
-    const donation = await this.donationsRepository.findOne({ where: { id } });
-    if (!donation) throw new NotFoundException('Donation not found');
-
-    // Accept only known status transitions
-    const allowedStatuses = Object.values(DonationStatus) as string[];
-    if (!allowedStatuses.includes(status)) {
-      throw new BadRequestException('Invalid status');
-    }
-
-    // Simple transition rules (can be expanded):
-    // - CLAIMED -> PICKED_UP allowed
-    // - PICKED_UP -> DELIVERED allowed
-    if (status === DonationStatus.PICKED_UP) {
-      if (donation.status !== DonationStatus.CLAIMED) {
-        throw new BadRequestException('Donation must be CLAIMED before marking as PICKED_UP');
-      }
-      donation.status = DonationStatus.PICKED_UP;
-    } else if (status === DonationStatus.DELIVERED) {
-      if (donation.status !== DonationStatus.PICKED_UP) {
-        throw new BadRequestException('Donation must be PICKED_UP before marking as DELIVERED');
-      }
-      donation.status = DonationStatus.DELIVERED;
-    } else {
-      // Other transitions are not allowed here
-      throw new BadRequestException('Unsupported status transition');
-    }
-
-    return await this.donationsRepository.save(donation);
-  }
-
-  async updateStatus(id: string, status: string, userId: string) {
-    const donation = await this.donationsRepository.findOne({ where: { id } });
-    if (!donation) throw new NotFoundException('Donation not found');
-
-    // Accept only known status transitions
-    const allowedStatuses = Object.values(DonationStatus) as string[];
-    if (!allowedStatuses.includes(status)) {
-      throw new BadRequestException('Invalid status');
-    }
-
-    // Simple transition rules (can be expanded):
-    // - CLAIMED -> PICKED_UP allowed
-    // - PICKED_UP -> DELIVERED allowed
-    if (status === DonationStatus.PICKED_UP) {
-      if (donation.status !== DonationStatus.CLAIMED) {
-        throw new BadRequestException('Donation must be CLAIMED before marking as PICKED_UP');
-      }
-      donation.status = DonationStatus.PICKED_UP;
-    } else if (status === DonationStatus.DELIVERED) {
-      if (donation.status !== DonationStatus.PICKED_UP) {
-        throw new BadRequestException('Donation must be PICKED_UP before marking as DELIVERED');
-      }
-      donation.status = DonationStatus.DELIVERED;
-    } else {
-      // Other transitions are not allowed here
-      throw new BadRequestException('Unsupported status transition');
-    }
-
-    return await this.donationsRepository.save(donation);
-  }
 }
