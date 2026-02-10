@@ -121,26 +121,49 @@ export class DonationsController {
     return this.donationsService.updateStatus(id, updateDto.status, req.user.userId);
   }
 
-  @Patch(':id/deliver')
+  @Patch(':id/pickup')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Mark a food donation as delivered' })
+  @ApiOperation({ summary: 'Confirm food donation pickup (Volunteer only)' })
   @ApiResponse({
     status: 200,
-    description: 'Donation marked as delivered successfully'
+    description: 'Donation picked up successfully'
   })
   @ApiResponse({
     status: 400,
-    description: 'Donation already delivered or mismatch'
+    description: 'Invalid state or unauthorized'
   })
   @ApiResponse({
     status: 404,
     description: 'Donation not found'
   })
-  markAsDelivered(
+  pickup(
     @Param('id') id: string,
     @Req() req: any,
   ) {
-    return this.donationsService.markAsDelivered(id, req.user.userId);
+    return this.donationsService.pickup(id, req.user.userId);
+  }
+
+  @Patch(':id/deliver')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Confirm food donation delivery (Volunteer only)' })
+  @ApiResponse({
+    status: 200,
+    description: 'Donation delivered successfully'
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid state or unauthorized'
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Donation not found'
+  })
+  deliver(
+    @Param('id') id: string,
+    @Req() req: any,
+  ) {
+    return this.donationsService.deliver(id, req.user.userId);
   }
 }
