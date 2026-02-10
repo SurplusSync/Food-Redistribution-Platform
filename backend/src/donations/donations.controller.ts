@@ -2,12 +2,7 @@ import { Controller, Get, Post, Patch, Param, Body, Query, UseInterceptors, Uplo
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { DonationsService } from './donations.service';
 import { CloudinaryService } from '../common/cloudinary.service';
-<<<<<<< HEAD
 import { CreateDonationDto, ClaimDonationDto, UpdateDonationStatusDto } from './dto/donations.dto';
-=======
-import { CreateDonationDto, ClaimDonationDto } from './dto/donations.dto';
-import { UpdateStatusDto } from './dto/donations.dto';
->>>>>>> a400d88 (feat: add volunteer dashboard and volunteer actions)
 import { ApiTags, ApiOperation, ApiResponse, ApiQuery, ApiConsumes, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
@@ -104,6 +99,7 @@ export class DonationsController {
   @Patch(':id/status')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
+
   @ApiOperation({ summary: 'Update food donation status' })
   @ApiResponse({
     status: 200,
