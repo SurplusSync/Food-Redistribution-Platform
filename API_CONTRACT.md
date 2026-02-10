@@ -7,6 +7,54 @@
 
 ---
 
+## 🔒 Security & Deployment Configuration
+
+### CORS Configuration
+
+> **⚠️ CRITICAL:** The backend currently has CORS hardcoded to `http://localhost:5173`. This will cause complete failure in production.
+
+**Current Code (main.ts):**
+````typescript
+app.enableCors({
+  origin: 'http://localhost:5173', 
+  credentials: true,
+});
+````
+
+**Required Fix Before Deployment:**
+
+1. **Add environment variable to `.env`:**
+````env
+FRONTEND_URL=http://localhost:5173
+````
+
+2. **Update `backend/src/main.ts`:**
+````typescript
+app.enableCors({
+  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  credentials: true,
+});
+````
+
+3. **For production deployment:**
+````env
+FRONTEND_URL=https://your-production-frontend.com
+````
+
+**Allowed Origins:**
+- Development: `http://localhost:5173`
+- Staging: Set via `FRONTEND_URL` environment variable
+- Production: Set via `FRONTEND_URL` environment variable
+
+**Impact if not fixed:**
+- ✅ Works: localhost development
+- ❌ Fails: Any other URL (staging, production, team member's different port)
+- ❌ Error: CORS policy blocking all requests
+
+---
+
+---
+
 ## Authentication
 
 Protected endpoints require a Bearer token in the header:
@@ -154,10 +202,24 @@ Content-Type: application/json
 ```
 ---
 
+
 ### 4. Get All Available Food Donations
 
 **Endpoint:** `GET /donations`  
-**Authentication:** Required (Bearer Token)
+**Authentication:** 🚨 **REQUIRED** (Bearer Token)
+
+> **⚠️ CRITICAL SECURITY ISSUE:** 
+> This endpoint is currently **NOT PROTECTED** in the backend implementation.
+> The `@UseGuards(JwtAuthGuard)` decorator is missing from the controller.
+> 
+> **Impact:** Anyone can access ALL donations without authentication, exposing:
+> - Donor names and contact information
+> - Exact pickup locations and addresses
+> - Food quantities and types
+> 
+> **Status:** 🔧 Must add authentication guard before production deployment
+> 
+> **Required Fix:** Add `@UseGuards(JwtAuthGuard)` to the `findAll()` method in `donations.controller.ts`
 
 **Query Parameters (Optional):**
 | Parameter | Type | Description | Example |
@@ -471,6 +533,122 @@ All API errors follow this structure:
 | 403  | Forbidden | Valid token but insufficient permissions |
 | 404  | Not Found | Resource doesn't exist |
 | 500  | Internal Server Error | Server-side error |
+
+---
+---
+
+## 📊 Data Types & Field Reference
+
+> **⚠️ Important:** Frontend and backend use different data structures in some places.
+> Follow these specifications to avoid type errors.
+
+### Field Type Specifications
+
+#### User Role Enum
+**Backend Format:** UPPERCASE enum values
+````typescript
+type UserRole = 'DONOR' | 'NGO' | 'VOLUNTEER' | 'ADMIN'
+````
+
+❌ **INVALID:** `'donor'`, `'Donor'`, `'ngo'`  
+✅ **VALID:** `'DONOR'`, `'NGO'`, `'VOLUNTEER'`
+
+---
+
+#### Quantity Field
+**Type:** `number` (not string)
+````json
+// ✅ CORRECT
+{
+  "quantity": 50
+}
+
+// ❌ WRONG
+{
+  "quantity": "50"
+}
+````
+
+---
+
+#### Location Structure
+**Backend Returns:** Flat fields (NOT nested object)
+````json
+// ✅ What backend actually returns
+{
+  "id": "abc123",
+  "foodType": "Rice",
+  "latitude": 17.6868,
+  "longitude": 83.2185,
+  "address": "Beach Road, Visakhapatnam"
+}
+
+// ❌ What backend does NOT return
+{
+  "location": {
+    "lat": 17.6868,
+    "lng": 83.2185,
+    "address": "..."
+  }
+}
+````
+
+**Frontend Transformation Required:**
+If your frontend uses nested `location` object, transform the response:
+````typescript
+const transformedDonation = {
+  ...backendResponse,
+  location: {
+    lat: backendResponse.latitude,
+    lng: backendResponse.longitude,
+    address: backendResponse.address
+  }
+};
+````
+
+---
+
+#### ClaimedBy Field
+**When donation is claimed, response includes:**
+````json
+{
+  "claimedBy": {
+    "id": "uuid-string",
+    "name": "Helping Hands NGO",
+    "contactNumber": "+919876543210"
+  }
+}
+````
+
+**Type:** Object (not just a string ID)
+
+---
+
+#### Timestamps
+**Format:** ISO 8601 strings
+````json
+{
+  "preparationTime": "2025-02-10T10:00:00Z",
+  "createdAt": "2025-02-10T10:30:00Z",
+  "claimedAt": "2025-02-10T11:00:00Z"
+}
+````
+
+**Parsing in Frontend:**
+````typescript
+const date = new Date(donation.preparationTime);
+````
+
+---
+
+### Common Type Errors
+
+| Error | Cause | Fix |
+|-------|-------|-----|
+| "role is not valid enum value" | Sent lowercase `'donor'` | Use uppercase `'DONOR'` |
+| "quantity must be a number" | Sent string `"50"` | Send number `50` |
+| "Cannot read property 'lat' of undefined" | Expected nested `location` object | Backend returns flat `latitude`/`longitude` |
+| "Invalid date" | Date sent without timezone | Use ISO 8601: `2025-02-10T10:00:00Z` |
 
 ---
 
@@ -1086,6 +1264,51 @@ async claimDonation(
   return this.donationRepository.save(donation);
 }
 ```
+### 🚨 CRITICAL: Secure the GET /donations Endpoint
+
+**Current Code (INSECURE):**
+````typescript
+@Get()
+// ❌ MISSING GUARD
+async findAll(@Query('latitude') latitude?: number, ...) {
+  // Anyone can call this!
+}
+````
+
+**Required Fix:**
+````typescript
+@Get()
+@UseGuards(JwtAuthGuard) // ✅ ADD THIS
+@ApiBearerAuth()         // ✅ ADD THIS
+async findAll(@Query('latitude') latitude?: number, ...) {
+  const donations = await this.donationsService.findAvailable(...);
+  return { success: true, data: donations };
+}
+````
+
+**Alternative - Public Endpoint with Limited Data:**
+If you want a public discovery endpoint, create a separate one:
+````typescript
+@Get('public')
+@ApiOperation({ summary: 'Public food discovery (limited data)' })
+async findPublic() {
+  const donations = await this.donationsService.findAvailable();
+  
+  // Remove sensitive data
+  return {
+    success: true,
+    data: donations.map(d => ({
+      id: d.id,
+      foodType: d.foodType,
+      quantity: d.quantity,
+      // ❌ NO donor contact info
+      // ❌ NO exact address
+      approximateLocation: d.address.split(',').slice(-2).join(','), // City only
+      distance: d.distance,
+    }))
+  };
+}
+````
 
 ---
 
