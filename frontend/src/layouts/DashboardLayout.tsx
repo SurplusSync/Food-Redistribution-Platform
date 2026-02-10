@@ -7,9 +7,28 @@ export default function DashboardLayout() {
   const navigate = useNavigate()
   const location = useLocation()
   const [unreadCount, setUnreadCount] = useState(0)
+  const [isRedirecting, setIsRedirecting] = useState(false)
 
   const user = JSON.parse(localStorage.getItem('user') || '{}')
   const userRole = (user.role || 'donor').toLowerCase()
+
+  useEffect(() => {
+    // Redirect to role-specific dashboard
+    if (location.pathname === '/dashboard') {
+      setIsRedirecting(true)
+      if (userRole === 'ngo') {
+        navigate('/dashboard/ngo', { replace: true })
+      } else if (userRole === 'volunteer') {
+        navigate('/dashboard/volunteer', { replace: true })
+      } else {
+        // Donor stays at /dashboard
+        setIsRedirecting(false)
+      }
+    } else {
+      // Not on /dashboard, so we're not redirecting
+      setIsRedirecting(false)
+    }
+  }, [userRole, location.pathname, navigate])
 
   useEffect(() => {
     loadNotifications()
@@ -34,7 +53,7 @@ export default function DashboardLayout() {
   }
 
   const navLinks = [
-    { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard', roles: ['donor', 'ngo', 'volunteer'] },
+    { to: userRole === 'ngo' ? '/dashboard/ngo' : '/dashboard', icon: LayoutDashboard, label: 'Dashboard', roles: ['donor', 'ngo', 'volunteer'] },
     { to: '/dashboard/add', icon: PlusCircle, label: 'Add Food', roles: ['donor'] },
     { to: '/dashboard/map', icon: Map, label: 'Discover', roles: ['donor', 'ngo', 'volunteer'] },
     { to: '/dashboard/history', icon: History, label: 'History', roles: ['donor', 'ngo', 'volunteer'] },
@@ -157,7 +176,16 @@ export default function DashboardLayout() {
       {/* Main Content */}
       <main className="main-content p-8">
         <div className="max-w-7xl mx-auto">
-          <Outlet />
+          {isRedirecting ? (
+            <div className="flex items-center justify-center h-screen">
+              <div className="text-center">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-600 animate-pulse mx-auto mb-4"></div>
+                <p className="text-slate-400">Loading...</p>
+              </div>
+            </div>
+          ) : (
+            <Outlet />
+          )}
         </div>
       </main>
     </div>

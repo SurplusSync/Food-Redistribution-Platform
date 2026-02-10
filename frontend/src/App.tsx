@@ -4,6 +4,7 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import DashboardLayout from './layouts/DashboardLayout'
 import DonorHome from './pages/dashboard/DonorHome'
+import NGODashboard from './pages/dashboard/NGODashboard'
 import AddFood from './pages/dashboard/AddFood'
 import DiscoveryMap from './pages/dashboard/DiscoveryMap'
 import History from './pages/dashboard/History'
@@ -21,6 +22,7 @@ export default function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/dashboard" element={<DashboardLayout />}>
           <Route index element={<DonorHome />} />
+          <Route path="ngo" element={<NGODashboard />} />
           <Route path="add" element={<AddFood />} />
           <Route path="map" element={<DiscoveryMap />} />
           <Route path="volunteer" element={<VolunteerDashboard />} />
