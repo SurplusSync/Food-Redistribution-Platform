@@ -127,6 +127,10 @@ export default function AddFood() {
         setIsSubmitting(true)
 
         try {
+            // Calculate expiry time based on preparation time and food type
+            const prepTime = new Date(formData.preparationTime);
+            const expiryTime = new Date(prepTime.getTime() + (selectedFoodType!.expiryHours * 60 * 60 * 1000));
+            
             // Correctly constructing the payload and passing images
             const payload = {
                 name: formData.foodName,
@@ -143,6 +147,7 @@ export default function AddFood() {
                     containerClean: formData.containerClean,
                 },
                 preparationTime: new Date(formData.preparationTime),
+                expiryTime: expiryTime,
             };
 
             // Call API with payload and images
