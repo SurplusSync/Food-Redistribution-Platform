@@ -8,7 +8,12 @@
     "start": "node dist/main",
     "start:dev": "ts-node -r tsconfig-paths/register src/main.ts",
     "start:debug": "ts-node --inspect -r tsconfig-paths/register src/main.ts",
-    "start:prod": "node dist/main"
+    "start:prod": "node dist/main",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:cov": "jest --coverage",
+    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
+    "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
@@ -37,10 +42,13 @@
     "@nestjs/cli": "^11.0.0",
     "@nestjs/testing": "^11.0.1",
     "@types/bcrypt": "^6.0.0",
+    "@types/jest": "^30.0.0",
     "@types/node": "^22.0.0",
     "@types/passport-jwt": "^4.0.1",
     "@types/streamifier": "^0.1.2",
+    "@types/supertest": "^6.0.3",
     "jest": "^30.0.0",
+    "supertest": "^7.2.2",
     "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",

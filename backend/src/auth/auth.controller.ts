@@ -45,6 +45,7 @@ export class AuthController {
     return this.authService.getProfile(req.user.userId);
   }
 
+
   @Patch('profile')
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth()
