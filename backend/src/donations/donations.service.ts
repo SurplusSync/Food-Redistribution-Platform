@@ -152,34 +152,60 @@ export class DonationsService {
     });
   }
 
-  async markAsDelivered(id: string, userId: string) {
+  async pickup(id: string, userId: string) {
     return await this.donationsRepository.manager.transaction(async transactionalEntityManager => {
       const donation = await transactionalEntityManager.findOne(Donation, { where: { id } });
+      const user = await transactionalEntityManager.findOne(User, { where: { id: userId } });
 
       if (!donation) {
         throw new NotFoundException('Donation not found');
       }
-
-      if (donation.claimedById !== userId) {
-        throw new BadRequestException('You can only mark your claimed donations as delivered');
-      }
-
-      if (donation.status === DonationStatus.DELIVERED) {
-        throw new BadRequestException('Donation already marked as delivered');
-      }
-
-      const user = await transactionalEntityManager.findOne(User, { where: { id: userId } });
       if (!user) {
         throw new NotFoundException('User not found');
       }
+      if (user.role !== UserRole.VOLUNTEER) {
+        throw new BadRequestException('Only volunteers can confirm pickups');
+      }
+      if (donation.status !== DonationStatus.CLAIMED) {
+        throw new BadRequestException('Donation must be claimed before pickup');
+      }
 
-      // Update status to DELIVERED
+      donation.status = DonationStatus.PICKED_UP;
+      donation.volunteerId = userId;
+      donation.pickedUpAt = new Date();
+
+      return await transactionalEntityManager.save(donation);
+    });
+  }
+
+  async deliver(id: string, userId: string) {
+    return await this.donationsRepository.manager.transaction(async transactionalEntityManager => {
+      const donation = await transactionalEntityManager.findOne(Donation, { where: { id } });
+      const user = await transactionalEntityManager.findOne(User, { where: { id: userId } });
+
+      if (!donation) {
+        throw new NotFoundException('Donation not found');
+      }
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+      if (user.role !== UserRole.VOLUNTEER) {
+        throw new BadRequestException('Only volunteers can confirm deliveries');
+      }
+      if (donation.status !== DonationStatus.PICKED_UP) {
+        throw new BadRequestException('Donation must be picked up before delivery');
+      }
+
       donation.status = DonationStatus.DELIVERED;
+      donation.deliveredAt = new Date();
 
-      // Decrement current intake load
-      user.currentIntakeLoad = Math.max(0, user.currentIntakeLoad - donation.quantity);
+      // Also finalize the NGO's intake load
+      const ngo = await transactionalEntityManager.findOne(User, { where: { id: donation.claimedById } });
+      if (ngo) {
+        ngo.currentIntakeLoad = Math.max(0, ngo.currentIntakeLoad - donation.quantity);
+        await transactionalEntityManager.save(ngo);
+      }
 
-      await transactionalEntityManager.save(user);
       return await transactionalEntityManager.save(donation);
     });
   }
@@ -205,7 +231,18 @@ export class DonationsService {
 
       const oldStatus = donation.status;
 
-      // If setting to DELIVERED, use the existing logic (which also decrements load)
+      // Prevent invalid state transitions
+      if (status === DonationStatus.PICKED_UP && oldStatus !== DonationStatus.CLAIMED) {
+        throw new BadRequestException('Donation must be CLAIMED before it can be PICKED_UP');
+      }
+      if (status === DonationStatus.DELIVERED && oldStatus !== DonationStatus.PICKED_UP) {
+        throw new BadRequestException('Donation must be PICKED_UP before it can be DELIVERED');
+      }
+      if (status === DonationStatus.CLAIMED && oldStatus !== DonationStatus.AVAILABLE) {
+        throw new BadRequestException('Donation must be AVAILABLE before it can be CLAIMED');
+      }
+
+      // If setting to DELIVERED, decrement NGO intake load
       if (status === DonationStatus.DELIVERED) {
         if (oldStatus === DonationStatus.DELIVERED) {
           throw new BadRequestException('Donation already marked as delivered');
@@ -216,12 +253,9 @@ export class DonationsService {
           user.currentIntakeLoad = Math.max(0, user.currentIntakeLoad - donation.quantity);
           await transactionalEntityManager.save(user);
         }
-
-        donation.status = DonationStatus.DELIVERED;
-        return await transactionalEntityManager.save(donation);
       }
 
-      // If reversing a claim (CLAIMED/PICKED_UP -> AVAILABLE), decrement load
+      // If reversing a claim (CLAIMED/PICKED_UP -> AVAILABLE), decrement load and clear tracking fields
       if (status === DonationStatus.AVAILABLE && (oldStatus === DonationStatus.CLAIMED || oldStatus === DonationStatus.PICKED_UP)) {
         const user = await transactionalEntityManager.findOne(User, { where: { id: donation.claimedById } });
         if (user) {
@@ -229,6 +263,8 @@ export class DonationsService {
           await transactionalEntityManager.save(user);
         }
         donation.claimedById = null;
+        donation.volunteerId = null;
+        donation.pickedUpAt = null;
       }
 
       donation.status = status;

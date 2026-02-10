@@ -64,6 +64,15 @@ export class Donation {
   @Column({ nullable: true })
   claimedById: string;
 
+  @Column({ nullable: true })
+  volunteerId: string;
+
+  @Column({ type: 'timestamp', nullable: true })
+  pickedUpAt: Date;
+
+  @Column({ type: 'timestamp', nullable: true })
+  deliveredAt: Date;
+
   @Column({ type: 'timestamp', nullable: true })
   expiryTime: Date;
 
