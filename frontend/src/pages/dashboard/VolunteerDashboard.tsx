@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react'
 import { getDonations, updateDonationStatus, type Donation } from '../../services/api'
-import { CheckCircle2, MapPin, Clock, Image as ImageIcon, X } from 'lucide-react'
+import { CheckCircle2, MapPin, Clock, Image as ImageIcon, X, ChevronLeft, ChevronRight } from 'lucide-react'
 
 export default function VolunteerDashboard() {
   const [donations, setDonations] = useState<Donation[]>([])
   const [loading, setLoading] = useState(false)
   const [processingId, setProcessingId] = useState<string | null>(null)
   const [selectedDonation, setSelectedDonation] = useState<Donation | null>(null)
+  const [currentImageIndex, setCurrentImageIndex] = useState(0)
 
   const user = JSON.parse(localStorage.getItem('user') || '{}')
 
@@ -142,9 +143,30 @@ export default function VolunteerDashboard() {
         <div className="fixed inset-0 z-[2000] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
           <div className="bg-slate-900 border border-slate-800 rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl">
             <div className="flex items-start gap-4 p-6">
-              <div className="w-40 h-40 bg-slate-950 rounded-lg overflow-hidden flex items-center justify-center">
+              <div className="w-40 h-40 bg-slate-950 rounded-lg overflow-hidden flex items-center justify-center relative group">
                 {selectedDonation.imageUrls && selectedDonation.imageUrls.length > 0 ? (
-                  <img src={selectedDonation.imageUrls[0]} alt={selectedDonation.name} className="w-full h-full object-cover" />
+                  <>
+                    <img src={selectedDonation.imageUrls[currentImageIndex]} alt={selectedDonation.name} className="w-full h-full object-cover" />
+                    {selectedDonation.imageUrls.length > 1 && (
+                      <>
+                        <button
+                          onClick={() => setCurrentImageIndex((prev) => (prev - 1 + selectedDonation.imageUrls.length) % selectedDonation.imageUrls.length)}
+                          className="absolute left-1 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          <ChevronLeft className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => setCurrentImageIndex((prev) => (prev + 1) % selectedDonation.imageUrls.length)}
+                          className="absolute right-1 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          <ChevronRight className="w-4 h-4" />
+                        </button>
+                        <div className="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-0.5 rounded">
+                          {currentImageIndex + 1}/{selectedDonation.imageUrls.length}
+                        </div>
+                      </>
+                    )}
+                  </>
                 ) : (
                   <div className="flex flex-col items-center text-slate-600">
                     <ImageIcon className="w-10 h-10 mb-2" />
@@ -159,7 +181,7 @@ export default function VolunteerDashboard() {
                     <h3 className="text-lg font-semibold text-white">{selectedDonation.name}</h3>
                     <p className="text-slate-400 text-sm">{selectedDonation.quantity} {selectedDonation.unit} • {selectedDonation.foodType}</p>
                   </div>
-                  <button onClick={() => setSelectedDonation(null)} className="p-1 hover:bg-slate-800 rounded-full text-slate-400">
+                  <button onClick={() => { setSelectedDonation(null); setCurrentImageIndex(0); }} className="p-1 hover:bg-slate-800 rounded-full text-slate-400">
                     <X className="w-5 h-5" />
                   </button>
                 </div>

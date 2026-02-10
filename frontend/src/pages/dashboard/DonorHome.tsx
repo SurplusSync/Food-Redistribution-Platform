@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { getDonations, claimDonation, updateDonationStatus, type Donation } from '../../services/api'
-import { PlusCircle, Map, Clock, TrendingUp, AlertTriangle, X, Image as ImageIcon, Shield, CheckCircle2, MapPin } from 'lucide-react'
+import { PlusCircle, Map, Clock, TrendingUp, AlertTriangle, X, Image as ImageIcon, Shield, CheckCircle2, MapPin, ChevronLeft, ChevronRight } from 'lucide-react'
 
 export default function DonorHome() {
   const [donations, setDonations] = useState<Donation[]>([])
@@ -9,6 +9,7 @@ export default function DonorHome() {
   const [selectedDonation, setSelectedDonation] = useState<Donation | null>(null)
   const [claiming, setClaiming] = useState<string | null>(null)
   const [processingId, setProcessingId] = useState<string | null>(null)
+  const [currentImageIndex, setCurrentImageIndex] = useState(0)
 
   const user = JSON.parse(localStorage.getItem('user') || '{}')
   const userRole = (user.role || 'donor').toLowerCase()
@@ -302,13 +303,36 @@ export default function DonorHome() {
           <div className="bg-slate-900 border border-slate-800 rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl flex flex-col md:flex-row">
             
             {/* LEFT: Image Section */}
-            <div className="w-full md:w-1/2 bg-slate-950 h-64 md:h-auto relative">
+            <div className="w-full md:w-1/2 bg-slate-950 h-64 md:h-auto relative group">
               {selectedDonation.imageUrls && selectedDonation.imageUrls.length > 0 ? (
-                <img 
-                  src={selectedDonation.imageUrls[0]} 
-                  alt={selectedDonation.name} 
-                  className="w-full h-full object-cover"
-                />
+                <>
+                  <img 
+                    src={selectedDonation.imageUrls[currentImageIndex]} 
+                    alt={selectedDonation.name} 
+                    className="w-full h-full object-cover"
+                  />
+                  {/* Image Counter */}
+                  <div className="absolute bottom-4 right-4 bg-black/60 text-white text-xs px-3 py-1 rounded-full">
+                    {currentImageIndex + 1} / {selectedDonation.imageUrls.length}
+                  </div>
+                  {/* Navigation Buttons */}
+                  {selectedDonation.imageUrls.length > 1 && (
+                    <>
+                      <button
+                        onClick={() => setCurrentImageIndex((prev) => (prev - 1 + selectedDonation.imageUrls.length) % selectedDonation.imageUrls.length)}
+                        className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <ChevronLeft className="w-5 h-5" />
+                      </button>
+                      <button
+                        onClick={() => setCurrentImageIndex((prev) => (prev + 1) % selectedDonation.imageUrls.length)}
+                        className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <ChevronRight className="w-5 h-5" />
+                      </button>
+                    </>
+                  )}
+                </>
               ) : (
                 <div className="w-full h-full flex flex-col items-center justify-center text-slate-600">
                   <ImageIcon className="w-12 h-12 mb-2 opacity-50" />
@@ -324,13 +348,12 @@ export default function DonorHome() {
                   <h2 className="text-xl font-bold text-white mb-1">{selectedDonation.name}</h2>
                   <p className="text-emerald-400 font-medium">{selectedDonation.quantity} {selectedDonation.unit} • {selectedDonation.foodType}</p>
                 </div>
-                <button onClick={() => setSelectedDonation(null)} className="p-1 hover:bg-slate-800 rounded-full text-slate-400 transition-colors">
+                <button onClick={() => { setSelectedDonation(null); setCurrentImageIndex(0); }} className="p-1 hover:bg-slate-800 rounded-full text-slate-400 transition-colors">
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
-              <div className="space-y-4 flex-1">
-                {/* Donor Info */}
+              <div className="space-y-3">
                 <div className="p-3 bg-slate-800/50 rounded-lg border border-slate-800">
                   <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Donor</p>
                   <div className="flex justify-between items-center">
