@@ -19,12 +19,12 @@ api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   return config;
 });
 
-// --- TYPES ---
+// TYPES
 export type UserRole = 'donor' | 'ngo' | 'volunteer';
 export type DonationStatus = 'AVAILABLE' | 'CLAIMED' | 'PICKED_UP' | 'DELIVERED';
 export type FoodType = 'cooked' | 'raw' | 'packaged' | 'fruits' | 'bakery' | 'dairy';
 
-// ✅ NEW: Explicit Donation Interface
+// Explicit Donation Interface
 export interface Donation {
   id: string;
   name: string;
@@ -49,7 +49,7 @@ export interface Donation {
   createdAt: Date;
   status: DonationStatus;
   claimedBy?: string;
-  imageUrls: string[]; // 👈 Critical for the modal
+  imageUrls: string[]; // Critical for the modal
 }
 
 export interface User {
@@ -88,7 +88,7 @@ export type Badge = {
   requirement?: number;
 }
 
-// --- API CALLS ---
+// API CALLS
 
 export const loginUser = async (email: string, password?: string) => {
   if (!password) throw new Error("Password is required");
@@ -147,6 +147,9 @@ export const createDonation = async (data: any, images: File[] = []) => {
   const prepTime = data.preparationTime instanceof Date ? data.preparationTime.toISOString() : data.preparationTime;
   formData.append('preparationTime', prepTime);
   
+  const expTime = data.expiryTime instanceof Date ? data.expiryTime.toISOString() : data.expiryTime;
+  formData.append('expiryTime', expTime);
+  
   if (data.donorId) formData.append('donorId', data.donorId);
   if (data.donorName) formData.append('donorName', data.donorName);
   if (data.donorTrustScore) formData.append('donorTrustScore', data.donorTrustScore.toString());
@@ -184,7 +187,7 @@ export const updateDonationStatus = async (id: string, status: string) => {
   return response.data;
 };
 
-// --- MOCK HELPERS ---
+// MOCK HELPERS
 export const getNotifications = async (_userId: string): Promise<Notification[]> => {
   return [{ id: '1', title: 'Welcome!', message: 'Welcome to SurplusSync.', read: false, createdAt: new Date() }];
 };
