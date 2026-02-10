@@ -99,6 +99,7 @@ export class DonationsController {
   @Patch(':id/status')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
+
   @ApiOperation({ summary: 'Update food donation status' })
   @ApiResponse({
     status: 200,

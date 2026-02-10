@@ -187,13 +187,19 @@ export class DonationsService {
   async updateStatus(id: string, status: DonationStatus, userId: string) {
     return await this.donationsRepository.manager.transaction(async transactionalEntityManager => {
       const donation = await transactionalEntityManager.findOne(Donation, { where: { id } });
+      const user = await transactionalEntityManager.findOne(User, { where: { id: userId } });
 
       if (!donation) {
         throw new NotFoundException('Donation not found');
       }
 
       // Authorization check
-      if (donation.donorId !== userId && donation.claimedById !== userId) {
+      const isAuthorized = 
+        donation.donorId === userId || 
+        donation.claimedById === userId ||
+        (user?.role === UserRole.VOLUNTEER && donation.claimedById !== null); // Volunteers can update if donation is claimed
+      
+      if (!isAuthorized) {
         throw new BadRequestException('You are not authorized to update this donation status');
       }
 
@@ -229,4 +235,5 @@ export class DonationsService {
       return await transactionalEntityManager.save(donation);
     });
   }
+
 }

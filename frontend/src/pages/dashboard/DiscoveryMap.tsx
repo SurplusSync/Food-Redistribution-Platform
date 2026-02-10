@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
-import { getDonations, claimDonation, type Donation } from '../../services/api'
+import { getDonations, claimDonation, updateDonationStatus, type Donation } from '../../services/api'
 import { Clock, Shield, AlertTriangle, X, Image as ImageIcon, MapPin, CheckCircle2 } from 'lucide-react'
 
 // Fix for default marker icons
@@ -30,6 +30,7 @@ export default function DiscoveryMap() {
     const [donations, setDonations] = useState<Donation[]>([])
     const [loading, setLoading] = useState(true)
     const [claiming, setClaiming] = useState<string | null>(null)
+    const [processingId, setProcessingId] = useState<string | null>(null)
     const [selectedDonation, setSelectedDonation] = useState<Donation | null>(null) // 🔍 State for Modal
 
     const user = JSON.parse(localStorage.getItem('user') || '{}')
@@ -62,6 +63,34 @@ export default function DiscoveryMap() {
             alert(error.message || 'Failed to claim donation')
         } finally {
             setClaiming(null)
+        }
+    }
+
+    const handleConfirmPickup = async (donationId: string) => {
+        if (processingId) return
+        setProcessingId(donationId)
+        try {
+            await updateDonationStatus(donationId, 'PICKED_UP')
+            await loadDonations()
+            setSelectedDonation(null)
+        } catch (error: any) {
+            alert(error.message || 'Failed to confirm pickup')
+        } finally {
+            setProcessingId(null)
+        }
+    }
+
+    const handleConfirmDelivery = async (donationId: string) => {
+        if (processingId) return
+        setProcessingId(donationId)
+        try {
+            await updateDonationStatus(donationId, 'DELIVERED')
+            await loadDonations()
+            setSelectedDonation(null)
+        } catch (error: any) {
+            alert(error.message || 'Failed to confirm delivery')
+        } finally {
+            setProcessingId(null)
         }
     }
 
@@ -294,8 +323,27 @@ export default function DiscoveryMap() {
                                         </div>
                                     )
                                 ) : (
-                                    <div className="text-center p-3 bg-amber-500/10 text-amber-400 rounded-lg font-medium border border-amber-500/20">
-                                        Already Claimed
+                                    // If already claimed, show volunteer actions when appropriate
+                                    <div>
+                                        {userRole === 'volunteer' && selectedDonation.status === 'CLAIMED' ? (
+                                            <button
+                                                onClick={() => handleConfirmPickup(selectedDonation.id)}
+                                                disabled={processingId === selectedDonation.id}
+                                                className="w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-white rounded-lg font-semibold transition-all"
+                                            >
+                                                {processingId === selectedDonation.id ? 'Processing...' : 'Confirm Pickup'}
+                                            </button>
+                                        ) : userRole === 'volunteer' && selectedDonation.status === 'PICKED_UP' ? (
+                                            <button
+                                                onClick={() => handleConfirmDelivery(selectedDonation.id)}
+                                                disabled={processingId === selectedDonation.id}
+                                                className="w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-white rounded-lg font-semibold transition-all"
+                                            >
+                                                {processingId === selectedDonation.id ? 'Processing...' : 'Confirm Delivery'}
+                                            </button>
+                                        ) : (
+                                            <div className="text-center p-3 bg-amber-500/10 text-amber-400 rounded-lg font-medium border border-amber-500/20">Already Claimed</div>
+                                        )}
                                     </div>
                                 )}
                             </div>
