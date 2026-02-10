@@ -29,11 +29,11 @@ export default function Register() {
 
         try {
             const data = await registerUser(formData)
-            
+
             // Save Token and User
             localStorage.setItem('token', data.token)
             localStorage.setItem('user', JSON.stringify(data.user))
-            
+
             navigate('/dashboard')
         } catch (err: any) {
             const msg = err.response?.data?.message || err.message || 'Registration failed'
@@ -81,11 +81,10 @@ export default function Register() {
                                         key={role.id}
                                         type="button"
                                         onClick={() => setFormData({ ...formData, role: role.id as UserRole })}
-                                        className={`p-4 rounded-xl border-2 text-center transition-all ${
-                                            formData.role === role.id
+                                        className={`p-4 rounded-xl border-2 text-center transition-all ${formData.role === role.id
                                                 ? 'border-emerald-500 bg-emerald-500/10'
                                                 : 'border-slate-700 bg-slate-800/50'
-                                        }`}
+                                            }`}
                                     >
                                         <Icon className={`w-8 h-8 mx-auto mb-2 ${formData.role === role.id ? 'text-emerald-400' : 'text-slate-500'}`} />
                                         <div className="text-white font-semibold">{role.label}</div>
@@ -137,7 +136,7 @@ export default function Register() {
                 </form>
 
                 <div className="mt-6 text-center">
-                    <p className="text-sm text-slate-400">Already have an account? <Link to="/" className="font-semibold text-emerald-400 hover:text-emerald-300">Sign in</Link></p>
+                    <p className="text-sm text-slate-400">Already have an account? <Link to="/login" className="font-semibold text-emerald-400 hover:text-emerald-300">Sign in</Link></p>
                 </div>
             </div>
         </div>

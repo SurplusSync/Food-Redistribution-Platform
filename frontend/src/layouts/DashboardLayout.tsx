@@ -10,7 +10,7 @@ export default function DashboardLayout() {
 
   const user = JSON.parse(localStorage.getItem('user') || '{}')
   const userRole = (user.role || 'donor').toLowerCase()
-  
+
   useEffect(() => {
     loadNotifications()
     const interval = setInterval(() => {
@@ -30,7 +30,7 @@ export default function DashboardLayout() {
 
   const logout = () => {
     localStorage.removeItem('user')
-    navigate('/')
+    navigate('/login')
   }
 
   const navLinks = [
@@ -110,9 +110,8 @@ export default function DashboardLayout() {
             <Link
               key={link.to}
               to={link.to}
-              className={`nav-item ${
-                isActive(link.to) ? 'nav-item-active' : 'nav-item-inactive'
-              }`}
+              className={`nav-item ${isActive(link.to) ? 'nav-item-active' : 'nav-item-inactive'
+                }`}
             >
               <link.icon className="w-5 h-5" />
               <span>{link.label}</span>
@@ -124,9 +123,8 @@ export default function DashboardLayout() {
         <div className="p-3 border-t border-slate-800 space-y-1">
           <Link
             to="/dashboard/notifications"
-            className={`nav-item relative ${
-              isActive('/dashboard/notifications') ? 'nav-item-active' : 'nav-item-inactive'
-            }`}
+            className={`nav-item relative ${isActive('/dashboard/notifications') ? 'nav-item-active' : 'nav-item-inactive'
+              }`}
           >
             <Bell className="w-5 h-5" />
             <span>Notifications</span>
@@ -139,9 +137,8 @@ export default function DashboardLayout() {
 
           <Link
             to="/dashboard/profile"
-            className={`nav-item ${
-              isActive('/dashboard/profile') ? 'nav-item-active' : 'nav-item-inactive'
-            }`}
+            className={`nav-item ${isActive('/dashboard/profile') ? 'nav-item-active' : 'nav-item-inactive'
+              }`}
           >
             <User className="w-5 h-5" />
             <span>Profile</span>
