@@ -1,0 +1,93 @@
+
+> frontend@0.0.0 test:run
+> vitest --run
+
+
+[7m[1m[36m RUN [39m[22m[27m [36mv1.6.1[39m [90mc:/Users/KESHAV/Downloads/foodredist/Food-Redistribution-Platform/frontend[39m
+
+ [33m❯[39m src/__tests__/pages/dashboard/AddFood.test.tsx [2m ([22m[2m0 test[22m[2m)[22m
+ [33m❯[39m src/__tests__/pages/Register.test.tsx [2m ([22m[2m0 test[22m[2m)[22m
+ [33m❯[39m src/__tests__/pages/dashboard/Profile.test.tsx [2m ([22m[2m0 test[22m[2m)[22m
+ [33m❯[39m src/__tests__/layouts/DashboardLayout.test.tsx [2m ([22m[2m0 test[22m[2m)[22m
+ [33m❯[39m src/__tests__/pages/dashboard/Impact.test.tsx [2m ([22m[2m0 test[22m[2m)[22m
+ [33m❯[39m src/__tests__/pages/dashboard/Notifications.test.tsx [2m ([22m[2m0 test[22m[2m)[22m
+ [33m❯[39m src/__tests__/pages/dashboard/History.test.tsx [2m ([22m[2m0 test[22m[2m)[22m
+ [33m❯[39m src/__tests__/pages/dashboard/DiscoveryMap.test.tsx [2m ([22m[2m0 test[22m[2m)[22m
+ [33m❯[39m src/__tests__/pages/dashboard/VolunteerDashboard.test.tsx [2m ([22m[2m0 test[22m[2m)[22m
+ [33m❯[39m src/__tests__/pages/dashboard/DonorHome.test.tsx [2m ([22m[2m0 test[22m[2m)[22m
+ [33m❯[39m src/__tests__/pages/dashboard/NGODashboard.test.tsx [2m ([22m[2m0 test[22m[2m)[22m
+ [33m❯[39m src/__tests__/pages/Login.test.tsx [2m ([22m[2m0 test[22m[2m)[22m
+ [33m❯[39m src/__tests__/pages/LandingPage.test.tsx [2m ([22m[2m0 test[22m[2m)[22m
+ [33m❯[39m src/__tests__/App.test.tsx [2m ([22m[2m0 test[22m[2m)[22m
+
+[31m⎯⎯⎯⎯⎯⎯[1m[7m Failed Suites 14 [27m[22m⎯⎯⎯⎯⎯⎯[39m
+
+[31m[1m[7m FAIL [27m[22m[39m src/__tests__/App.test.tsx [2m[ src/__tests__/App.test.tsx ][22m
+[31m[1mError[22m: No test suite found in file C:/Users/KESHAV/Downloads/foodredist/Food-Redistribution-Platform/frontend/src/__tests__/App.test.tsx[39m
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/14]⎯[22m[39m
+
+[31m[1m[7m FAIL [27m[22m[39m src/__tests__/layouts/DashboardLayout.test.tsx [2m[ src/__tests__/layouts/DashboardLayout.test.tsx ][22m
+[31m[1mError[22m: No test suite found in file C:/Users/KESHAV/Downloads/foodredist/Food-Redistribution-Platform/frontend/src/__tests__/layouts/DashboardLayout.test.tsx[39m
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/14]⎯[22m[39m
+
+[31m[1m[7m FAIL [27m[22m[39m src/__tests__/pages/LandingPage.test.tsx [2m[ src/__tests__/pages/LandingPage.test.tsx ][22m
+[31m[1mError[22m: No test suite found in file C:/Users/KESHAV/Downloads/foodredist/Food-Redistribution-Platform/frontend/src/__tests__/pages/LandingPage.test.tsx[39m
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/14]⎯[22m[39m
+
+[31m[1m[7m FAIL [27m[22m[39m src/__tests__/pages/Login.test.tsx [2m[ src/__tests__/pages/Login.test.tsx ][22m
+[31m[1mError[22m: No test suite found in file C:/Users/KESHAV/Downloads/foodredist/Food-Redistribution-Platform/frontend/src/__tests__/pages/Login.test.tsx[39m
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/14]⎯[22m[39m
+
+[31m[1m[7m FAIL [27m[22m[39m src/__tests__/pages/Register.test.tsx [2m[ src/__tests__/pages/Register.test.tsx ][22m
+[31m[1mError[22m: No test suite found in file C:/Users/KESHAV/Downloads/foodredist/Food-Redistribution-Platform/frontend/src/__tests__/pages/Register.test.tsx[39m
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/14]⎯[22m[39m
+
+[31m[1m[7m FAIL [27m[22m[39m src/__tests__/pages/dashboard/AddFood.test.tsx [2m[ src/__tests__/pages/dashboard/AddFood.test.tsx ][22m
+[31m[1mError[22m: Failed to resolve import "../../services/api" from "src/__tests__/pages/dashboard/AddFood.test.tsx". Does the file exist?[39m
+[90m [2m❯[22m TransformPluginContext._formatError node_modules/vitest/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:[2m49258:41[22m[39m
+[90m [2m❯[22m TransformPluginContext.error node_modules/vitest/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:[2m49253:16[22m[39m
+[90m [2m❯[22m normalizeUrl node_modules/vitest/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:[2m64307:23[22m[39m
+[90m [2m❯[22m async file:/c:/Users/KESHAV/Downloads/foodredist/Food-Redistribution-Platform/frontend/node_modules/vitest/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:[2m64439:39[22m[39m
+[90m [2m❯[22m TransformPluginContext.transform node_modules/vitest/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:[2m64366:7[22m[39m
+[90m [2m❯[22m PluginContainer.transform node_modules/vitest/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:[2m49099:18[22m[39m
+[90m [2m❯[22m loadAndTransform node_modules/vitest/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:[2m51978:27[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/14]⎯[22m[39m
+
+[31m[1m[7m FAIL [27m[22m[39m src/__tests__/pages/dashboard/DiscoveryMap.test.tsx [2m[ src/__tests__/pages/dashboard/DiscoveryMap.test.tsx ][22m
+[31m[1mError[22m: No test suite found in file C:/Users/KESHAV/Downloads/foodredist/Food-Redistribution-Platform/frontend/src/__tests__/pages/dashboard/DiscoveryMap.test.tsx[39m
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/14]⎯[22m[39m
+
+[31m[1m[7m FAIL [27m[22m[39m src/__tests__/pages/dashboard/DonorHome.test.tsx [2m[ src/__tests__/pages/dashboard/DonorHome.test.tsx ][22m
+[31m[1mError[22m: No test suite found in file C:/Users/KESHAV/Downloads/foodredist/Food-Redistribution-Platform/frontend/src/__tests__/pages/dashboard/DonorHome.test.tsx[39m
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/14]⎯[22m[39m
+
+[31m[1m[7m FAIL [27m[22m[39m src/__tests__/pages/dashboard/History.test.tsx [2m[ src/__tests__/pages/dashboard/History.test.tsx ][22m
+[31m[1mError[22m: No test suite found in file C:/Users/KESHAV/Downloads/foodredist/Food-Redistribution-Platform/frontend/src/__tests__/pages/dashboard/History.test.tsx[39m
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/14]⎯[22m[39m
+
+[31m[1m[7m FAIL [27m[22m[39m src/__tests__/pages/dashboard/Impact.test.tsx [2m[ src/__tests__/pages/dashboard/Impact.test.tsx ][22m
+[31m[1mError[22m: No test suite found in file C:/Users/KESHAV/Downloads/foodredist/Food-Redistribution-Platform/frontend/src/__tests__/pages/dashboard/Impact.test.tsx[39m
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/14]⎯[22m[39m
+
+[31m[1m[7m FAIL [27m[22m[39m src/__tests__/pages/dashboard/NGODashboard.test.tsx [2m[ src/__tests__/pages/dashboard/NGODashboard.test.tsx ][22m
+[31m[1mError[22m: No test suite found in file C:/Users/KESHAV/Downloads/foodredist/Food-Redistribution-Platform/frontend/src/__tests__/pages/dashboard/NGODashboard.test.tsx[39m
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/14]⎯[22m[39m
+
+[31m[1m[7m FAIL [27m[22m[39m src/__tests__/pages/dashboard/Notifications.test.tsx [2m[ src/__tests__/pages/dashboard/Notifications.test.tsx ][22m
+[31m[1mError[22m: No test suite found in file C:/Users/KESHAV/Downloads/foodredist/Food-Redistribution-Platform/frontend/src/__tests__/pages/dashboard/Notifications.test.tsx[39m
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/14]⎯[22m[39m
+
+[31m[1m[7m FAIL [27m[22m[39m src/__tests__/pages/dashboard/Profile.test.tsx [2m[ src/__tests__/pages/dashboard/Profile.test.tsx ][22m
+[31m[1mError[22m: No test suite found in file C:/Users/KESHAV/Downloads/foodredist/Food-Redistribution-Platform/frontend/src/__tests__/pages/dashboard/Profile.test.tsx[39m
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/14]⎯[22m[39m
+
+[31m[1m[7m FAIL [27m[22m[39m src/__tests__/pages/dashboard/VolunteerDashboard.test.tsx [2m[ src/__tests__/pages/dashboard/VolunteerDashboard.test.tsx ][22m
+[31m[1mError[22m: No test suite found in file C:/Users/KESHAV/Downloads/foodredist/Food-Redistribution-Platform/frontend/src/__tests__/pages/dashboard/VolunteerDashboard.test.tsx[39m
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/14]⎯[22m[39m
+
+[2m Test Files [22m [1m[31m14 failed[39m[22m[90m (14)[39m
+[2m      Tests [22m [2mno tests[22m
+[2m   Start at [22m 11:35:00
+[2m   Duration [22m 11.58s[2m (transform 3.37s, setup 5.75s, collect 22.16s, tests 0ms, environment 36.21s, prepare 14.56s)[22m
+
