@@ -128,4 +128,4 @@ This project is licensed under the MIT License.
 
 ---
 
-**Built with ❤️ to reduce food waste and feed communities**
+**Built with love to reduce food waste and feed communities**
