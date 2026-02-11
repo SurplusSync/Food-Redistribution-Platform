@@ -38,6 +38,9 @@ export class Donation {
   @Column()
   preparationTime: string; // Added to match Frontend
 
+  @Column({ nullable: true })
+  expiryTime: string; // Added for Food Safety
+
   // Location Data (Crucial for the Map)
   @Column('float')
   latitude: number;

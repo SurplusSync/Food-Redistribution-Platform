@@ -15,7 +15,7 @@ describe('AppController', () => {
   });
 
   describe('root', () => {
-    it('should return "Hello World!"', () => {
+    it('should return "Food Redistribution Platform API"', () => {
       expect(appController.getHello()).toBe('Food Redistribution Platform API');
     });
   });

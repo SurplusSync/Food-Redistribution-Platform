@@ -42,6 +42,12 @@ export class User {
   @Column('float', { nullable: true })
   longitude: number;
 
+  @Column('float', { nullable: true, default: 0 })
+  currentIntakeLoad: number;
+
+  @Column('float', { nullable: true, default: 100 })
+  dailyIntakeCapacity: number;
+
   @CreateDateColumn()
   createdAt: Date;
 }

@@ -29,7 +29,7 @@ export class CreateDonationDto {
     }
     return value;
   })
-  hygiene?: any; 
+  hygiene?: any;
 
   @ApiProperty({ required: false, description: 'Donor trust score' })
   @IsOptional()
@@ -54,6 +54,10 @@ export class CreateDonationDto {
   @ApiProperty({ example: '2025-01-30T10:00:00Z', description: 'Preparation time' })
   @IsDateString()
   preparationTime: string;
+
+  @ApiProperty({ example: '2025-01-30T12:00:00Z', description: 'Expiry time' })
+  @IsDateString()
+  expiryTime: string;
 
   @ApiProperty({ example: 17.6868, description: 'Latitude' })
   @Type(() => Number)

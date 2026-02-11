@@ -45,6 +45,7 @@ describe('DonationsController', () => {
             quantity: 10,
             unit: 'kg',
             preparationTime: new Date().toISOString(),
+            expiryTime: new Date(Date.now() + 3600 * 1000).toISOString(),
             latitude: 10,
             longitude: 20,
             description: 'Test donation',
