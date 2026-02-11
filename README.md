@@ -137,7 +137,7 @@ SurplusSync is designed to tackle the problem of food waste by creating a seamle
 | **Frontend Framework** | [React](https://react.dev/) 18 | Component-based UI with hooks |
 | **Build Tool** | [Vite](https://vitejs.dev/) | Fast HMR and optimized production builds |
 | **Styling** | [Tailwind CSS](https://tailwindcss.com/) 3 | Utility-first CSS framework |
-| **State Management** | [Zustand](https://zustand-demo.pmnd.rs/) | Lightweight, hook-based global state |
+| **State Management** | LocalStorage + React State | Persistent auth/user data across refreshes with component-level state via `useState` |
 | **Maps** | [Leaflet](https://leafletjs.com/) + [React-Leaflet](https://react-leaflet.js.org/) | Interactive map-based food discovery |
 | **HTTP Client** | [Axios](https://axios-http.com/) | Promise-based HTTP requests with interceptors |
 | **Icons** | [Lucide React](https://lucide.dev/) | Modern, clean SVG icon library |
