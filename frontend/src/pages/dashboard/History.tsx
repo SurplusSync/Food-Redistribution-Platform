@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { getDonations } from '../../services/api'
 import type { Donation } from '../../services/api'
 
@@ -60,8 +60,8 @@ export default function History() {
                         key={status}
                         onClick={() => setFilter(status)}
                         className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors capitalize ${filter === status
-                                ? 'bg-emerald-500 text-white'
-                                : 'bg-slate-900 text-slate-400 hover:text-white'
+                            ? 'bg-emerald-500 text-white'
+                            : 'bg-slate-900 text-slate-400 hover:text-white'
                             }`}
                     >
                         {status === 'all' ? 'All' : status.toLowerCase()}

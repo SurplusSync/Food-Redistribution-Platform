@@ -1,0 +1,21 @@
+src/pages/dashboard/DonorHome.tsx(48,9): error TS6133: 'handleClaim' is declared but its value is never read.
+src/pages/dashboard/DonorHome.tsx(49,5): error TS2304: Cannot find name 'setClaiming'.
+src/pages/dashboard/DonorHome.tsx(51,13): error TS2304: Cannot find name 'claimDonation'.
+src/pages/dashboard/DonorHome.tsx(57,7): error TS2304: Cannot find name 'setClaiming'.
+src/pages/dashboard/DonorHome.tsx(61,9): error TS6133: 'handleConfirmPickup' is declared but its value is never read.
+src/pages/dashboard/DonorHome.tsx(62,5): error TS2304: Cannot find name 'setProcessingId'.
+src/pages/dashboard/DonorHome.tsx(64,13): error TS2304: Cannot find name 'updateDonationStatus'.
+src/pages/dashboard/DonorHome.tsx(70,7): error TS2304: Cannot find name 'setProcessingId'.
+src/pages/dashboard/DonorHome.tsx(74,9): error TS6133: 'handleConfirmDelivery' is declared but its value is never read.
+src/pages/dashboard/DonorHome.tsx(75,5): error TS2304: Cannot find name 'setProcessingId'.
+src/pages/dashboard/DonorHome.tsx(77,13): error TS2304: Cannot find name 'updateDonationStatus'.
+src/pages/dashboard/DonorHome.tsx(83,7): error TS2304: Cannot find name 'setProcessingId'.
+src/pages/dashboard/History.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+src/pages/dashboard/Impact.tsx(163,42): error TS18048: 'badge.requirement' is possibly 'undefined'.
+src/pages/dashboard/Impact.tsx(183,54): error TS18048: 'nextBadge.requirement' is possibly 'undefined'.
+src/pages/dashboard/NGODashboard.tsx(409,78): error TS2339: Property 'address' does not exist on type 'Donation'.
+src/pages/dashboard/Notifications.tsx(45,41): error TS2339: Property 'type' does not exist on type 'Notification'.
+src/pages/dashboard/Notifications.tsx(53,16): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{ food_claimed: Element; pickup_assigned: Element; delivery_confirmed: Element; near_expiry: Element; new_food_nearby: Element; }'.
+src/pages/dashboard/Notifications.tsx(136,59): error TS2339: Property 'type' does not exist on type 'Notification'.
+src/pages/Register.tsx(4,10): error TS6133: 'Utensils' is declared but its value is never read.
+src/pages/Register.tsx(52,11): error TS6133: 'organizationTypes' is declared but its value is never read.

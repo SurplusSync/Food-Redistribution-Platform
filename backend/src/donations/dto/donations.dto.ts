@@ -76,6 +76,11 @@ export class CreateDonationDto {
   @IsString({ each: true })
   imageUrls?: string[];
 
+  @ApiProperty({ required: false, description: 'Single image URL' })
+  @IsOptional()
+  @IsString()
+  imageUrl?: string;
+
   @ApiProperty({ example: '2025-01-31T10:00:00Z', description: 'Expiry time' })
   @IsDateString()
   expiryTime: string;
@@ -96,4 +101,48 @@ export class UpdateDonationStatusDto {
   @ApiProperty({ enum: DonationStatus, example: DonationStatus.PICKED_UP })
   @IsEnum(DonationStatus)
   status: DonationStatus;
+}
+
+export class UpdateDonationDto {
+  @ApiProperty({ example: 'Vegetable Biryani', required: false })
+  @IsOptional()
+  @IsString()
+  name?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  description?: string;
+
+  @ApiProperty({ example: 'cooked', required: false })
+  @IsOptional()
+  @IsString()
+  foodType?: string;
+
+  @ApiProperty({ example: 50, required: false })
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @Min(0.1)
+  quantity?: number;
+
+  @ApiProperty({ example: 'kg', required: false })
+  @IsOptional()
+  @IsString()
+  unit?: string;
+
+  @ApiProperty({ example: '2025-01-30T10:00:00Z', required: false })
+  @IsOptional()
+  @IsDateString()
+  preparationTime?: string;
+
+  @ApiProperty({ example: '2025-01-31T10:00:00Z', required: false })
+  @IsOptional()
+  @IsDateString()
+  expiryTime?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  imageUrl?: string;
 }

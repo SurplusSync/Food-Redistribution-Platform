@@ -73,6 +73,7 @@ export interface User {
 
 export type Notification = {
   id: string;
+  type: 'food_claimed' | 'pickup_assigned' | 'delivery_confirmed' | 'near_expiry' | 'new_food_nearby';
   title: string;
   message: string;
   read: boolean;
@@ -143,13 +144,17 @@ export const createDonation = async (data: any, images: File[] = []) => {
   formData.append('quantity', data.quantity.toString());
   formData.append('unit', data.unit);
   formData.append('description', data.description || '');
-  
-  const prepTime = data.preparationTime instanceof Date ? data.preparationTime.toISOString() : data.preparationTime;
-  formData.append('preparationTime', prepTime);
-  
-  const expTime = data.expiryTime instanceof Date ? data.expiryTime.toISOString() : data.expiryTime;
-  formData.append('expiryTime', expTime);
-  
+
+  if (data.preparationTime) {
+    const prepTime = data.preparationTime instanceof Date ? data.preparationTime.toISOString() : data.preparationTime;
+    formData.append('preparationTime', (prepTime as string));
+  }
+
+  if (data.expiryTime) {
+    const expTime = data.expiryTime instanceof Date ? data.expiryTime.toISOString() : data.expiryTime;
+    formData.append('expiryTime', (expTime as string));
+  }
+
   if (data.donorId) formData.append('donorId', data.donorId);
   if (data.donorName) formData.append('donorName', data.donorName);
   if (data.donorTrustScore) formData.append('donorTrustScore', data.donorTrustScore.toString());
@@ -164,7 +169,7 @@ export const createDonation = async (data: any, images: File[] = []) => {
   }
 
   images.forEach((file) => {
-    formData.append('images', file); 
+    formData.append('images', file);
   });
 
   const response = await api.post('/donations', formData, {
@@ -189,7 +194,7 @@ export const updateDonationStatus = async (id: string, status: string) => {
 
 // MOCK HELPERS
 export const getNotifications = async (_userId: string): Promise<Notification[]> => {
-  return [{ id: '1', title: 'Welcome!', message: 'Welcome to SurplusSync.', read: false, createdAt: new Date() }];
+  return [{ id: '1', type: 'food_claimed', title: 'Welcome!', message: 'Welcome to SurplusSync.', read: false, createdAt: new Date() }];
 };
 export const markNotificationRead = async (_id: string) => { return; };
 export const checkExpiringDonations = () => { return; };

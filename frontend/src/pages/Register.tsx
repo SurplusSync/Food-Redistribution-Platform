@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { registerUser, type UserRole } from '../services/api'
-import { Utensils, Store, Building2, Car, ChevronRight, AlertCircle } from 'lucide-react'
+import { Store, Building2, Car, ChevronRight, AlertCircle } from 'lucide-react'
 
 export default function Register() {
     const [formData, setFormData] = useState({
@@ -49,10 +49,7 @@ export default function Register() {
         { id: 'volunteer', label: 'Volunteer', desc: 'Help with transport', icon: Car },
     ]
 
-    const organizationTypes = {
-        donor: ['restaurant', 'hotel', 'canteen', 'event', 'catering', 'grocery', 'bakery'],
-        ngo: ['charity', 'shelter', 'community_kitchen', 'food_bank'],
-    }
+
 
     const showOrganizationFields = formData.role === 'donor' || formData.role === 'ngo'
 
@@ -82,8 +79,8 @@ export default function Register() {
                                         type="button"
                                         onClick={() => setFormData({ ...formData, role: role.id as UserRole })}
                                         className={`p-4 rounded-xl border-2 text-center transition-all ${formData.role === role.id
-                                                ? 'border-emerald-500 bg-emerald-500/10'
-                                                : 'border-slate-700 bg-slate-800/50'
+                                            ? 'border-emerald-500 bg-emerald-500/10'
+                                            : 'border-slate-700 bg-slate-800/50'
                                             }`}
                                     >
                                         <Icon className={`w-8 h-8 mx-auto mb-2 ${formData.role === role.id ? 'text-emerald-400' : 'text-slate-500'}`} />

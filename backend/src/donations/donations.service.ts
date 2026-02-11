@@ -1,7 +1,7 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CreateDonationDto, ClaimDonationDto } from './dto/donations.dto';
+import { CreateDonationDto, ClaimDonationDto, UpdateDonationDto } from './dto/donations.dto';
 import { Donation, DonationStatus } from './entities/donation.entity';
 import { User, UserRole } from '../auth/entities/user.entity';
 
@@ -26,6 +26,33 @@ export class DonationsService {
     });
 
     // Saves to Postgres
+    return await this.donationsRepository.save(donation);
+  }
+
+  async update(id: string, updateDto: UpdateDonationDto, userId: string) {
+    const donation = await this.donationsRepository.findOne({ where: { id } });
+
+    if (!donation) {
+      throw new NotFoundException('Donation not found');
+    }
+
+    if (donation.donorId !== userId) {
+      throw new ForbiddenException('Only the donor can update this donation');
+    }
+
+    if (donation.status !== DonationStatus.AVAILABLE) {
+      throw new BadRequestException('Cannot update a donation that has already been claimed or processed');
+    }
+
+    // Merge changes for validation
+    const updatedDonation = Object.assign({}, donation, updateDto);
+
+    // Re-validate food safety if preparationTime, expiryTime, or foodType is being changed
+    if (updateDto.preparationTime || updateDto.expiryTime || updateDto.foodType) {
+      this.validateFoodSafety(updatedDonation as any);
+    }
+
+    Object.assign(donation, updateDto);
     return await this.donationsRepository.save(donation);
   }
 
@@ -219,13 +246,9 @@ export class DonationsService {
         throw new NotFoundException('Donation not found');
       }
 
-      // Authorization check
-      const isAuthorized = 
-        donation.donorId === userId || 
-        donation.claimedById === userId ||
-        (user?.role === UserRole.VOLUNTEER && donation.claimedById !== null); // Volunteers can update if donation is claimed
-      
-      if (!isAuthorized) {
+      // Authorization check: Allow donor, claimant, or ADMIN
+      const isAdmin = user && user.role === UserRole.ADMIN;
+      if (donation.donorId !== userId && donation.claimedById !== userId && !isAdmin) {
         throw new BadRequestException('You are not authorized to update this donation status');
       }
 
@@ -248,23 +271,24 @@ export class DonationsService {
           throw new BadRequestException('Donation already marked as delivered');
         }
 
-        const user = await transactionalEntityManager.findOne(User, { where: { id: donation.claimedById } });
-        if (user) {
-          user.currentIntakeLoad = Math.max(0, user.currentIntakeLoad - donation.quantity);
-          await transactionalEntityManager.save(user);
+        const claimant = await transactionalEntityManager.findOne(User, { where: { id: donation.claimedById } });
+        if (claimant) {
+          claimant.currentIntakeLoad = Math.max(0, claimant.currentIntakeLoad - donation.quantity);
+          await transactionalEntityManager.save(claimant);
         }
       }
 
       // If reversing a claim (CLAIMED/PICKED_UP -> AVAILABLE), decrement load and clear tracking fields
       if (status === DonationStatus.AVAILABLE && (oldStatus === DonationStatus.CLAIMED || oldStatus === DonationStatus.PICKED_UP)) {
-        const user = await transactionalEntityManager.findOne(User, { where: { id: donation.claimedById } });
-        if (user) {
-          user.currentIntakeLoad = Math.max(0, user.currentIntakeLoad - donation.quantity);
-          await transactionalEntityManager.save(user);
+        const claimant = await transactionalEntityManager.findOne(User, { where: { id: donation.claimedById } });
+        if (claimant) {
+          claimant.currentIntakeLoad = Math.max(0, claimant.currentIntakeLoad - donation.quantity);
+          await transactionalEntityManager.save(claimant);
         }
         donation.claimedById = null;
         donation.volunteerId = null;
         donation.pickedUpAt = null;
+        donation.deliveredAt = null;
       }
 
       donation.status = status;
@@ -272,4 +296,18 @@ export class DonationsService {
     });
   }
 
+  async updateImage(id: string, imageUrl: string, userId: string) {
+    const donation = await this.donationsRepository.findOne({ where: { id } });
+
+    if (!donation) {
+      throw new NotFoundException('Donation not found');
+    }
+
+    if (donation.donorId !== userId) {
+      throw new ForbiddenException('Only the donation owner can upload images');
+    }
+
+    donation.imageUrl = imageUrl;
+    return await this.donationsRepository.save(donation);
+  }
 }

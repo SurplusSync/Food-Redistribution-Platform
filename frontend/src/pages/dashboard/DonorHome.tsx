@@ -14,9 +14,9 @@ export default function DonorHome() {
   const load = async () => {
     setLoading(true)
     try {
-      const data = await getDonations({ 
+      const data = await getDonations({
         role: 'donor',
-        userId: user.id 
+        userId: user.id
       })
       setDonations(data)
     } finally {
@@ -45,44 +45,7 @@ export default function DonorHome() {
     return getTimeRemaining(d.expiryTime).urgent
   })
 
-  const handleClaim = async (donationId: string) => {
-    setClaiming(donationId)
-    try {
-      await claimDonation(donationId)
-      await load()
-      setSelectedDonation(null)
-    } catch (error: any) {
-      alert(error.message || 'Failed to claim donation')
-    } finally {
-      setClaiming(null)
-    }
-  }
 
-  const handleConfirmPickup = async (id: string) => {
-    setProcessingId(id)
-    try {
-      await updateDonationStatus(id, 'PICKED_UP')
-      await load()
-      setSelectedDonation(null)
-    } catch (error: any) {
-      alert(error.message || 'Failed to confirm pickup')
-    } finally {
-      setProcessingId(null)
-    }
-  }
-
-  const handleConfirmDelivery = async (id: string) => {
-    setProcessingId(id)
-    try {
-      await updateDonationStatus(id, 'DELIVERED')
-      await load()
-      setSelectedDonation(null)
-    } catch (error: any) {
-      alert(error.message || 'Failed to confirm delivery')
-    } finally {
-      setProcessingId(null)
-    }
-  }
 
   const getStatusStyle = (status: string) => {
     const styles: Record<string, string> = {
@@ -241,10 +204,9 @@ export default function DonorHome() {
               <div key={donation.id} className="p-4 hover:bg-slate-800/30 transition-colors">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4 flex-1">
-                    <div className={`w-12 h-12 rounded-lg flex items-center justify-center text-2xl ${
-                      donation.status === 'AVAILABLE' ? 'bg-emerald-500/10' : 
-                      donation.status === 'CLAIMED' ? 'bg-amber-500/10' : 'bg-slate-800'
-                    }`}>
+                    <div className={`w-12 h-12 rounded-lg flex items-center justify-center text-2xl ${donation.status === 'AVAILABLE' ? 'bg-emerald-500/10' :
+                        donation.status === 'CLAIMED' ? 'bg-amber-500/10' : 'bg-slate-800'
+                      }`}>
                       {donation.foodType === 'cooked' && '🍛'}
                       {donation.foodType === 'raw' && '🥬'}
                       {donation.foodType === 'packaged' && '📦'}
@@ -289,14 +251,14 @@ export default function DonorHome() {
       {selectedDonation && (
         <div className="fixed inset-0 z-[2000] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
           <div className="bg-slate-900 border border-slate-800 rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl flex flex-col md:flex-row">
-            
+
             {/* LEFT: Image Section */}
             <div className="w-full md:w-1/2 bg-slate-950 h-64 md:h-auto relative group">
               {selectedDonation.imageUrls && selectedDonation.imageUrls.length > 0 ? (
                 <>
-                  <img 
-                    src={selectedDonation.imageUrls[currentImageIndex]} 
-                    alt={selectedDonation.name} 
+                  <img
+                    src={selectedDonation.imageUrls[currentImageIndex]}
+                    alt={selectedDonation.name}
                     className="w-full h-full object-cover"
                   />
                   {/* Image Counter */}
@@ -389,7 +351,7 @@ export default function DonorHome() {
                 {/* Time */}
                 <div className="flex items-center gap-2 text-sm text-slate-400">
                   <Clock className="w-4 h-4" />
-                  <span>Prepared: {new Date(selectedDonation.preparationTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                  <span>Prepared: {new Date(selectedDonation.preparationTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                 </div>
               </div>
 

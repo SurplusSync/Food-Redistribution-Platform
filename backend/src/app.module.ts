@@ -1,19 +1,24 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ScheduleModule } from '@nestjs/schedule';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { DonationsModule } from './donations/donations.module';
 import { User } from './auth/entities/user.entity';
 import { Donation } from './donations/entities/donation.entity';
+import { LoadResetService } from './tasks/load-reset.service';
 
 @Module({
   imports: [
     // 1. Load .env variables
     ConfigModule.forRoot({ isGlobal: true }),
 
-    // 2. Connect to Postgres (using variables from docker-compose)
+    // 2. Enable Cron Jobs
+    ScheduleModule.forRoot(),
+
+    // 3. Connect to Postgres (using variables from docker-compose)
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DATABASE_HOST || 'postgres',
@@ -29,6 +34,6 @@ import { Donation } from './donations/entities/donation.entity';
     DonationsModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, LoadResetService],
 })
-export class AppModule {}
+export class AppModule { }

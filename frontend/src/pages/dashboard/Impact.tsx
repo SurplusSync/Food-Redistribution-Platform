@@ -147,22 +147,19 @@ export default function Impact() {
                         {badges.map((badge) => (
                             <div
                                 key={badge.id}
-                                className={`p-5 rounded-2xl border text-center transition-all ${
-                                    badge.earned
+                                className={`p-5 rounded-2xl border text-center transition-all ${badge.earned
                                         ? 'bg-slate-800/50 border-slate-700'
                                         : 'bg-slate-900/30 border-slate-800/50 opacity-40'
-                                }`}
+                                    }`}
                             >
                                 <div className="text-4xl mb-3">{badge.icon}</div>
                                 <p className={`text-sm font-semibold mb-1 ${badge.earned ? 'text-white' : 'text-slate-600'}`}>
                                     {badge.name}
                                 </p>
                                 <p className="text-xs text-slate-500 mb-2">{badge.description}</p>
-                                {!badge.earned && (
-                                    <p className="text-xs text-slate-600">
-                                        {badge.requirement - stats.totalDonations} more needed
-                                    </p>
-                                )}
+                                <p className="text-xs text-slate-600">
+                                    {(badge.requirement || 0) - stats.totalDonations} more needed
+                                </p>
                             </div>
                         ))}
                     </div>
@@ -180,7 +177,7 @@ export default function Impact() {
                                 </div>
                                 <div className="text-right">
                                     <p className="text-2xl font-bold text-emerald-400">
-                                        {Math.max(0, nextBadge.requirement - stats.totalDonations)}
+                                        {Math.max(0, (nextBadge.requirement || 0) - stats.totalDonations)}
                                     </p>
                                     <p className="text-xs text-slate-500">more to go</p>
                                 </div>
@@ -304,11 +301,10 @@ export default function Impact() {
                         {badges.map((badge) => (
                             <div
                                 key={badge.id}
-                                className={`p-5 rounded-2xl border text-center transition-all ${
-                                    badge.earned
+                                className={`p-5 rounded-2xl border text-center transition-all ${badge.earned
                                         ? 'bg-slate-800/50 border-slate-700'
                                         : 'bg-slate-900/30 border-slate-800/50 opacity-40'
-                                }`}
+                                    }`}
                             >
                                 <div className="text-4xl mb-3">{badge.icon}</div>
                                 <p className={`text-sm font-semibold mb-1 ${badge.earned ? 'text-white' : 'text-slate-600'}`}>
@@ -428,11 +424,10 @@ export default function Impact() {
                     {badges.map((badge) => (
                         <div
                             key={badge.id}
-                            className={`p-5 rounded-2xl border text-center transition-all ${
-                                badge.earned
+                            className={`p-5 rounded-2xl border text-center transition-all ${badge.earned
                                     ? 'bg-slate-800/50 border-slate-700'
                                     : 'bg-slate-900/30 border-slate-800/50 opacity-40'
-                            }`}
+                                }`}
                         >
                             <div className="text-4xl mb-3">{badge.icon}</div>
                             <p className={`text-sm font-semibold mb-1 ${badge.earned ? 'text-white' : 'text-slate-600'}`}>
