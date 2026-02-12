@@ -80,6 +80,8 @@ Volunteer delivers it to the NGO
 Everyone's impact dashboard updates
 ```
 
+<img width="8192" height="3532" alt="Architecture_diagram" src="https://github.com/user-attachments/assets/2a170e13-8b32-468c-a2a1-e311e6de9019" />
+
 ---
 
 ## About
