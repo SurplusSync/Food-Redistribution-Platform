@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException, ConflictException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, ConflictException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
@@ -30,7 +30,7 @@ export class AuthService {
     // 3. Create User with Hashed Password
     const user = this.usersRepository.create({
       ...registerDto,
-      password: hashedPassword, // Storing Hash
+      password: hashedPassword,
     });
 
     await this.usersRepository.save(user);
@@ -90,17 +90,82 @@ export class AuthService {
     };
   }
 
+  // ✅ SINGLE getProfile method with karma and level
   async getProfile(userId: string) {
-    const user = await this.usersRepository.findOne({ where: { id: userId } });
-    if (!user) throw new UnauthorizedException('User not found');
+    const user = await this.usersRepository.findOne({
+      where: { id: userId }
+    });
 
-    // Remove password from response
-    const { password, ...result } = user;
-    return result;
+    if (!user) {
+      throw new NotFoundException({
+        success: false,
+        message: 'User not found',
+        statusCode: 404,
+      });
+    }
+
+    const { password, ...userWithoutPassword } = user;
+
+    return {
+      success: true,
+      data: {
+        ...userWithoutPassword,
+        karmaPoints: user.karmaPoints || 0,
+        badges: user.badges || [],
+        level: this.calculateLevel(user.karmaPoints || 0),
+        nextLevelPoints: this.getNextLevelPoints(user.karmaPoints || 0),
+      },
+      message: 'Profile retrieved successfully',
+    };
   }
 
   async updateProfile(userId: string, updateData: any) {
     await this.usersRepository.update(userId, updateData);
-    return this.getProfile(userId);
+
+    // Fetch updated user
+    const user = await this.usersRepository.findOne({
+      where: { id: userId }
+    });
+
+    if (!user) {
+      throw new NotFoundException({
+        success: false,
+        message: 'User not found',
+        statusCode: 404,
+      });
+    }
+
+    // Return user without password
+    const { password, ...userWithoutPassword } = user;
+
+    return {
+      success: true,
+      data: {
+        ...userWithoutPassword,
+        karmaPoints: user.karmaPoints || 0,
+        badges: user.badges || [],
+        level: this.calculateLevel(user.karmaPoints || 0),
+        nextLevelPoints: this.getNextLevelPoints(user.karmaPoints || 0),
+      },
+      message: 'Profile updated successfully',
+    };
+  }
+
+  // ✅ Calculate user level based on karma
+  private calculateLevel(karmaPoints: number): number {
+    if (karmaPoints < 100) return 1;
+    if (karmaPoints < 250) return 2;
+    if (karmaPoints < 500) return 3;
+    if (karmaPoints < 1000) return 4;
+    return 5;
+  }
+
+  // ✅ Get points needed for next level
+  private getNextLevelPoints(karmaPoints: number): number {
+    if (karmaPoints < 100) return 100 - karmaPoints;
+    if (karmaPoints < 250) return 250 - karmaPoints;
+    if (karmaPoints < 500) return 500 - karmaPoints;
+    if (karmaPoints < 1000) return 1000 - karmaPoints;
+    return 0; // Max level reached
   }
 }
