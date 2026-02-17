@@ -1,18 +1,29 @@
-FROM node:20-alpine
+# stage 1: Build the Application
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Copy package files first for better caching
-COPY package*.json ./
-
-# Install dependencies
+# Copy dependency files and install
+COPY backend/package*.json ./
 RUN npm install
 
-# Copy the rest of the application
-COPY . .
+# Copy backend source and shared types
+COPY backend/ .
+COPY shared/ /shared/
 
-# Expose the API port
+RUN npm run build
+
+# stage 2: Run the Application (Production)
+FROM node:20-alpine AS runner
+
+WORKDIR /app
+
+COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/dist ./dist
+
+# Install only production dependencies
+RUN npm ci --omit=dev
+
 EXPOSE 3000
 
-# Start in Development Mode (Hot Reload)
-CMD ["npm", "run", "start:dev"]
+CMD ["node", "dist/main"]
