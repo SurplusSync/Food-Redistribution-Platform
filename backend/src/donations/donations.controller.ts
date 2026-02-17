@@ -144,6 +144,6 @@ export class DonationsController {
     @Param('id') id: string,
     @Req() req: any,
   ) {
-    return this.donationsService.markAsDelivered(id, req.user.userId);
+    return this.donationsService.updateStatus(id, 'DELIVERED' as any, req.user.userId);
   }
 }
