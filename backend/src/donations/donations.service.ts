@@ -1,18 +1,42 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Inject, Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateDonationDto, ClaimDonationDto } from './dto/donations.dto';
 import { Donation, DonationStatus } from './entities/donation.entity';
 import { User, UserRole } from '../auth/entities/user.entity';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 
 @Injectable()
 export class DonationsService {
+  private readonly logger = new Logger(DonationsService.name);
+
   constructor(
     @InjectRepository(Donation)
     private donationsRepository: Repository<Donation>,
     @InjectRepository(User)
     private usersRepository: Repository<User>,
+    @Inject(CACHE_MANAGER)
+    private cacheManager: Record<string, any>,
   ) { }
+
+  /**
+   * Invalidate all cached donation queries.
+   * Called after any write operation (create, claim, status update, deliver)
+   * so that subsequent GET /donations requests fetch fresh data.
+   */
+  private async invalidateCache(): Promise<void> {
+    try {
+      // cache-manager v7 uses clear(), older versions use reset()
+      if (typeof this.cacheManager.clear === 'function') {
+        await this.cacheManager.clear();
+      } else if (typeof this.cacheManager.reset === 'function') {
+        await this.cacheManager.reset();
+      }
+      this.logger.log('Donation cache invalidated');
+    } catch (error) {
+      this.logger.warn('Failed to invalidate cache, it will expire naturally', error);
+    }
+  }
 
   async create(createDonationDto: CreateDonationDto, userId: string) {
     // Perform safety validation
@@ -26,7 +50,9 @@ export class DonationsService {
     });
 
     // Saves to Postgres
-    return await this.donationsRepository.save(donation);
+    const saved = await this.donationsRepository.save(donation);
+    await this.invalidateCache();
+    return saved;
   }
 
   private validateFoodSafety(createDonationDto: CreateDonationDto) {
@@ -148,7 +174,9 @@ export class DonationsService {
       user.currentIntakeLoad += donation.quantity;
 
       await transactionalEntityManager.save(user);
-      return await transactionalEntityManager.save(donation);
+      const saved = await transactionalEntityManager.save(donation);
+      await this.invalidateCache();
+      return saved;
     });
   }
 
@@ -180,7 +208,9 @@ export class DonationsService {
       user.currentIntakeLoad = Math.max(0, user.currentIntakeLoad - donation.quantity);
 
       await transactionalEntityManager.save(user);
-      return await transactionalEntityManager.save(donation);
+      const saved = await transactionalEntityManager.save(donation);
+      await this.invalidateCache();
+      return saved;
     });
   }
 
@@ -218,7 +248,9 @@ export class DonationsService {
         }
 
         donation.status = DonationStatus.DELIVERED;
-        return await transactionalEntityManager.save(donation);
+        const saved = await transactionalEntityManager.save(donation);
+        await this.invalidateCache();
+        return saved;
       }
 
       // If reversing a claim (CLAIMED/PICKED_UP -> AVAILABLE), decrement load
@@ -232,7 +264,9 @@ export class DonationsService {
       }
 
       donation.status = status;
-      return await transactionalEntityManager.save(donation);
+      const saved = await transactionalEntityManager.save(donation);
+      await this.invalidateCache();
+      return saved;
     });
   }
 

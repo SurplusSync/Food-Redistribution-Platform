@@ -5,6 +5,7 @@ import { CloudinaryService } from '../common/cloudinary.service';
 import { CreateDonationDto, ClaimDonationDto, UpdateDonationStatusDto } from './dto/donations.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiQuery, ApiConsumes, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 
 @ApiTags('Donations')
 @Controller('donations')
@@ -41,6 +42,8 @@ export class DonationsController {
   }
 
   @Get()
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(60)
   @ApiOperation({ summary: 'Get all available food donations' })
   @ApiQuery({
     name: 'latitude',
