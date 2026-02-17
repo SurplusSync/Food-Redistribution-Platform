@@ -1,4 +1,4 @@
-import { Inject, Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Inject, Injectable, Logger, NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateDonationDto, ClaimDonationDto } from './dto/donations.dto';
@@ -180,94 +180,153 @@ export class DonationsService {
     });
   }
 
-  async markAsDelivered(id: string, userId: string) {
-    return await this.donationsRepository.manager.transaction(async transactionalEntityManager => {
-      const donation = await transactionalEntityManager.findOne(Donation, { where: { id } });
+  async updateStatus(id: string, status: DonationStatus, userId: string) {
+    return await this.donationsRepository.manager.transaction(
+      async (transactionalEntityManager) => {
+        // Find the donation
+        const donation = await transactionalEntityManager.findOne(Donation, {
+          where: { id },
+          relations: ['donor'] // ✅ Load donor relation for karma
+        });
 
-      if (!donation) {
-        throw new NotFoundException('Donation not found');
-      }
+        if (!donation) {
+          throw new NotFoundException('Donation not found');
+        }
 
-      if (donation.claimedById !== userId) {
-        throw new BadRequestException('You can only mark your claimed donations as delivered');
-      }
+        // Find the user making the request
+        const requestingUser = await transactionalEntityManager.findOne(User, {
+          where: { id: userId },
+        });
 
-      if (donation.status === DonationStatus.DELIVERED) {
-        throw new BadRequestException('Donation already marked as delivered');
-      }
+        if (!requestingUser) {
+          throw new NotFoundException('User not found');
+        }
 
-      const user = await transactionalEntityManager.findOne(User, { where: { id: userId } });
-      if (!user) {
-        throw new NotFoundException('User not found');
-      }
+        // ✅ AUTHORIZATION CHECK (allows donors, NGOs, and volunteers)
+        const isAuthorized =
+          donation.donorId === userId ||
+          donation.claimedById === userId ||
+          (requestingUser.role === UserRole.VOLUNTEER && donation.claimedById !== null);
 
-      // Update status to DELIVERED
-      donation.status = DonationStatus.DELIVERED;
+        if (!isAuthorized) {
+          throw new BadRequestException('You are not authorized to update this donation status');
+        }
 
-      // Decrement current intake load
-      user.currentIntakeLoad = Math.max(0, user.currentIntakeLoad - donation.quantity);
+        const oldStatus = donation.status;
 
-      await transactionalEntityManager.save(user);
-      const saved = await transactionalEntityManager.save(donation);
-      await this.invalidateCache();
-      return saved;
-    });
+        // ✅ GAMIFICATION: Handle DELIVERED status with karma awards
+        if (status === DonationStatus.DELIVERED) {
+          if (oldStatus === DonationStatus.DELIVERED) {
+            throw new BadRequestException('Donation already marked as delivered');
+          }
+
+          // Find the NGO who claimed it
+          const claimedNgo = await transactionalEntityManager.findOne(User, {
+            where: { id: donation.claimedById }
+          });
+
+          if (claimedNgo) {
+            // Decrement NGO's intake load
+            claimedNgo.currentIntakeLoad = Math.max(0, claimedNgo.currentIntakeLoad - donation.quantity);
+            await transactionalEntityManager.save(claimedNgo);
+          }
+
+          // ✅ AWARD KARMA TO VOLUNTEER (if they're the one marking as delivered)
+          if (requestingUser.role === UserRole.VOLUNTEER) {
+            const VOLUNTEER_KARMA = 50;
+            requestingUser.karmaPoints = (requestingUser.karmaPoints || 0) + VOLUNTEER_KARMA;
+
+            // Check and award badges to volunteer
+            const volunteerNewBadges = this.checkAndAwardBadges(requestingUser);
+            if (volunteerNewBadges.length > 0) {
+              const currentBadges = requestingUser.badges || [];
+              requestingUser.badges = [...new Set([...currentBadges, ...volunteerNewBadges])];
+            }
+
+            await transactionalEntityManager.save(requestingUser);
+          }
+
+          // ✅ AWARD KARMA TO DONOR
+          if (donation.donor) {
+            const DONOR_KARMA = 30;
+            donation.donor.karmaPoints = (donation.donor.karmaPoints || 0) + DONOR_KARMA;
+
+            // Check and award badges to donor
+            const donorNewBadges = this.checkAndAwardBadges(donation.donor);
+            if (donorNewBadges.length > 0) {
+              const currentBadges = donation.donor.badges || [];
+              donation.donor.badges = [...new Set([...currentBadges, ...donorNewBadges])];
+            }
+
+            await transactionalEntityManager.save(donation.donor);
+          }
+
+          donation.status = DonationStatus.DELIVERED;
+          donation.deliveredAt = new Date();
+          await transactionalEntityManager.save(donation);
+          await this.invalidateCache();
+
+          return {
+            ...donation,
+            karmaAwarded: requestingUser.role === UserRole.VOLUNTEER ? 50 : 0,
+            donorKarmaAwarded: 30,
+          };
+        }
+
+        // Handle PICKED_UP status
+        if (status === DonationStatus.PICKED_UP) {
+          donation.pickedUpAt = new Date();
+          donation.volunteerId = userId;
+        }
+
+        // Handle reversing a claim (CLAIMED/PICKED_UP -> AVAILABLE)
+        if (status === DonationStatus.AVAILABLE && (oldStatus === DonationStatus.CLAIMED || oldStatus === DonationStatus.PICKED_UP)) {
+          const claimedUser = await transactionalEntityManager.findOne(User, {
+            where: { id: donation.claimedById }
+          });
+
+          if (claimedUser) {
+            claimedUser.currentIntakeLoad = Math.max(0, claimedUser.currentIntakeLoad - donation.quantity);
+            await transactionalEntityManager.save(claimedUser);
+          }
+
+          donation.claimedById = null;
+        }
+
+        // Update status
+        donation.status = status;
+        await transactionalEntityManager.save(donation);
+        await this.invalidateCache();
+
+        return donation;
+      },
+    );
   }
 
-  async updateStatus(id: string, status: DonationStatus, userId: string) {
-    return await this.donationsRepository.manager.transaction(async transactionalEntityManager => {
-      const donation = await transactionalEntityManager.findOne(Donation, { where: { id } });
-      const user = await transactionalEntityManager.findOne(User, { where: { id: userId } });
+  // ✅ Badge checking method
+  private checkAndAwardBadges(user: User): string[] {
+    const newBadges: string[] = [];
+    const currentBadges = user.badges || [];
 
-      if (!donation) {
-        throw new NotFoundException('Donation not found');
+    // Badge thresholds
+    const badgeRules = [
+      { threshold: 50, badge: 'Newcomer', emoji: '🌱' },
+      { threshold: 100, badge: 'Local Hero', emoji: '🦸' },
+      { threshold: 250, badge: 'Champion', emoji: '🏆' },
+      { threshold: 500, badge: 'Legend', emoji: '⭐' },
+      { threshold: 1000, badge: 'Superhero', emoji: '💫' },
+    ];
+
+    // Check each badge rule
+    for (const rule of badgeRules) {
+      const badgeName = `${rule.emoji} ${rule.badge}`;
+
+      if (user.karmaPoints >= rule.threshold && !currentBadges.includes(badgeName)) {
+        newBadges.push(badgeName);
       }
+    }
 
-      // Authorization check
-      const isAuthorized = 
-        donation.donorId === userId || 
-        donation.claimedById === userId ||
-        (user?.role === UserRole.VOLUNTEER && donation.claimedById !== null); // Volunteers can update if donation is claimed
-      
-      if (!isAuthorized) {
-        throw new BadRequestException('You are not authorized to update this donation status');
-      }
-
-      const oldStatus = donation.status;
-
-      // If setting to DELIVERED, use the existing logic (which also decrements load)
-      if (status === DonationStatus.DELIVERED) {
-        if (oldStatus === DonationStatus.DELIVERED) {
-          throw new BadRequestException('Donation already marked as delivered');
-        }
-
-        const user = await transactionalEntityManager.findOne(User, { where: { id: donation.claimedById } });
-        if (user) {
-          user.currentIntakeLoad = Math.max(0, user.currentIntakeLoad - donation.quantity);
-          await transactionalEntityManager.save(user);
-        }
-
-        donation.status = DonationStatus.DELIVERED;
-        const saved = await transactionalEntityManager.save(donation);
-        await this.invalidateCache();
-        return saved;
-      }
-
-      // If reversing a claim (CLAIMED/PICKED_UP -> AVAILABLE), decrement load
-      if (status === DonationStatus.AVAILABLE && (oldStatus === DonationStatus.CLAIMED || oldStatus === DonationStatus.PICKED_UP)) {
-        const user = await transactionalEntityManager.findOne(User, { where: { id: donation.claimedById } });
-        if (user) {
-          user.currentIntakeLoad = Math.max(0, user.currentIntakeLoad - donation.quantity);
-          await transactionalEntityManager.save(user);
-        }
-        donation.claimedById = null;
-      }
-
-      donation.status = status;
-      const saved = await transactionalEntityManager.save(donation);
-      await this.invalidateCache();
-      return saved;
-    });
+    return newBadges;
   }
 
 }

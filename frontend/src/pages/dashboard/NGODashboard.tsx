@@ -15,9 +15,9 @@ export default function NGODashboard() {
   const load = async () => {
     setLoading(true)
     try {
-      const data = await getDonations({ 
+      const data = await getDonations({
         role: 'ngo',
-        userId: user.id 
+        userId: user.id
       })
       setDonations(data)
     } finally {
@@ -100,7 +100,7 @@ export default function NGODashboard() {
               </p>
             </div>
             <div className="w-24 h-2 bg-slate-800 rounded-full overflow-hidden">
-              <div 
+              <div
                 className="h-full bg-blue-500 transition-all"
                 style={{ width: `${Math.min((user.currentIntakeLoad / user.dailyIntakeCapacity) * 100, 100)}%` }}
               />
@@ -208,9 +208,8 @@ export default function NGODashboard() {
               <div key={donation.id} className="p-4 hover:bg-slate-800/30 transition-colors">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4 flex-1">
-                    <div className={`w-12 h-12 rounded-lg flex items-center justify-center text-2xl ${
-                      timeLeft.urgent ? 'bg-red-500/10' : 'bg-emerald-500/10'
-                    }`}>
+                    <div className={`w-12 h-12 rounded-lg flex items-center justify-center text-2xl ${timeLeft.urgent ? 'bg-red-500/10' : 'bg-emerald-500/10'
+                      }`}>
                       {donation.foodType === 'cooked' && '🍛'}
                       {donation.foodType === 'raw' && '🥬'}
                       {donation.foodType === 'packaged' && '📦'}
@@ -306,14 +305,14 @@ export default function NGODashboard() {
       {selectedDonation && (
         <div className="fixed inset-0 z-[2000] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
           <div className="bg-slate-900 border border-slate-800 rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl flex flex-col md:flex-row">
-            
+
             {/* LEFT: Image Section */}
             <div className="w-full md:w-1/2 bg-slate-950 h-64 md:h-auto relative group">
               {selectedDonation.imageUrls && selectedDonation.imageUrls.length > 0 ? (
                 <>
-                  <img 
-                    src={selectedDonation.imageUrls[currentImageIndex]} 
-                    alt={selectedDonation.name} 
+                  <img
+                    src={selectedDonation.imageUrls[currentImageIndex]}
+                    alt={selectedDonation.name}
                     className="w-full h-full object-cover"
                   />
                   {/* Image Counter */}
@@ -412,7 +411,7 @@ export default function NGODashboard() {
                 {/* Time */}
                 <div className="flex items-center gap-2 text-sm text-slate-400">
                   <Clock className="w-4 h-4" />
-                  <span>Prepared: {new Date(selectedDonation.preparationTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                  <span>Prepared: {new Date(selectedDonation.preparationTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                 </div>
               </div>
 
