@@ -7,9 +7,18 @@ import { AuthModule } from './auth/auth.module';
 import { DonationsModule } from './donations/donations.module';
 import { User } from './auth/entities/user.entity';
 import { Donation } from './donations/entities/donation.entity';
+import { CacheModule } from '@nestjs/cache-manager';
+import * as redisStore from 'cache-manager-redis-store';
 
 @Module({
   imports: [
+    CacheModule.register({
+      isGlobal: true,        // Makes caching available everywhere
+      store: redisStore,     // Tells NestJS to use Redis, not RAM
+      host: process.env.REDIS_HOST || 'redis',   // From docker-compose env
+      port: parseInt(process.env.REDIS_PORT, 10) || 6379,
+      ttl: 30,               // Default cache life: 30 seconds
+    }),
     // 1. Load .env variables
     ConfigModule.forRoot({ isGlobal: true }),
 
