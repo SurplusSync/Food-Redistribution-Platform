@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { User } from '../../auth/entities/user.entity';
 
 export enum DonationStatus {
   AVAILABLE = 'AVAILABLE',
@@ -30,16 +31,16 @@ export class Donation {
   @Column()
   foodType: string;  // Type of food (e.g., 'cooked', 'raw')
 
-  @Column('float')   // Changed to Number to match Frontend
+  @Column('float')
   quantity: number;
 
   @Column()
-  unit: string;      // Added to match Frontend (e.g., "kg", "plates")
+  unit: string;  // e.g., "kg", "plates", "servings"
 
   @Column()
-  preparationTime: string; // Added to match Frontend
+  preparationTime: string;
 
-  // Location Data (Crucial for the Map)
+  // Location Data
   @Column('float')
   latitude: number;
 
@@ -61,11 +62,27 @@ export class Donation {
   @Column()
   donorId: string;
 
+  // ✅ Relation to donor (for gamification - awards karma)
+  @ManyToOne(() => User, { nullable: true })
+  @JoinColumn({ name: 'donorId' })
+  donor: User;
+
   @Column({ nullable: true })
-  claimedById: string;
+  claimedById: string | null;
+
+  // ✅ NEW: Volunteer who picks up/delivers the food
+  @Column({ nullable: true })
+  volunteerId: string | null;
 
   @Column({ type: 'timestamp', nullable: true })
   expiryTime: Date;
+
+  // ✅ NEW: Timestamps for workflow tracking
+  @Column({ type: 'timestamp', nullable: true })
+  pickedUpAt: Date;
+
+  @Column({ type: 'timestamp', nullable: true })
+  deliveredAt: Date;
 
   @CreateDateColumn()
   createdAt: Date;

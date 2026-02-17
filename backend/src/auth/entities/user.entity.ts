@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
+import { Donation } from '../../donations/entities/donation.entity';
 
 export enum UserRole {
   DONOR = 'DONOR',
@@ -24,16 +25,16 @@ export class User {
   @Column()
   name: string;
 
-  @Column({ nullable: true }) // Make this nullable if not every user has one
+  @Column({ nullable: true })
   organizationName: string;
 
   @Column({ nullable: true })
   organizationType: string;
 
-  @Column({ nullable: true }) // Make nullable to prevent errors on existing data
+  @Column({ nullable: true })
   phone: string;
 
-  @Column({ nullable: true }) // Make nullable
+  @Column({ nullable: true })
   address: string;
 
   @Column('float', { nullable: true })
@@ -51,6 +52,20 @@ export class User {
   @Column({ nullable: true })
   capacityUnit: string;
 
+  // 🎮 Gamification
+  @Column({ default: 0 })
+  karmaPoints: number;
+
+  @Column('simple-array', { default: '' })
+  badges: string[];
+
+  // Timestamps — only once each ✅
   @CreateDateColumn()
   createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
+
+  @OneToMany(() => Donation, (donation) => donation.donor)
+  donations: Donation[];
 }

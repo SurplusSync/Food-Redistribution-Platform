@@ -411,6 +411,61 @@ Content-Type: application/json
   "statusCode": 403
 }
 ```
+---
+
+### 7. Get User Profile (With Karma & Badges)
+
+**Endpoint:** `GET /auth/profile`  
+**Authentication:** Required (Bearer Token)
+
+**Example Request:**
+```http
+GET /auth/profile
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+
+**Success Response (200 OK):**
+```json
+{
+  "success": true,
+  "data": {
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "email": "volunteer@example.com",
+    "name": "Ravi Kumar",
+    "role": "VOLUNTEER",
+    "phoneNumber": "+919876543210",
+    "isVerified": true,
+    "karmaPoints": 150,
+    "badges": ["🌱 Newcomer", "🦸 Local Hero"],
+    "level": 2,
+    "nextLevelPoints": 100,
+    "createdAt": "2025-01-10T10:00:00Z"
+  },
+  "message": "Profile retrieved successfully"
+}
+```
+
+**Karma System:**
+- **Volunteer delivers food:** +50 karma points
+- **Donor contributes food:** +30 karma points (awarded when delivered)
+
+**Badge Thresholds:**
+| Karma Points | Badge | Emoji |
+|--------------|-------|-------|
+| 50 | Newcomer | 🌱 |
+| 100 | Local Hero | 🦸 |
+| 250 | Champion | 🏆 |
+| 500 | Legend | ⭐ |
+| 1000 | Superhero | 💫 |
+
+**Level Calculation:**
+- Level 1: 0-99 points
+- Level 2: 100-249 points
+- Level 3: 250-499 points
+- Level 4: 500-999 points
+- Level 5: 1000+ points
+
+---
 
 **Business Rules:**
 - Only users with role `VOLUNTEER` can update status
