@@ -36,8 +36,8 @@ services:
   # BACKEND (NestJS)
   backend:
     build:
-      context: ./backend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: backend/Dockerfile
     container_name: surplus_backend
     ports:
       - "3000:3000"
