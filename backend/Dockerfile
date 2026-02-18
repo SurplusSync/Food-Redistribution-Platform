@@ -1,19 +1,32 @@
-# stage 1: Build the Application
-FROM node:20-alpine AS builder
+# Stage 1: Install all dependencies (used by dev & build)
+FROM node:20-alpine AS deps
 
 WORKDIR /app
 
-# Copy dependency files and install
 COPY backend/package*.json ./
 RUN npm install
 
-# Copy backend source and shared types
+# Stage 2: Development (all deps, ts-node hot-reload)
+FROM deps AS dev
+
+WORKDIR /app
+
+# Source code is mounted via docker-compose volumes
+EXPOSE 3000
+
+CMD ["npm", "run", "start:dev"]
+
+# Stage 3: Build the application
+FROM deps AS builder
+
+WORKDIR /app
+
 COPY backend/ .
 COPY shared/ /shared/
 
 RUN npm run build
 
-# stage 2: Run the Application (Production)
+# Stage 4: Production (minimal image)
 FROM node:20-alpine AS runner
 
 WORKDIR /app
@@ -21,7 +34,6 @@ WORKDIR /app
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/dist ./dist
 
-# Install only production dependencies
 RUN npm ci --omit=dev
 
 EXPOSE 3000
