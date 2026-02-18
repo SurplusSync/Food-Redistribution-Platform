@@ -32,25 +32,34 @@ export class DonationsService {
       } else if (typeof this.cacheManager.reset === 'function') {
         await this.cacheManager.reset();
       }
-      this.logger.log('Donation cache invalidated');
+      this.logger.debug('Donation cache invalidated');
     } catch (error) {
       this.logger.warn('Failed to invalidate cache, it will expire naturally', error);
     }
   }
 
   async create(createDonationDto: CreateDonationDto, userId: string) {
-    // Perform safety validation
     this.validateFoodSafety(createDonationDto);
 
-    // Creates a new entry in the 'donation' table
     const donation = this.donationsRepository.create({
       ...createDonationDto,
-      donorId: userId, // From JWT payload
+      donorId: userId,
       status: DonationStatus.AVAILABLE,
     });
 
-    // Saves to Postgres
     const saved = await this.donationsRepository.save(donation);
+
+    // Award karma to donor for creating a donation
+    const donor = await this.usersRepository.findOne({ where: { id: userId } });
+    if (donor) {
+      donor.karmaPoints = (donor.karmaPoints || 0) + 10;
+      const newBadges = this.checkAndAwardBadges(donor);
+      if (newBadges.length > 0) {
+        donor.badges = [...new Set([...(donor.badges || []), ...newBadges])];
+      }
+      await this.usersRepository.save(donor);
+    }
+
     await this.invalidateCache();
     return saved;
   }
@@ -173,6 +182,13 @@ export class DonationsService {
 
       user.currentIntakeLoad += donation.quantity;
 
+      // Award karma to NGO for claiming a donation
+      user.karmaPoints = (user.karmaPoints || 0) + 10;
+      const newBadges = this.checkAndAwardBadges(user);
+      if (newBadges.length > 0) {
+        user.badges = [...new Set([...(user.badges || []), ...newBadges])];
+      }
+
       await transactionalEntityManager.save(user);
       const saved = await transactionalEntityManager.save(donation);
       await this.invalidateCache();
@@ -186,7 +202,7 @@ export class DonationsService {
         // Find the donation
         const donation = await transactionalEntityManager.findOne(Donation, {
           where: { id },
-          relations: ['donor'] // ✅ Load donor relation for karma
+          relations: ['donor'], // Load donor relation for karma
         });
 
         if (!donation) {
@@ -202,7 +218,7 @@ export class DonationsService {
           throw new NotFoundException('User not found');
         }
 
-        // ✅ AUTHORIZATION CHECK (allows donors, NGOs, and volunteers)
+        // Authorization: donor, claiming NGO, or assigned volunteer
         const isAuthorized =
           donation.donorId === userId ||
           donation.claimedById === userId ||
@@ -214,48 +230,59 @@ export class DonationsService {
 
         const oldStatus = donation.status;
 
-        // ✅ GAMIFICATION: Handle DELIVERED status with karma awards
+        // Handle DELIVERED status with karma awards
         if (status === DonationStatus.DELIVERED) {
           if (oldStatus === DonationStatus.DELIVERED) {
             throw new BadRequestException('Donation already marked as delivered');
           }
 
-          // Find the NGO who claimed it
-          const claimedNgo = await transactionalEntityManager.findOne(User, {
-            where: { id: donation.claimedById }
-          });
+          // Decrement NGO's intake load and award NGO karma
+          if (donation.claimedById) {
+            const claimedNgo = await transactionalEntityManager.findOne(User, {
+              where: { id: donation.claimedById },
+            });
 
-          if (claimedNgo) {
-            // Decrement NGO's intake load
-            claimedNgo.currentIntakeLoad = Math.max(0, claimedNgo.currentIntakeLoad - donation.quantity);
-            await transactionalEntityManager.save(claimedNgo);
+            if (claimedNgo) {
+              claimedNgo.currentIntakeLoad = Math.max(0, claimedNgo.currentIntakeLoad - donation.quantity);
+
+              const NGO_KARMA = 20;
+              claimedNgo.karmaPoints = (claimedNgo.karmaPoints || 0) + NGO_KARMA;
+
+              const ngoBadges = this.checkAndAwardBadges(claimedNgo);
+              if (ngoBadges.length > 0) {
+                claimedNgo.badges = [...new Set([...(claimedNgo.badges || []), ...ngoBadges])];
+              }
+
+              await transactionalEntityManager.save(claimedNgo);
+            }
           }
 
-          // ✅ AWARD KARMA TO VOLUNTEER (if they're the one marking as delivered)
+          // Award karma to volunteer (if they're the one marking as delivered)
           if (requestingUser.role === UserRole.VOLUNTEER) {
             const VOLUNTEER_KARMA = 50;
             requestingUser.karmaPoints = (requestingUser.karmaPoints || 0) + VOLUNTEER_KARMA;
 
-            // Check and award badges to volunteer
             const volunteerNewBadges = this.checkAndAwardBadges(requestingUser);
             if (volunteerNewBadges.length > 0) {
-              const currentBadges = requestingUser.badges || [];
-              requestingUser.badges = [...new Set([...currentBadges, ...volunteerNewBadges])];
+              requestingUser.badges = [...new Set([...(requestingUser.badges || []), ...volunteerNewBadges])];
             }
 
             await transactionalEntityManager.save(requestingUser);
+
+            // Ensure volunteerId is set even if PICKED_UP was skipped
+            if (!donation.volunteerId) {
+              donation.volunteerId = userId;
+            }
           }
 
-          // ✅ AWARD KARMA TO DONOR
+          // Award karma to donor
           if (donation.donor) {
             const DONOR_KARMA = 30;
             donation.donor.karmaPoints = (donation.donor.karmaPoints || 0) + DONOR_KARMA;
 
-            // Check and award badges to donor
             const donorNewBadges = this.checkAndAwardBadges(donation.donor);
             if (donorNewBadges.length > 0) {
-              const currentBadges = donation.donor.badges || [];
-              donation.donor.badges = [...new Set([...currentBadges, ...donorNewBadges])];
+              donation.donor.badges = [...new Set([...(donation.donor.badges || []), ...donorNewBadges])];
             }
 
             await transactionalEntityManager.save(donation.donor);
@@ -303,18 +330,17 @@ export class DonationsService {
     );
   }
 
-  // ✅ Badge checking method
+  // Badge checking based on karma thresholds
   private checkAndAwardBadges(user: User): string[] {
     const newBadges: string[] = [];
     const currentBadges = user.badges || [];
 
-    // Badge thresholds
     const badgeRules = [
-      { threshold: 50, badge: 'Newcomer', emoji: '🌱' },
-      { threshold: 100, badge: 'Local Hero', emoji: '🦸' },
-      { threshold: 250, badge: 'Champion', emoji: '🏆' },
-      { threshold: 500, badge: 'Legend', emoji: '⭐' },
-      { threshold: 1000, badge: 'Superhero', emoji: '💫' },
+      { threshold: 10, badge: 'Newcomer', emoji: '🌱' },
+      { threshold: 50, badge: 'Local Hero', emoji: '🦸' },
+      { threshold: 150, badge: 'Champion', emoji: '🏆' },
+      { threshold: 300, badge: 'Legend', emoji: '⭐' },
+      { threshold: 500, badge: 'Superhero', emoji: '💫' },
     ];
 
     // Check each badge rule

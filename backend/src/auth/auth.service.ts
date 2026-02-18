@@ -5,7 +5,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { RegisterDto, LoginDto } from './dto/auth.dto';
 import { User } from './entities/user.entity';
-import { Donation, DonationStatus } from '../donations/entities/donation.entity'; // ✅ added DonationStatus
+import { Donation, DonationStatus } from '../donations/entities/donation.entity';
 
 @Injectable()
 export class AuthService {
@@ -86,11 +86,10 @@ export class AuthService {
     };
   }
 
-  // ✅ FIXED: handles donor, NGO and volunteer separately
   private async getImpactStats(userId: string, role: string) {
     if (role === 'VOLUNTEER') {
       const deliveries = await this.donationsRepository.find({
-        where: { volunteerId: userId, status: DonationStatus.DELIVERED }
+        where: { volunteerId: userId, status: DonationStatus.DELIVERED },
       });
       return {
         totalDonations: deliveries.length,
@@ -99,18 +98,38 @@ export class AuthService {
       };
     }
 
-    // DONOR and NGO
+    if (role === 'NGO') {
+      const claimed = await this.donationsRepository.find({
+        where: { claimedById: userId },
+      });
+      const delivered = claimed.filter(d => d.status === DonationStatus.DELIVERED).length;
+      return {
+        totalDonations: claimed.length,
+        mealsProvided: delivered * 10,
+        kgSaved: delivered * 5,
+      };
+    }
+
+    // DONOR
     const donations = await this.donationsRepository.find({
-      where: { donorId: userId }
+      where: { donorId: userId },
     });
-    const totalDonations = donations.length;
     const delivered = donations.filter(d => d.status === DonationStatus.DELIVERED).length;
     return {
-      totalDonations,
+      totalDonations: donations.length,
       mealsProvided: delivered * 10,
       kgSaved: delivered * 5,
     };
   }
+
+  // Shared badge catalog — must match donations.service.ts checkAndAwardBadges
+  private static readonly BADGE_RULES = [
+    { threshold: 10, badge: 'Newcomer', emoji: '🌱', description: 'Earned 10 karma points' },
+    { threshold: 50, badge: 'Local Hero', emoji: '🦸', description: 'Earned 50 karma points' },
+    { threshold: 150, badge: 'Champion', emoji: '🏆', description: 'Earned 150 karma points' },
+    { threshold: 300, badge: 'Legend', emoji: '⭐', description: 'Earned 300 karma points' },
+    { threshold: 500, badge: 'Superhero', emoji: '💫', description: 'Earned 500 karma points' },
+  ];
 
   async getProfile(userId: string) {
     const user = await this.usersRepository.findOne({
@@ -126,14 +145,42 @@ export class AuthService {
     }
 
     const { password, ...userWithoutPassword } = user;
-    const impactStats = await this.getImpactStats(userId, user.role); // ✅ pass role
+    const impactStats = await this.getImpactStats(userId, user.role);
+    const karma = user.karmaPoints || 0;
+
+    // Recompute earned badges from karma (catches any missed saves)
+    const earnedBadgeNames: string[] = [];
+    for (const rule of AuthService.BADGE_RULES) {
+      if (karma >= rule.threshold) {
+        earnedBadgeNames.push(`${rule.emoji} ${rule.badge}`);
+      }
+    }
+
+    // Merge with stored badges and persist if new ones found
+    const storedBadges = user.badges || [];
+    const mergedBadges = [...new Set([...storedBadges, ...earnedBadgeNames])];
+    if (mergedBadges.length > storedBadges.length) {
+      user.badges = mergedBadges;
+      await this.usersRepository.save(user);
+    }
+
+    // Build full badge catalog with earned/unearned status
+    const badgeCatalog = AuthService.BADGE_RULES.map((rule, index) => ({
+      id: String(index + 1),
+      name: rule.badge,
+      icon: rule.emoji,
+      description: rule.description,
+      earned: karma >= rule.threshold,
+      requirement: rule.threshold,
+    }));
 
     return {
       ...userWithoutPassword,
-      karmaPoints: user.karmaPoints || 0,
-      badges: user.badges || [],
-      level: this.calculateLevel(user.karmaPoints || 0),
-      nextLevelPoints: this.getNextLevelPoints(user.karmaPoints || 0),
+      karmaPoints: karma,
+      badges: mergedBadges,
+      badgeCatalog,
+      level: this.calculateLevel(karma),
+      nextLevelPoints: this.getNextLevelPoints(karma),
       impactStats,
     };
   }

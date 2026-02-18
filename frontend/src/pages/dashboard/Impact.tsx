@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import { getUserProfile, type User } from '../../services/api'
 import { Trophy, TrendingUp, Share2, Package, Users, MapPin, Clock } from 'lucide-react'
 
-// ✅ Badge type definition (since we removed it from API)
 type Badge = {
     id: string;
     name: string;
@@ -30,49 +29,35 @@ export default function Impact() {
     const currentUser = safeParseUser() || { id: 'guest', role: 'donor' }
     const userRole = (currentUser.role || 'donor').toLowerCase()
 
-    // ✅ Fallback badges if user has none
-    const fallbackBadges: Badge[] = [
-        { id: '1', name: 'Newcomer', icon: '🌱', description: 'Joined the platform', earned: true, requirement: 1 },
-        { id: '2', name: 'First Donation', icon: '🥫', description: 'Shared your first donation', earned: false, requirement: 1 },
-        { id: '3', name: 'Community Hero', icon: '🏅', description: 'Helped 50 people', earned: false, requirement: 10 },
-    ]
-
-    // ✅ Convert user badges (strings like "🌱 Newcomer") to Badge objects
-    const parseBadges = (userBadges: string[] | undefined): Badge[] => {
-        if (!userBadges || userBadges.length === 0) {
-            return fallbackBadges
-        }
-
-        return userBadges.map((badge, index) => {
-            const parts = badge.split(' ')
-            const icon = parts[0] || '🏆'
-            const name = parts.slice(1).join(' ') || 'Achievement'
-
-            return {
-                id: String(index + 1),
-                name,
-                icon,
-                description: `Earned by achieving ${name}`,
-                earned: true, // User badges are always earned
-                requirement: 0,
-            }
-        })
-    }
-
     useEffect(() => {
         const load = async () => {
             setLoading(true)
             try {
-                // ✅ Get profile which now includes badges
                 const profileData = await getUserProfile()
                 setUser(profileData)
 
-                // ✅ Parse badges from profile
-                const userBadges = parseBadges(profileData.badges)
-                setBadges(userBadges.length > 0 ? userBadges : fallbackBadges)
+                // Use badge catalog from backend (includes earned/unearned status)
+                const catalog = (profileData as any).badgeCatalog
+                if (Array.isArray(catalog) && catalog.length > 0) {
+                    setBadges(catalog)
+                } else {
+                    // Fallback: parse earned badge strings from profile
+                    const earned = (profileData.badges || []).map((b: string, i: number) => {
+                        const parts = b.split(' ')
+                        return {
+                            id: String(i + 1),
+                            name: parts.slice(1).join(' ') || 'Achievement',
+                            icon: parts[0] || '🏆',
+                            description: `Earned by achieving ${parts.slice(1).join(' ')}`,
+                            earned: true,
+                            requirement: 0,
+                        }
+                    })
+                    setBadges(earned.length > 0 ? earned : [])
+                }
             } catch (error) {
                 console.error('Failed to load impact data:', error)
-                setBadges(fallbackBadges)
+                setBadges([])
             } finally {
                 setLoading(false)
             }
@@ -194,7 +179,7 @@ export default function Impact() {
                                 <p className="text-xs text-slate-500 mb-2">{badge.description}</p>
                                 {!badge.earned && badge.requirement && (
                                     <p className="text-xs text-slate-600">
-                                        {badge.requirement - stats.totalDonations} more needed
+                                        {badge.requirement - (user?.karmaPoints || 0)} more karma needed
                                     </p>
                                 )}
                             </div>
@@ -214,7 +199,7 @@ export default function Impact() {
                                 </div>
                                 <div className="text-right">
                                     <p className="text-2xl font-bold text-emerald-400">
-                                        {nextBadge.requirement ? Math.max(0, nextBadge.requirement - stats.totalDonations) : 0}
+                                        {nextBadge.requirement ? Math.max(0, nextBadge.requirement - (user?.karmaPoints || 0)) : 0}
                                     </p>
                                     <p className="text-xs text-slate-500">more to go</p>
                                 </div>
