@@ -8,10 +8,11 @@ import { AuthController } from './auth.controller';
 import { User } from './entities/user.entity';
 import { JwtStrategy } from './jwt.strategy';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { Donation } from '../donations/entities/donation.entity'; // ✅ ADD THIS
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([User, Donation]), // ✅ ADD Donation here
     PassportModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
