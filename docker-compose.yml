@@ -38,6 +38,7 @@ services:
     build:
       context: .
       dockerfile: backend/Dockerfile
+      target: dev
     container_name: surplus_backend
     ports:
       - "3000:3000"
