@@ -1,6 +1,16 @@
 import { useEffect, useState } from 'react'
-import { getBadges, getUserProfile, type Badge, type User } from '../../services/api'
+import { getUserProfile, type User } from '../../services/api'
 import { Trophy, TrendingUp, Share2, Package, Users, MapPin, Clock } from 'lucide-react'
+
+// ✅ Badge type definition (since we removed it from API)
+type Badge = {
+    id: string;
+    name: string;
+    icon: string;
+    description: string;
+    earned?: boolean;
+    requirement?: number;
+}
 
 export default function Impact() {
     const [user, setUser] = useState<User | null>(null)
@@ -20,23 +30,48 @@ export default function Impact() {
     const currentUser = safeParseUser() || { id: 'guest', role: 'donor' }
     const userRole = (currentUser.role || 'donor').toLowerCase()
 
+    // ✅ Fallback badges if user has none
     const fallbackBadges: Badge[] = [
         { id: '1', name: 'Newcomer', icon: '🌱', description: 'Joined the platform', earned: true, requirement: 1 },
         { id: '2', name: 'First Donation', icon: '🥫', description: 'Shared your first donation', earned: false, requirement: 1 },
         { id: '3', name: 'Community Hero', icon: '🏅', description: 'Helped 50 people', earned: false, requirement: 10 },
     ]
 
+    // ✅ Convert user badges (strings like "🌱 Newcomer") to Badge objects
+    const parseBadges = (userBadges: string[] | undefined): Badge[] => {
+        if (!userBadges || userBadges.length === 0) {
+            return fallbackBadges
+        }
+
+        return userBadges.map((badge, index) => {
+            const parts = badge.split(' ')
+            const icon = parts[0] || '🏆'
+            const name = parts.slice(1).join(' ') || 'Achievement'
+
+            return {
+                id: String(index + 1),
+                name,
+                icon,
+                description: `Earned by achieving ${name}`,
+                earned: true, // User badges are always earned
+                requirement: 0,
+            }
+        })
+    }
+
     useEffect(() => {
         const load = async () => {
             setLoading(true)
             try {
-                const [profileData, badgesData] = await Promise.all([
-                    getUserProfile(currentUser.id),
-                    getBadges(currentUser.id)
-                ])
+                // ✅ Get profile which now includes badges
+                const profileData = await getUserProfile()
                 setUser(profileData)
-                setBadges(badgesData?.length ? badgesData : fallbackBadges)
-            } catch {
+
+                // ✅ Parse badges from profile
+                const userBadges = parseBadges(profileData.badges)
+                setBadges(userBadges.length > 0 ? userBadges : fallbackBadges)
+            } catch (error) {
+                console.error('Failed to load impact data:', error)
                 setBadges(fallbackBadges)
             } finally {
                 setLoading(false)
@@ -147,18 +182,17 @@ export default function Impact() {
                         {badges.map((badge) => (
                             <div
                                 key={badge.id}
-                                className={`p-5 rounded-2xl border text-center transition-all ${
-                                    badge.earned
+                                className={`p-5 rounded-2xl border text-center transition-all ${badge.earned
                                         ? 'bg-slate-800/50 border-slate-700'
                                         : 'bg-slate-900/30 border-slate-800/50 opacity-40'
-                                }`}
+                                    }`}
                             >
                                 <div className="text-4xl mb-3">{badge.icon}</div>
                                 <p className={`text-sm font-semibold mb-1 ${badge.earned ? 'text-white' : 'text-slate-600'}`}>
                                     {badge.name}
                                 </p>
                                 <p className="text-xs text-slate-500 mb-2">{badge.description}</p>
-                                {!badge.earned && (
+                                {!badge.earned && badge.requirement && (
                                     <p className="text-xs text-slate-600">
                                         {badge.requirement - stats.totalDonations} more needed
                                     </p>
@@ -180,7 +214,7 @@ export default function Impact() {
                                 </div>
                                 <div className="text-right">
                                     <p className="text-2xl font-bold text-emerald-400">
-                                        {Math.max(0, nextBadge.requirement - stats.totalDonations)}
+                                        {nextBadge.requirement ? Math.max(0, nextBadge.requirement - stats.totalDonations) : 0}
                                     </p>
                                     <p className="text-xs text-slate-500">more to go</p>
                                 </div>
@@ -304,11 +338,10 @@ export default function Impact() {
                         {badges.map((badge) => (
                             <div
                                 key={badge.id}
-                                className={`p-5 rounded-2xl border text-center transition-all ${
-                                    badge.earned
+                                className={`p-5 rounded-2xl border text-center transition-all ${badge.earned
                                         ? 'bg-slate-800/50 border-slate-700'
                                         : 'bg-slate-900/30 border-slate-800/50 opacity-40'
-                                }`}
+                                    }`}
                             >
                                 <div className="text-4xl mb-3">{badge.icon}</div>
                                 <p className={`text-sm font-semibold mb-1 ${badge.earned ? 'text-white' : 'text-slate-600'}`}>
@@ -428,11 +461,10 @@ export default function Impact() {
                     {badges.map((badge) => (
                         <div
                             key={badge.id}
-                            className={`p-5 rounded-2xl border text-center transition-all ${
-                                badge.earned
+                            className={`p-5 rounded-2xl border text-center transition-all ${badge.earned
                                     ? 'bg-slate-800/50 border-slate-700'
                                     : 'bg-slate-900/30 border-slate-800/50 opacity-40'
-                            }`}
+                                }`}
                         >
                             <div className="text-4xl mb-3">{badge.icon}</div>
                             <p className={`text-sm font-semibold mb-1 ${badge.earned ? 'text-white' : 'text-slate-600'}`}>
