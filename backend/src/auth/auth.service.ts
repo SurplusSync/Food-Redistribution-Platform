@@ -5,17 +5,19 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { RegisterDto, LoginDto } from './dto/auth.dto';
 import { User } from './entities/user.entity';
+import { Donation, DonationStatus } from '../donations/entities/donation.entity'; // ✅ added DonationStatus
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
+    @InjectRepository(Donation)
+    private donationsRepository: Repository<Donation>,
     private jwtService: JwtService,
   ) { }
 
   async register(registerDto: RegisterDto) {
-    // 1. Check if user exists
     const existingUser = await this.usersRepository.findOne({
       where: { email: registerDto.email }
     });
@@ -24,10 +26,8 @@ export class AuthService {
       throw new ConflictException('Email already exists');
     }
 
-    // 2. Hash the password (Salt rounds: 10)
     const hashedPassword = await bcrypt.hash(registerDto.password, 10);
 
-    // 3. Create User with Hashed Password
     const user = this.usersRepository.create({
       ...registerDto,
       password: hashedPassword,
@@ -35,7 +35,6 @@ export class AuthService {
 
     await this.usersRepository.save(user);
 
-    // 4. Generate Token
     const token = this.jwtService.sign({
       sub: user.id,
       email: user.email,
@@ -58,17 +57,14 @@ export class AuthService {
   }
 
   async login(loginDto: LoginDto) {
-    // 1. Find User
     const user = await this.usersRepository.findOne({
       where: { email: loginDto.email }
     });
 
-    // 2. Compare candidate password with stored Hash
     if (!user || !(await bcrypt.compare(loginDto.password, user.password))) {
       throw new UnauthorizedException('Invalid email or password');
     }
 
-    // 3. Generate Token
     const token = this.jwtService.sign({
       sub: user.id,
       email: user.email,
@@ -90,7 +86,32 @@ export class AuthService {
     };
   }
 
-  // ✅ SINGLE getProfile method with karma and level
+  // ✅ FIXED: handles donor, NGO and volunteer separately
+  private async getImpactStats(userId: string, role: string) {
+    if (role === 'VOLUNTEER') {
+      const deliveries = await this.donationsRepository.find({
+        where: { volunteerId: userId, status: DonationStatus.DELIVERED }
+      });
+      return {
+        totalDonations: deliveries.length,
+        mealsProvided: deliveries.length * 10,
+        kgSaved: deliveries.length * 5,
+      };
+    }
+
+    // DONOR and NGO
+    const donations = await this.donationsRepository.find({
+      where: { donorId: userId }
+    });
+    const totalDonations = donations.length;
+    const delivered = donations.filter(d => d.status === DonationStatus.DELIVERED).length;
+    return {
+      totalDonations,
+      mealsProvided: delivered * 10,
+      kgSaved: delivered * 5,
+    };
+  }
+
   async getProfile(userId: string) {
     const user = await this.usersRepository.findOne({
       where: { id: userId }
@@ -105,24 +126,21 @@ export class AuthService {
     }
 
     const { password, ...userWithoutPassword } = user;
+    const impactStats = await this.getImpactStats(userId, user.role); // ✅ pass role
 
     return {
-      success: true,
-      data: {
-        ...userWithoutPassword,
-        karmaPoints: user.karmaPoints || 0,
-        badges: user.badges || [],
-        level: this.calculateLevel(user.karmaPoints || 0),
-        nextLevelPoints: this.getNextLevelPoints(user.karmaPoints || 0),
-      },
-      message: 'Profile retrieved successfully',
+      ...userWithoutPassword,
+      karmaPoints: user.karmaPoints || 0,
+      badges: user.badges || [],
+      level: this.calculateLevel(user.karmaPoints || 0),
+      nextLevelPoints: this.getNextLevelPoints(user.karmaPoints || 0),
+      impactStats,
     };
   }
 
   async updateProfile(userId: string, updateData: any) {
     await this.usersRepository.update(userId, updateData);
 
-    // Fetch updated user
     const user = await this.usersRepository.findOne({
       where: { id: userId }
     });
@@ -135,7 +153,6 @@ export class AuthService {
       });
     }
 
-    // Return user without password
     const { password, ...userWithoutPassword } = user;
 
     return {
@@ -151,7 +168,6 @@ export class AuthService {
     };
   }
 
-  // ✅ Calculate user level based on karma
   private calculateLevel(karmaPoints: number): number {
     if (karmaPoints < 100) return 1;
     if (karmaPoints < 250) return 2;
@@ -160,12 +176,11 @@ export class AuthService {
     return 5;
   }
 
-  // ✅ Get points needed for next level
   private getNextLevelPoints(karmaPoints: number): number {
     if (karmaPoints < 100) return 100 - karmaPoints;
     if (karmaPoints < 250) return 250 - karmaPoints;
     if (karmaPoints < 500) return 500 - karmaPoints;
     if (karmaPoints < 1000) return 1000 - karmaPoints;
-    return 0; // Max level reached
+    return 0;
   }
 }
