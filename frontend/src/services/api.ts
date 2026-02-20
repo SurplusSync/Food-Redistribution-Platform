@@ -79,6 +79,7 @@ export type Notification = {
   id: string;
   title: string;
   message: string;
+  type: 'food_claimed' | 'pickup_assigned' | 'delivery_confirmed' | 'near_expiry' | 'new_food_nearby';
   read: boolean;
   createdAt: Date;
 };
@@ -197,8 +198,12 @@ export const createDonation = async (data: any, images: File[] = []) => {
   formData.append('preparationTime', toISO(data.preparationTime));
   formData.append('expiryTime', toISO(data.expiryTime));
 
-  if (data.donorId) formData.append('donorId', data.donorId);
-  if (data.donorName) formData.append('donorName', data.donorName);
+  if (data.donorId !== undefined && data.donorId !== null) {
+    formData.append('donorId', String(data.donorId));
+  }
+  if (data.donorName !== undefined && data.donorName !== null) {
+    formData.append('donorName', String(data.donorName));
+  }
   if (data.donorTrustScore) {
     formData.append('donorTrustScore', data.donorTrustScore.toString());
   }
@@ -241,6 +246,7 @@ export const getNotifications = async (_userId: string): Promise<Notification[]>
       id: '1',
       title: 'Welcome!',
       message: 'Welcome to SurplusSync.',
+      type: 'new_food_nearby',
       read: false,
       createdAt: new Date(),
     },

@@ -3,7 +3,8 @@ import { AuthService } from './auth.service';
 import { JwtService } from '@nestjs/jwt';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
-import { UnauthorizedException, ConflictException } from '@nestjs/common';
+import { Donation } from '../donations/entities/donation.entity';
+import { UnauthorizedException, ConflictException, NotFoundException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 
 // 1. Mock the entire bcrypt library here
@@ -20,6 +21,10 @@ const mockJwtService = {
   sign: jest.fn().mockReturnValue('fake_jwt_token'),
 };
 
+const mockDonationRepo = {
+  find: jest.fn().mockResolvedValue([]),
+};
+
 describe('AuthService', () => {
   let service: AuthService;
 
@@ -28,6 +33,7 @@ describe('AuthService', () => {
       providers: [
         AuthService,
         { provide: getRepositoryToken(User), useValue: mockUserRepo },
+        { provide: getRepositoryToken(Donation), useValue: mockDonationRepo },
         { provide: JwtService, useValue: mockJwtService },
       ],
     }).compile();
@@ -132,7 +138,7 @@ describe('AuthService', () => {
 
     it('should throw error if user not found', async () => {
       mockUserRepo.findOne.mockResolvedValue(null);
-      await expect(service.getProfile('99')).rejects.toThrow(UnauthorizedException);
+      await expect(service.getProfile('99')).rejects.toThrow(NotFoundException);
     });
   });
 
@@ -147,7 +153,7 @@ describe('AuthService', () => {
       const result = await service.updateProfile('1', updateDto);
 
       expect(mockUserRepo.update).toHaveBeenCalledWith('1', updateDto);
-      expect(result.name).toBe('Updated Name');
+      expect(result.data.name).toBe('Updated Name');
     });
   });
 });

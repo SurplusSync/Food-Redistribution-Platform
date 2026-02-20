@@ -16,8 +16,7 @@ export default function VolunteerDashboard() {
   const load = async () => {
     setLoading(true)
     try {
-      const data = await getDonations({ status: ['CLAIMED', 'PICKED_UP'], role: 'volunteer', userId: user.id })
-      setDonations(data)
+      setDonations(await getDonations({ status: ['CLAIMED', 'PICKED_UP'], role: 'volunteer', userId: user.id }))
     } finally {
       setLoading(false)
     }

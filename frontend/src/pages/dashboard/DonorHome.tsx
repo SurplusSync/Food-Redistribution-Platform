@@ -45,45 +45,6 @@ export default function DonorHome() {
     return getTimeRemaining(d.expiryTime).urgent
   })
 
-  const handleClaim = async (donationId: string) => {
-    setClaiming(donationId)
-    try {
-      await claimDonation(donationId)
-      await load()
-      setSelectedDonation(null)
-    } catch (error: any) {
-      alert(error.message || 'Failed to claim donation')
-    } finally {
-      setClaiming(null)
-    }
-  }
-
-  const handleConfirmPickup = async (id: string) => {
-    setProcessingId(id)
-    try {
-      await updateDonationStatus(id, 'PICKED_UP')
-      await load()
-      setSelectedDonation(null)
-    } catch (error: any) {
-      alert(error.message || 'Failed to confirm pickup')
-    } finally {
-      setProcessingId(null)
-    }
-  }
-
-  const handleConfirmDelivery = async (id: string) => {
-    setProcessingId(id)
-    try {
-      await updateDonationStatus(id, 'DELIVERED')
-      await load()
-      setSelectedDonation(null)
-    } catch (error: any) {
-      alert(error.message || 'Failed to confirm delivery')
-    } finally {
-      setProcessingId(null)
-    }
-  }
-
   const getStatusStyle = (status: string) => {
     const styles: Record<string, string> = {
       AVAILABLE: 'bg-emerald-500/10 text-emerald-400',
