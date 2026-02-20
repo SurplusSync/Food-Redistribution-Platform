@@ -24,7 +24,7 @@ export default function VolunteerDashboard() {
 
   useEffect(() => {
     load()
-    
+
     // Connect to WebSocket
     socketService.connect()
 
@@ -37,7 +37,7 @@ export default function VolunteerDashboard() {
     })
 
     // Listen for claimed donations to see if any become available for pickup
-    const unsubscribeClaimed = socketService.onDonationClaimed((data) => {
+    const unsubscribeClaimed = socketService.onDonationClaimed((_data) => {
       // Reload to see if this volunteer has new assignments
       load()
     })
@@ -222,7 +222,7 @@ export default function VolunteerDashboard() {
                       disabled={processingId === selectedDonation.id}
                       className="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-white rounded-md"
                     >
-                      {processingId === selectedDonation.id ? 'Processing...' : (<><MapPin className="inline w-4 h-4 mr-2"/> Confirm Pickup</>)}
+                      {processingId === selectedDonation.id ? 'Processing...' : (<><MapPin className="inline w-4 h-4 mr-2" /> Confirm Pickup</>)}
                     </button>
                   )}
 
@@ -232,7 +232,7 @@ export default function VolunteerDashboard() {
                       disabled={processingId === selectedDonation.id}
                       className="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-white rounded-md"
                     >
-                      {processingId === selectedDonation.id ? 'Processing...' : (<><CheckCircle2 className="inline w-4 h-4 mr-2"/> Confirm Delivery</>)}
+                      {processingId === selectedDonation.id ? 'Processing...' : (<><CheckCircle2 className="inline w-4 h-4 mr-2" /> Confirm Delivery</>)}
                     </button>
                   )}
                 </div>
