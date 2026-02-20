@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type ReactElement } from 'react'
 import { getNotifications, markNotificationRead, type Notification } from '../../services/api'
 import { Bell, CheckCircle, AlertTriangle, MapPin, Package } from 'lucide-react'
 
@@ -43,7 +43,7 @@ export default function Notifications() {
     const unreadCount = notifications.filter(n => !n.read).length
 
     const getIcon = (type: Notification['type']) => {
-        const icons = {
+        const icons: Record<Notification['type'], ReactElement> = {
             food_claimed: <Package className="w-5 h-5 text-emerald-400" />,
             pickup_assigned: <MapPin className="w-5 h-5 text-blue-400" />,
             delivery_confirmed: <CheckCircle className="w-5 h-5 text-green-400" />,

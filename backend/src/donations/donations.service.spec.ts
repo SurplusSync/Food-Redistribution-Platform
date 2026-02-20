@@ -4,8 +4,9 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Donation, DonationStatus } from './entities/donation.entity';
 import { User, UserRole } from '../auth/entities/user.entity';
 import { BadRequestException } from '@nestjs/common';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 
-// 1. 👇 Create a SHARED mock for QueryBuilder
+// 1. Create a SHARED mock for QueryBuilder
 const mockQueryBuilder = {
   addSelect: jest.fn().mockReturnThis(),
   having: jest.fn().mockReturnThis(),
@@ -26,13 +27,20 @@ const mockDonationRepo = {
   manager: {
     transaction: jest.fn((cb) => cb(mockEntityManager)),
   },
-  // 2. 👇 Return the SAME object every time
+  // 2. Return the SAME object every time
   createQueryBuilder: jest.fn(() => mockQueryBuilder),
 };
 
 const mockUserRepo = {
   findOne: jest.fn(),
   save: jest.fn(),
+};
+
+const mockCacheManager = {
+  get: jest.fn(),
+  set: jest.fn(),
+  clear: jest.fn(),
+  reset: jest.fn(),
 };
 
 describe('DonationsService Unit Tests', () => {
@@ -44,6 +52,7 @@ describe('DonationsService Unit Tests', () => {
         DonationsService,
         { provide: getRepositoryToken(Donation), useValue: mockDonationRepo },
         { provide: getRepositoryToken(User), useValue: mockUserRepo },
+        { provide: CACHE_MANAGER, useValue: mockCacheManager },
       ],
     }).compile();
 

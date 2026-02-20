@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import { useState, type ChangeEvent, type FormEvent } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { registerUser, type UserRole } from '../services/api'
-import { Utensils, Store, Building2, Car, ChevronRight, AlertCircle } from 'lucide-react'
+import { Store, Building2, Car, ChevronRight, AlertCircle } from 'lucide-react'
 
 export default function Register() {
     const [formData, setFormData] = useState({
@@ -9,7 +9,7 @@ export default function Register() {
         email: '',
         password: '',
         phone: '',
-        role: 'donor' as UserRole,
+        role: 'DONOR' as UserRole,
         organizationName: '',
         organizationType: '',
         address: '',
@@ -18,11 +18,11 @@ export default function Register() {
     const [error, setError] = useState<string | null>(null)
     const navigate = useNavigate()
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value })
     }
 
-    const onSubmit = async (e: React.FormEvent) => {
+    const onSubmit = async (e: FormEvent) => {
         e.preventDefault()
         setLoading(true)
         setError(null)
@@ -44,17 +44,12 @@ export default function Register() {
     }
 
     const roles = [
-        { id: 'donor', label: 'Donor', desc: 'Share surplus food', icon: Store },
-        { id: 'ngo', label: 'NGO', desc: 'Collect and distribute', icon: Building2 },
-        { id: 'volunteer', label: 'Volunteer', desc: 'Help with transport', icon: Car },
+        { id: 'DONOR', label: 'Donor', desc: 'Share surplus food', icon: Store },
+        { id: 'NGO', label: 'NGO', desc: 'Collect and distribute', icon: Building2 },
+        { id: 'VOLUNTEER', label: 'Volunteer', desc: 'Help with transport', icon: Car },
     ]
 
-    const organizationTypes = {
-        donor: ['restaurant', 'hotel', 'canteen', 'event', 'catering', 'grocery', 'bakery'],
-        ngo: ['charity', 'shelter', 'community_kitchen', 'food_bank'],
-    }
-
-    const showOrganizationFields = formData.role === 'donor' || formData.role === 'ngo'
+    const showOrganizationFields = formData.role === 'DONOR' || formData.role === 'NGO'
 
     return (
         <div className="min-h-screen bg-slate-950 p-4 flex items-center justify-center">
@@ -120,7 +115,7 @@ export default function Register() {
                     {showOrganizationFields && (
                         <>
                             <div>
-                                <label className="block text-sm font-medium text-slate-300 mb-2">{formData.role === 'donor' ? 'Business Name' : 'Organization Name'}</label>
+                                <label className="block text-sm font-medium text-slate-300 mb-2">{formData.role === 'DONOR' ? 'Business Name' : 'Organization Name'}</label>
                                 <input type="text" name="organizationName" value={formData.organizationName} onChange={handleChange} required className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white focus:border-emerald-500 outline-none" />
                             </div>
                             <div>

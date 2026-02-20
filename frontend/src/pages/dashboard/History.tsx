@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { getDonations } from '../../services/api'
 import type { Donation } from '../../services/api'
 

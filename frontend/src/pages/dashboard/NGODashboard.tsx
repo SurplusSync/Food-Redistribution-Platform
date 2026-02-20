@@ -405,7 +405,7 @@ export default function NGODashboard() {
                 {/* Location */}
                 <div>
                   <p className="text-xs text-slate-400 mb-1">Pickup Location</p>
-                  <p className="text-sm text-slate-300">📍 {selectedDonation.address || 'Location not specified'}</p>
+                  <p className="text-sm text-slate-300">📍 {selectedDonation.location?.address || 'Location not specified'}</p>
                 </div>
 
                 {/* Time */}

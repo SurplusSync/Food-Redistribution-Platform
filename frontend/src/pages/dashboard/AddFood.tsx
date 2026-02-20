@@ -124,6 +124,14 @@ export default function AddFood() {
             return
         }
 
+        const donorId = String(user?.id ?? '').trim()
+        const donorName = String(user?.organizationName ?? user?.name ?? '').trim()
+
+        if (!donorId || !donorName) {
+            setError('Missing donor information. Please sign in again.')
+            return
+        }
+
         setIsSubmitting(true)
 
         try {
@@ -138,8 +146,8 @@ export default function AddFood() {
                 quantity: formData.quantity,
                 unit: formData.unit,
                 description: formData.description,
-                donorId: user.id,
-                donorName: user.organizationName || user.name,
+                donorId,
+                donorName,
                 donorTrustScore: user.trustScore || 0,
                 location,
                 hygiene: {
