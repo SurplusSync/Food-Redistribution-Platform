@@ -2,6 +2,8 @@ import { Inject, Injectable, Logger, NotFoundException, BadRequestException, For
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateDonationDto, ClaimDonationDto } from './dto/donations.dto';
+import { Cron, CronExpression } from '@nestjs/schedule';
+import { LessThan } from 'typeorm';
 import { Donation, DonationStatus } from './entities/donation.entity';
 import { User, UserRole } from '../auth/entities/user.entity';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
@@ -355,4 +357,30 @@ export class DonationsService {
     return newBadges;
   }
 
+  @Cron('CronExpression.EVERY_DAY_AT_MIDNIGHT')
+  async handleDataRetentionPolicy() {
+    this.logger.log('Running Data Retention Cron Job...');
+
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    try {
+      const oldDonations = await this.donationsRepository.find({
+        where: {
+          status: DonationStatus.DELIVERED,
+          deliveredAt: LessThan(thirtyDaysAgo),
+        },
+      });
+
+      if (oldDonations.length > 0) {
+        await this.donationsRepository.remove(oldDonations);
+        await this.invalidateCache();
+        this.logger.log(`Successfully deleted ${oldDonations.length} old donations older than 30 days.`);
+      } else {
+        this.logger.log('No old data found to archive today.');
+      }
+    } catch (error: any) {
+      this.logger.error('Failed to run data retention job', error.stack);
+    }
+  }
 }
