@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { getDonations, updateDonationStatus, type Donation } from '../../services/api'
+import { socketService } from '../../services/socket'
 import { CheckCircle2, MapPin, Clock, Image as ImageIcon, X, ChevronLeft, ChevronRight } from 'lucide-react'
+import { toast } from 'sonner'
 
 export default function VolunteerDashboard() {
   const [donations, setDonations] = useState<Donation[]>([])
@@ -21,7 +23,33 @@ export default function VolunteerDashboard() {
     }
   }
 
-  useEffect(() => { load() }, [])
+  useEffect(() => {
+    load()
+    
+    // Connect to WebSocket
+    socketService.connect()
+
+    // Listen for new donations (for awareness)
+    const unsubscribeCreated = socketService.onDonationCreated((data) => {
+      toast.success(`🍕 New Food Alert: ${data.foodType} available nearby!`, {
+        description: `${data.name} - ${data.location.address}`,
+        duration: 5000,
+      })
+    })
+
+    // Listen for claimed donations to see if any become available for pickup
+    const unsubscribeClaimed = socketService.onDonationClaimed((data) => {
+      // Reload to see if this volunteer has new assignments
+      load()
+    })
+
+    // Cleanup on unmount
+    return () => {
+      unsubscribeCreated()
+      unsubscribeClaimed()
+      socketService.disconnect()
+    }
+  }, [])
 
   const handleConfirmPickup = async (id: string) => {
     setProcessingId(id)

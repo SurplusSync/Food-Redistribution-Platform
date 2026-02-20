@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { getDonations, claimDonation, type Donation } from '../../services/api'
+import { socketService } from '../../services/socket'
 import { Map, TrendingUp, Clock, X, Image as ImageIcon, Shield, CheckCircle2, MapPin, ChevronLeft, ChevronRight } from 'lucide-react'
+import { toast } from 'sonner'
 
 export default function NGODashboard() {
   const [donations, setDonations] = useState<Donation[]>([])
@@ -27,6 +29,43 @@ export default function NGODashboard() {
 
   useEffect(() => {
     load()
+    
+    // Connect to WebSocket
+    socketService.connect()
+
+    // Listen for new donations
+    const unsubscribeCreated = socketService.onDonationCreated((data) => {
+      toast.success(`🍕 New Food Alert: ${data.foodType} available nearby!`, {
+        description: `${data.name} - ${data.location.address}`,
+        duration: 5000,
+      })
+      // Re-fetch donations to show the new item
+      load()
+    })
+
+    // Listen for claimed donations
+    const unsubscribeClaimed = socketService.onDonationClaimed((data) => {
+      toast.info(`🔔 Food Claimed`, {
+        description: `${data.donationId} has been claimed`,
+        duration: 3000,
+      })
+      // Remove the claimed donation from state
+      setDonations((prevDonations) =>
+        prevDonations.filter((donation) => donation.id !== data.donationId)
+      )
+      // Close modal if it was for this donation
+      if (selectedDonation?.id === data.donationId) {
+        setSelectedDonation(null)
+        setCurrentImageIndex(0)
+      }
+    })
+
+    // Cleanup on unmount
+    return () => {
+      unsubscribeCreated()
+      unsubscribeClaimed()
+      socketService.disconnect()
+    }
   }, [])
 
   const availableCount = donations.filter((d) => d.status === 'AVAILABLE').length
@@ -405,7 +444,7 @@ export default function NGODashboard() {
                 {/* Location */}
                 <div>
                   <p className="text-xs text-slate-400 mb-1">Pickup Location</p>
-                  <p className="text-sm text-slate-300">📍 {selectedDonation.address || 'Location not specified'}</p>
+                  <p className="text-sm text-slate-300">📍 {selectedDonation.location?.address || 'Location not specified'}</p>
                 </div>
 
                 {/* Time */}
