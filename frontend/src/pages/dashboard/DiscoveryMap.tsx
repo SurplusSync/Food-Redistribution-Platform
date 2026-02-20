@@ -3,7 +3,9 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { getDonations, claimDonation, updateDonationStatus, type Donation } from '../../services/api'
+import { socketService } from '../../services/socket'
 import { Clock, Shield, AlertTriangle, X, Image as ImageIcon, MapPin, CheckCircle2, ChevronLeft, ChevronRight } from 'lucide-react'
+import { toast } from 'sonner'
 
 // Fix for default marker icons
 delete (L.Icon.Default.prototype as any)._getIconUrl
@@ -40,6 +42,43 @@ export default function DiscoveryMap() {
 
     useEffect(() => {
         loadDonations()
+        
+        // Connect to WebSocket
+        socketService.connect()
+
+        // Listen for new donations
+        const unsubscribeCreated = socketService.onDonationCreated((data) => {
+            toast.success(`🍕 New Food Alert: ${data.foodType} available nearby!`, {
+                description: `${data.name} - ${data.location.address}`,
+                duration: 5000,
+            })
+            // Re-fetch donations to show the new pin
+            loadDonations()
+        })
+
+        // Listen for claimed donations
+        const unsubscribeClaimed = socketService.onDonationClaimed((data) => {
+            toast.info(`🔔 Food Claimed`, {
+                description: `${data.donationId} has been claimed`,
+                duration: 3000,
+            })
+            // Remove the claimed donation from state
+            setDonations((prevDonations) =>
+                prevDonations.filter((donation) => donation.id !== data.donationId)
+            )
+            // Close modal if it was for this donation
+            if (selectedDonation?.id === data.donationId) {
+                setSelectedDonation(null)
+                setCurrentImageIndex(0)
+            }
+        })
+
+        // Cleanup on unmount
+        return () => {
+            unsubscribeCreated()
+            unsubscribeClaimed()
+            socketService.disconnect()
+        }
     }, [])
 
     const loadDonations = async () => {
