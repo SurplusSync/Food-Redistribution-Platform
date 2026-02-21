@@ -357,7 +357,7 @@ export class DonationsService {
     return newBadges;
   }
 
-  @Cron('CronExpression.EVERY_DAY_AT_MIDNIGHT')
+  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   async handleDataRetentionPolicy() {
     this.logger.log('Running Data Retention Cron Job...');
 
