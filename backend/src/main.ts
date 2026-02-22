@@ -2,6 +2,9 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { User, UserRole } from './auth/entities/user.entity';
+import * as bcrypt from 'bcrypt';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -20,6 +23,28 @@ async function bootstrap() {
       transform: true,
     }),
   );
+
+  // --- SUPER ADMIN SEEDER START ---
+  const userRepository = app.get(getRepositoryToken(User));
+  const adminEmail = process.env.SUPER_ADMIN_EMAIL || 'admin@surplussync.com';
+
+  const existingAdmin = await userRepository.findOne({ where: { role: UserRole.ADMIN } });
+
+  if (!existingAdmin) {
+    console.log('🌱 Seeding Super Admin account...');
+    const hashedPassword = await bcrypt.hash(process.env.SUPER_ADMIN_PASSWORD || 'SecureAdmin123!', 10);
+
+    await userRepository.save({
+      name: 'System Admin',
+      email: adminEmail,
+      password: hashedPassword,
+      phone: '0000000000',
+      role: UserRole.ADMIN,
+      isVerified: true,
+    });
+    console.log('✅ Super Admin seeded successfully!');
+  }
+  // --- SUPER ADMIN SEEDER END ---
 
   // Setup Swagger Documentation
   const config = new DocumentBuilder()

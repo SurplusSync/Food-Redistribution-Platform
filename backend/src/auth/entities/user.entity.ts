@@ -22,6 +22,12 @@ export class User {
   @Column({ type: 'enum', enum: UserRole, default: UserRole.DONOR })
   role: UserRole;
 
+  @Column({ default: false })
+  isVerified: boolean;
+
+  @Column({ default: true })
+  isActive: boolean; // false = suspended/banned
+
   @Column()
   name: string;
 

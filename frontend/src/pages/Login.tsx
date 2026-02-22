@@ -22,7 +22,12 @@ export default function Login() {
       localStorage.setItem('token', data.token)
       localStorage.setItem('user', JSON.stringify(data.user))
       
-      navigate('/dashboard')
+      // Route based on role
+      if (data.user.role === 'ADMIN') {
+        navigate('/admin-dashboard')
+      } else {
+        navigate('/dashboard')
+      }
     } catch (err: any) {
       // Handle Axios errors safely
       const msg = err.response?.data?.message || err.message || 'Login failed'

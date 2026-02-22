@@ -7,6 +7,7 @@ vi.mock('react-router-dom', () => ({
   Routes: ({ children }: any) => children,
   Route: ({ element }: any) => element,
   Link: ({ to, children }: any) => <a href={to}>{children}</a>,
+  Navigate: ({ to }: any) => <div data-testid="navigate" data-to={to} />,
   useNavigate: () => vi.fn(),
   useLocation: () => ({ pathname: '/', state: null }),
   Outlet: () => <div data-testid="outlet" />
