@@ -31,7 +31,7 @@ export class Donation {
   @Column()
   foodType: string;  // Type of food (e.g., 'cooked', 'raw')
 
-  @Column('float')
+  @Column('decimal', { precision: 10, scale: 2 })
   quantity: number;
 
   @Column()
