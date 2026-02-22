@@ -261,4 +261,15 @@ export const checkExpiringDonations = () => {
   return;
 };
 
+// --- ADMIN API ---
+export const adminAPI = {
+  getPendingNGOs: () => api.get('/admin/pending-ngos'),
+  verifyNGO: (id: string) => api.patch(`/admin/verify/${id}`),
+
+  getAllUsers: () => api.get('/admin/users'),
+  toggleUserStatus: (id: string) => api.patch(`/admin/users/${id}/toggle-status`),
+
+  getAllDonations: () => api.get('/admin/donations'),
+};
+
 export default api;
