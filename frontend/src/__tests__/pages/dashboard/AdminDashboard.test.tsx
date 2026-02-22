@@ -33,7 +33,7 @@ describe('AdminDashboard - Epic 7 User Story 1 & 2', () => {
   });
 
   it('should render the admin dashboard with title and description', () => {
-    vi.mocked(adminAPI.getPendingNGOs).mockResolvedValue({ data: [] });
+    vi.mocked(adminAPI.getPendingNGOs).mockResolvedValue({ data: [], status: 200, statusText: 'OK', headers: {}, config: {} } as any);
     
     render(<AdminDashboard />);
 
@@ -42,7 +42,7 @@ describe('AdminDashboard - Epic 7 User Story 1 & 2', () => {
   });
 
   it('should render three tabs: Pending NGOs, All Users, Platform Donations', () => {
-    vi.mocked(adminAPI.getPendingNGOs).mockResolvedValue({ data: [] });
+    vi.mocked(adminAPI.getPendingNGOs).mockResolvedValue({ data: [], status: 200, statusText: 'OK', headers: {}, config: {} } as any);
     
     render(<AdminDashboard />);
 
@@ -52,7 +52,7 @@ describe('AdminDashboard - Epic 7 User Story 1 & 2', () => {
   });
 
   it('should render Sign Out button', () => {
-    vi.mocked(adminAPI.getPendingNGOs).mockResolvedValue({ data: [] });
+    vi.mocked(adminAPI.getPendingNGOs).mockResolvedValue({ data: [], status: 200, statusText: 'OK', headers: {}, config: {} } as any);
     
     render(<AdminDashboard />);
 
@@ -73,7 +73,7 @@ describe('AdminDashboard - Epic 7 User Story 1 & 2', () => {
         },
       ];
 
-      vi.mocked(adminAPI.getPendingNGOs).mockResolvedValue({ data: mockPendingNGOs });
+      vi.mocked(adminAPI.getPendingNGOs).mockResolvedValue({ data: mockPendingNGOs, status: 200, statusText: 'OK', headers: {}, config: {} } as any);
 
       render(<AdminDashboard />);
 
@@ -88,7 +88,7 @@ describe('AdminDashboard - Epic 7 User Story 1 & 2', () => {
     });
 
     it('should display "No records found" when no pending NGOs exist', async () => {
-      vi.mocked(adminAPI.getPendingNGOs).mockResolvedValue({ data: [] });
+      vi.mocked(adminAPI.getPendingNGOs).mockResolvedValue({ data: [], status: 200, statusText: 'OK', headers: {}, config: {} } as any);
 
       render(<AdminDashboard />);
 
@@ -109,8 +109,8 @@ describe('AdminDashboard - Epic 7 User Story 1 & 2', () => {
         },
       ];
 
-      vi.mocked(adminAPI.getPendingNGOs).mockResolvedValue({ data: mockPendingNGOs });
-      vi.mocked(adminAPI.verifyNGO).mockResolvedValue({ data: { message: 'Verified' } });
+      vi.mocked(adminAPI.getPendingNGOs).mockResolvedValue({ data: mockPendingNGOs, status: 200, statusText: 'OK', headers: {}, config: {} } as any);
+      vi.mocked(adminAPI.verifyNGO).mockResolvedValue({ data: { message: 'Verified' }, status: 200, statusText: 'OK', headers: {}, config: {} } as any);
 
       render(<AdminDashboard />);
 
@@ -142,8 +142,8 @@ describe('AdminDashboard - Epic 7 User Story 1 & 2', () => {
         },
       ];
 
-      vi.mocked(adminAPI.getPendingNGOs).mockResolvedValue({ data: [] });
-      vi.mocked(adminAPI.getAllUsers).mockResolvedValue({ data: mockUsers });
+      vi.mocked(adminAPI.getPendingNGOs).mockResolvedValue({ data: [], status: 200, statusText: 'OK', headers: {}, config: {} } as any);
+      vi.mocked(adminAPI.getAllUsers).mockResolvedValue({ data: mockUsers, status: 200, statusText: 'OK', headers: {}, config: {} } as any);
 
       render(<AdminDashboard />);
 
@@ -173,8 +173,8 @@ describe('AdminDashboard - Epic 7 User Story 1 & 2', () => {
         },
       ];
 
-      vi.mocked(adminAPI.getPendingNGOs).mockResolvedValue({ data: [] });
-      vi.mocked(adminAPI.getAllUsers).mockResolvedValue({ data: mockUsers });
+      vi.mocked(adminAPI.getPendingNGOs).mockResolvedValue({ data: [], status: 200, statusText: 'OK', headers: {}, config: {} } as any);
+      vi.mocked(adminAPI.getAllUsers).mockResolvedValue({ data: mockUsers, status: 200, statusText: 'OK', headers: {}, config: {} } as any);
 
       render(<AdminDashboard />);
 
@@ -198,11 +198,15 @@ describe('AdminDashboard - Epic 7 User Story 1 & 2', () => {
         },
       ];
 
-      vi.mocked(adminAPI.getPendingNGOs).mockResolvedValue({ data: [] });
-      vi.mocked(adminAPI.getAllUsers).mockResolvedValue({ data: mockUsers });
+      vi.mocked(adminAPI.getPendingNGOs).mockResolvedValue({ data: [], status: 200, statusText: 'OK', headers: {}, config: {} } as any);
+      vi.mocked(adminAPI.getAllUsers).mockResolvedValue({ data: mockUsers, status: 200, statusText: 'OK', headers: {}, config: {} } as any);
       vi.mocked(adminAPI.toggleUserStatus).mockResolvedValue({
         data: { message: 'User suspended', isActive: false },
-      });
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {}
+      } as any);
 
       render(<AdminDashboard />);
 
@@ -234,8 +238,8 @@ describe('AdminDashboard - Epic 7 User Story 1 & 2', () => {
         },
       ];
 
-      vi.mocked(adminAPI.getPendingNGOs).mockResolvedValue({ data: [] });
-      vi.mocked(adminAPI.getAllUsers).mockResolvedValue({ data: mockUsers });
+      vi.mocked(adminAPI.getPendingNGOs).mockResolvedValue({ data: [], status: 200, statusText: 'OK', headers: {}, config: {} } as any);
+      vi.mocked(adminAPI.getAllUsers).mockResolvedValue({ data: mockUsers, status: 200, statusText: 'OK', headers: {}, config: {} } as any);
 
       render(<AdminDashboard />);
 
@@ -269,8 +273,8 @@ describe('AdminDashboard - Epic 7 User Story 1 & 2', () => {
         },
       ];
 
-      vi.mocked(adminAPI.getPendingNGOs).mockResolvedValue({ data: [] });
-      vi.mocked(adminAPI.getAllDonations).mockResolvedValue({ data: mockDonations });
+      vi.mocked(adminAPI.getPendingNGOs).mockResolvedValue({ data: [], status: 200, statusText: 'OK', headers: {}, config: {} } as any);
+      vi.mocked(adminAPI.getAllDonations).mockResolvedValue({ data: mockDonations, status: 200, statusText: 'OK', headers: {}, config: {} } as any);
 
       render(<AdminDashboard />);
 
@@ -311,7 +315,7 @@ describe('AdminDashboard - Epic 7 User Story 1 & 2', () => {
         },
       ];
 
-      vi.mocked(adminAPI.getPendingNGOs).mockResolvedValue({ data: mockPendingNGOs });
+      vi.mocked(adminAPI.getPendingNGOs).mockResolvedValue({ data: mockPendingNGOs, status: 200, statusText: 'OK', headers: {}, config: {} } as any);
       vi.mocked(adminAPI.verifyNGO).mockRejectedValue(new Error('Verification failed'));
 
       render(<AdminDashboard />);
