@@ -2,12 +2,13 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { adminAPI } from '../../services/api';
 import { toast } from 'sonner';
-import { ShieldAlert, CheckCircle, Ban, Activity, LogOut } from 'lucide-react';
+import { ShieldAlert, CheckCircle, Ban, Activity, LogOut, X } from 'lucide-react';
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState<'pending' | 'users' | 'donations'>('pending');
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const [certificatePreviewUrl, setCertificatePreviewUrl] = useState<string | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -48,6 +49,20 @@ export default function AdminDashboard() {
       toast.error('Failed to update user status');
     }
   };
+
+  const handleViewCertificate = (certificateUrl?: string) => {
+    if (!certificateUrl) {
+      toast.error('No registration certificate uploaded for this NGO');
+      return;
+    }
+    setCertificatePreviewUrl(certificateUrl);
+  };
+
+  const closeCertificatePreview = () => {
+    setCertificatePreviewUrl(null);
+  };
+
+  const isPdfCertificate = certificatePreviewUrl?.toLowerCase().includes('.pdf');
 
   const handleSignOut = () => {
     localStorage.removeItem('token');
@@ -129,9 +144,17 @@ export default function AdminDashboard() {
                     </td>
                     <td className="p-4 text-right">
                       {activeTab === 'pending' && (
-                        <button onClick={() => handleVerify(item.id)} className="text-emerald-400 hover:text-emerald-300 flex items-center justify-end gap-1 ml-auto">
-                          <CheckCircle size={16} /> Approve
-                        </button>
+                        <div className="flex items-center justify-end gap-4 ml-auto">
+                          <button
+                            onClick={() => handleViewCertificate(item.certificateUrl)}
+                            className="text-blue-400 hover:text-blue-300"
+                          >
+                            View Certificate
+                          </button>
+                          <button onClick={() => handleVerify(item.id)} className="text-emerald-400 hover:text-emerald-300 flex items-center justify-end gap-1">
+                            <CheckCircle size={16} /> Approve
+                          </button>
+                        </div>
                       )}
                       {activeTab === 'users' && item.role !== 'ADMIN' && (
                         <button onClick={() => handleToggleStatus(item.id)} className={`${item.isActive ? 'text-red-400 hover:text-red-300' : 'text-emerald-400 hover:text-emerald-300'} flex items-center justify-end gap-1 ml-auto`}>
@@ -151,6 +174,30 @@ export default function AdminDashboard() {
           )}
         </div>
       </div>
+
+      {certificatePreviewUrl && (
+        <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
+          <div className="w-full max-w-4xl bg-slate-900 border border-slate-700 rounded-xl overflow-hidden">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-slate-800">
+              <h3 className="text-white font-semibold">Registration Certificate</h3>
+              <button
+                onClick={closeCertificatePreview}
+                className="text-slate-400 hover:text-white"
+                aria-label="Close certificate preview"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            <div className="bg-slate-950 h-[70vh]">
+              {isPdfCertificate ? (
+                <iframe src={certificatePreviewUrl} title="Certificate Preview" className="w-full h-full" />
+              ) : (
+                <img src={certificatePreviewUrl} alt="NGO registration certificate" className="w-full h-full object-contain" />
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
