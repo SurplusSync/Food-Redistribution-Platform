@@ -43,7 +43,7 @@ export class DonationsController {
 
   @Get()
   @UseInterceptors(CacheInterceptor)
-  @CacheTTL(60)
+  @CacheTTL(60_000)
   @ApiOperation({ summary: 'Get all available food donations' })
   @ApiQuery({
     name: 'latitude',
