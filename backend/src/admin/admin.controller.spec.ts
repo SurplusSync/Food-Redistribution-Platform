@@ -69,7 +69,7 @@ describe('AdminController', () => {
           role: UserRole.NGO,
           isVerified: false,
         },
-        select: ['id', 'name', 'email', 'organizationName', 'phone', 'address', 'createdAt'],
+        select: ['id', 'name', 'email', 'organizationName', 'phone', 'address', 'certificateUrl', 'createdAt'],
       });
       expect(result).toEqual(mockNGOs);
     });
