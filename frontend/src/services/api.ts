@@ -102,8 +102,22 @@ export const loginUser = async (email: string, password?: string) => {
 };
 
 export const registerUser = async (data: any) => {
-  const payload = { ...data, role: data.role.toUpperCase() };
-  const response = await api.post('/auth/register', payload);
+  let payload: any;
+  const headers: Record<string, string> = {};
+
+  if (data instanceof FormData) {
+    // Ensure role is uppercase inside FormData
+    const currentRole = data.get('role');
+    if (currentRole && typeof currentRole === 'string') {
+      data.set('role', currentRole.toUpperCase());
+    }
+    payload = data;
+    headers['Content-Type'] = 'multipart/form-data';
+  } else {
+    payload = { ...data, role: data.role.toUpperCase() };
+  }
+
+  const response = await api.post('/auth/register', payload, { headers });
   return response.data.data;
 };
 

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { loginUser } from '../services/api'
 import { Utensils, ChevronRight, Check } from 'lucide-react'
 
@@ -8,7 +8,6 @@ export default function Login() {
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const navigate = useNavigate()
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -22,15 +21,16 @@ export default function Login() {
       localStorage.setItem('token', data.token)
       localStorage.setItem('user', JSON.stringify(data.user))
       
-      // Route based on role
+      // Route based on role.
+      // Use full navigation so App re-reads localStorage auth state immediately.
       if (data.user.role === 'ADMIN') {
-        navigate('/admin-dashboard')
+        window.location.replace('/admin-dashboard')
       } else {
-        navigate('/dashboard')
+        window.location.replace('/dashboard')
       }
-    } catch (err: any) {
-      // Handle Axios errors safely
-      const msg = err.response?.data?.message || err.message || 'Login failed'
+    } catch (err: unknown) {
+      const axiosErr = err as { response?: { data?: { message?: string } }; message?: string }
+      const msg = axiosErr.response?.data?.message || axiosErr.message || 'Login failed'
       setError(msg)
     } finally {
       setLoading(false)

@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { RegisterDto, LoginDto } from './dto/auth.dto';
+import { CloudinaryService } from '../common/cloudinary.service';
 
 // Define locally to avoid import issues from outside src
 enum UserRole {
@@ -21,6 +22,10 @@ describe('AuthController', () => {
         getProfile: jest.fn(),
     };
 
+    const mockCloudinaryService = {
+        uploadImage: jest.fn(),
+    };
+
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
             controllers: [AuthController],
@@ -28,6 +33,10 @@ describe('AuthController', () => {
                 {
                     provide: AuthService,
                     useValue: mockAuthService,
+                },
+                {
+                    provide: CloudinaryService,
+                    useValue: mockCloudinaryService,
                 },
             ],
         }).compile();
@@ -119,7 +128,7 @@ describe('AuthController', () => {
             // but usually Enums are compatible if values match or if TS doesn't check nominal typing strictly across files here.
             // However, the Controller signature uses the IMPORTED UserRole.
             // passing the LOCAL UserRole value 'DONOR' (string) should be fine as it matches the value.
-            const result = await controller.register(registerDto as any);
+            const result = await controller.register(registerDto as any, undefined);
 
             expect(authService.register).toHaveBeenCalledWith(registerDto);
             expect(result).toEqual(expectedResult);

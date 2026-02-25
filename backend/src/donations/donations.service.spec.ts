@@ -115,14 +115,26 @@ describe('DonationsService Unit Tests', () => {
 
     it('should fail if NGO exceeds Daily Capacity', async () => {
       const heavyDonation = { id: 'd1', quantity: 50, status: DonationStatus.AVAILABLE };
-      const fullNgo = { id: 'u1', role: UserRole.NGO, currentIntakeLoad: 80, dailyIntakeCapacity: 100 };
+      const fullNgo = {
+        id: 'u1',
+        role: UserRole.NGO,
+        isVerified: true,
+        currentIntakeLoad: 80,
+        dailyIntakeCapacity: 100,
+      };
       mockEntityManager.findOne.mockResolvedValueOnce(heavyDonation).mockResolvedValueOnce(fullNgo);
       await expect(service.claim('d1', {} as any, 'u1')).rejects.toThrow(/Claim exceeds daily intake capacity/);
     });
 
     it('should succeed and lock donation if capacity is sufficient', async () => {
       const donation = { id: 'd1', quantity: 10, status: DonationStatus.AVAILABLE };
-      const ngo = { id: 'u1', role: UserRole.NGO, currentIntakeLoad: 50, dailyIntakeCapacity: 100 };
+      const ngo = {
+        id: 'u1',
+        role: UserRole.NGO,
+        isVerified: true,
+        currentIntakeLoad: 50,
+        dailyIntakeCapacity: 100,
+      };
       mockEntityManager.findOne.mockResolvedValueOnce(donation).mockResolvedValueOnce(ngo);
       mockEntityManager.save.mockImplementation((entity) => Promise.resolve(entity));
       

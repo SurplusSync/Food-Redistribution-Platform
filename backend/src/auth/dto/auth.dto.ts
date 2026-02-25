@@ -68,6 +68,14 @@ export class RegisterDto {
   @IsOptional()
   @IsString()
   address?: string;
+
+  @ApiProperty({
+    required: false,
+    description: 'Secure URL of the uploaded registration certificate (set by server after file upload)',
+  })
+  @IsOptional()
+  @IsString()
+  certificateUrl?: string;
 }
 
 export class LoginDto {

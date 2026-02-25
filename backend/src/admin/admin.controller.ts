@@ -24,7 +24,7 @@ export class AdminController {
         role: UserRole.NGO,
         isVerified: false,
       },
-      select: ['id', 'name', 'email', 'organizationName', 'phone', 'address', 'createdAt'], // Don't send passwords!
+      select: ['id', 'name', 'email', 'organizationName', 'phone', 'address', 'certificateUrl', 'createdAt'], // Don't send passwords!
     });
   }
 

@@ -92,7 +92,11 @@ export default function NGODashboard() {
       await load()
       setSelectedDonation(null)
     } catch (error: any) {
-      alert(error.message || 'Failed to claim donation')
+      const msg =
+        error?.response?.data?.message ||
+        error?.message ||
+        'Failed to claim donation'
+      toast.error('Unable to claim', { description: msg })
     } finally {
       setClaiming(null)
     }

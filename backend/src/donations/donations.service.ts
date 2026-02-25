@@ -156,6 +156,13 @@ export class DonationsService {
         throw new BadRequestException('Only NGOs can claim donations');
       }
 
+      // Security: Block unverified NGOs from claiming
+      if (user.role === UserRole.NGO && !user.isVerified) {
+        throw new ForbiddenException(
+          'Your NGO account is pending verification by an Administrator. You cannot claim food yet.',
+        );
+      }
+
       // 3. NGO Capacity Validation
       if (user.dailyIntakeCapacity !== null && user.dailyIntakeCapacity !== undefined) {
         // Check unit match (case-insensitive)
