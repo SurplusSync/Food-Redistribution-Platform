@@ -1,15 +1,22 @@
-import { Controller, Post, Body, Get, Patch, UseGuards, Request } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { Controller, Post, Body, Get, Patch, UseGuards, Request, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiConsumes } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { AuthService } from './auth.service';
 import { RegisterDto, LoginDto, UpdateProfileDto } from './dto/auth.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { CloudinaryService } from '../common/cloudinary.service';
 
 @ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) { }
+  constructor(
+    private readonly authService: AuthService,
+    private readonly cloudinaryService: CloudinaryService,
+  ) { }
 
   @Post('register')
+  @UseInterceptors(FileInterceptor('certificate'))
+  @ApiConsumes('multipart/form-data')
   @ApiOperation({ summary: 'Register a new user' })
   @ApiResponse({
     status: 201,
@@ -19,7 +26,14 @@ export class AuthController {
     status: 400,
     description: 'Validation error or email already exists'
   })
-  register(@Body() registerDto: RegisterDto) {
+  async register(
+    @Body() registerDto: RegisterDto,
+    @UploadedFile() file?: Express.Multer.File,
+  ) {
+    if (file) {
+      const certificateUrl = await this.cloudinaryService.uploadImage(file);
+      registerDto.certificateUrl = certificateUrl;
+    }
     return this.authService.register(registerDto);
   }
 

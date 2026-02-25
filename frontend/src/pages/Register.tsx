@@ -1,7 +1,7 @@
 import { useState, type ChangeEvent, type FormEvent } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { registerUser, type UserRole } from '../services/api'
-import { Store, Building2, Car, ChevronRight, AlertCircle } from 'lucide-react'
+import { Store, Building2, Car, ChevronRight, AlertCircle, Upload } from 'lucide-react'
 
 export default function Register() {
     const [formData, setFormData] = useState({
@@ -14,6 +14,7 @@ export default function Register() {
         organizationType: '',
         address: '',
     })
+    const [certificateFile, setCertificateFile] = useState<File | null>(null)
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const navigate = useNavigate()
@@ -28,7 +29,27 @@ export default function Register() {
         setError(null)
 
         try {
-            const data = await registerUser(formData)
+            let payload: any
+
+            if (formData.role === 'NGO' || certificateFile) {
+                const fd = new FormData()
+                fd.append('name', formData.name)
+                fd.append('email', formData.email)
+                fd.append('password', formData.password)
+                fd.append('phone', formData.phone)
+                fd.append('role', formData.role)
+                fd.append('organizationName', formData.organizationName)
+                fd.append('organizationType', formData.organizationType)
+                fd.append('address', formData.address)
+                if (certificateFile) {
+                    fd.append('certificate', certificateFile)
+                }
+                payload = fd
+            } else {
+                payload = formData
+            }
+
+            const data = await registerUser(payload)
 
             // Save Token and User
             localStorage.setItem('token', data.token)
@@ -123,6 +144,26 @@ export default function Register() {
                                 <textarea name="address" value={formData.address} onChange={handleChange} required className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white focus:border-emerald-500 outline-none resize-none" rows={2} />
                             </div>
                         </>
+                    )}
+
+                    {formData.role === 'NGO' && (
+                        <div>
+                            <label className="block text-sm font-medium text-slate-300 mb-2">Registration Certificate <span className="text-red-400">*</span></label>
+                            <div className="flex items-center gap-3">
+                                <label className="flex items-center gap-2 cursor-pointer bg-slate-800 border border-slate-700 hover:border-emerald-500 rounded-xl px-4 py-3 text-slate-300 transition-colors">
+                                    <Upload className="w-5 h-5 text-emerald-400" />
+                                    <span>{certificateFile ? certificateFile.name : 'Upload Certificate'}</span>
+                                    <input
+                                        type="file"
+                                        accept="image/*,.pdf"
+                                        className="hidden"
+                                        onChange={(e) => setCertificateFile(e.target.files?.[0] || null)}
+                                        required
+                                    />
+                                </label>
+                            </div>
+                            <p className="text-xs text-slate-500 mt-1">Accepted formats: Images or PDF</p>
+                        </div>
                     )}
 
                     <button type="submit" disabled={loading} className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 text-white font-semibold py-3.5 px-6 rounded-xl shadow-lg flex items-center justify-center gap-2">

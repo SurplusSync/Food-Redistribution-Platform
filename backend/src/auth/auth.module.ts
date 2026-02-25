@@ -9,6 +9,7 @@ import { User } from './entities/user.entity';
 import { JwtStrategy } from './jwt.strategy';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { Donation } from '../donations/entities/donation.entity'; // ✅ ADD THIS
+import { CloudinaryService } from '../common/cloudinary.service';
 
 @Module({
   imports: [
@@ -24,7 +25,7 @@ import { Donation } from '../donations/entities/donation.entity'; // ✅ ADD THI
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, JwtAuthGuard],
+  providers: [AuthService, JwtStrategy, JwtAuthGuard, CloudinaryService],
   exports: [AuthService, JwtAuthGuard],
 })
 export class AuthModule { }

@@ -58,6 +58,9 @@ export class User {
   @Column({ nullable: true })
   capacityUnit: string;
 
+  @Column({ nullable: true })
+  certificateUrl: string;
+
   // 🎮 Gamification
   @Column({ default: 0 })
   karmaPoints: number;
