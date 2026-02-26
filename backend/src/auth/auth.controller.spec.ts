@@ -22,6 +22,10 @@ describe('AuthController', () => {
     getProfile: jest.fn(),
   };
 
+  const mockCloudinaryService = {
+    uploadImage: jest.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [AuthController],
@@ -29,6 +33,10 @@ describe('AuthController', () => {
         {
           provide: AuthService,
           useValue: mockAuthService,
+        },
+        {
+          provide: CloudinaryService,
+          useValue: mockCloudinaryService,
         },
       ],
     }).compile();

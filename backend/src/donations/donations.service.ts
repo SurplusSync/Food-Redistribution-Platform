@@ -8,11 +8,11 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateDonationDto, ClaimDonationDto } from './dto/donations.dto';
-import { Cron, CronExpression } from '@nestjs/schedule';
-import { LessThan } from 'typeorm';
 import { Donation, DonationStatus } from './entities/donation.entity';
 import { User, UserRole } from '../auth/entities/user.entity';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { EventsGateway } from '../events/events.gateway';
+import { RedisService } from '../common/redis.service';
 
 @Injectable()
 export class DonationsService {
@@ -25,7 +25,9 @@ export class DonationsService {
     private usersRepository: Repository<User>,
     @Inject(CACHE_MANAGER)
     private cacheManager: Record<string, any>,
-  ) { }
+    private eventsGateway: EventsGateway,
+    private redisService: RedisService,
+  ) {}
 
   /**
    * Invalidate all cached donation queries.
@@ -69,6 +71,15 @@ export class DonationsService {
         donor.badges = [...new Set([...(donor.badges || []), ...newBadges])];
       }
       await this.usersRepository.save(donor);
+    }
+
+    // 1. Emit the event over websockets
+    this.eventsGateway.emitDonationCreated(saved);
+
+    // 2. Clear Redis cache for donation listings
+    if (this.redisService) {
+      // Assuming keys are stored like "/donations*" or clear all cache if needed
+      await this.redisService.deleteKeysByPattern('*donations*');
     }
 
     await this.invalidateCache();
@@ -222,6 +233,10 @@ export class DonationsService {
 
         await transactionalEntityManager.save(user);
         const saved = await transactionalEntityManager.save(donation);
+
+        // 5. Emit Event
+        this.eventsGateway.emitDonationClaimed(saved.id);
+
         await this.invalidateCache();
         return saved;
       },
@@ -419,5 +434,4 @@ export class DonationsService {
 
     return newBadges;
   }
-
 }

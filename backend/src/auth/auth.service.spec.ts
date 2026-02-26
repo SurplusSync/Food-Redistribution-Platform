@@ -3,7 +3,12 @@ import { AuthService } from './auth.service';
 import { JwtService } from '@nestjs/jwt';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
-import { UnauthorizedException, ConflictException } from '@nestjs/common';
+import {
+  UnauthorizedException,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
+import { Donation } from '../donations/entities/donation.entity';
 import * as bcrypt from 'bcrypt';
 
 // 1. Mock the entire bcrypt library here
@@ -22,10 +27,6 @@ const mockDonationRepo = {
 
 const mockJwtService = {
   sign: jest.fn().mockReturnValue('fake_jwt_token'),
-};
-
-const mockDonationRepo = {
-  find: jest.fn().mockResolvedValue([]),
 };
 
 describe('AuthService', () => {
@@ -176,7 +177,7 @@ describe('AuthService', () => {
       const result = await service.updateProfile('1', updateDto);
 
       expect(mockUserRepo.update).toHaveBeenCalledWith('1', updateDto);
-      expect(result.name).toBe('Updated Name');
+      expect(result.data.name).toBe('Updated Name');
     });
   });
 });

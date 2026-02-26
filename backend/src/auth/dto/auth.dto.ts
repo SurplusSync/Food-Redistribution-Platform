@@ -78,7 +78,8 @@ export class RegisterDto {
 
   @ApiProperty({
     required: false,
-    description: 'Secure URL of the uploaded registration certificate (set by server after file upload)',
+    description:
+      'Secure URL of the uploaded registration certificate (set by server after file upload)',
   })
   @IsOptional()
   @IsString()

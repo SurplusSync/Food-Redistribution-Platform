@@ -30,4 +30,12 @@ export class EventsGateway
   handleConnection(client: Socket) {
     this.logger.log(`Client connected: ${client.id}`);
   }
+
+  emitDonationCreated(donationData: any) {
+    this.server.emit('donation.created', donationData);
+  }
+
+  emitDonationClaimed(donationId: string) {
+    this.server.emit('donation.claimed', donationId);
+  }
 }

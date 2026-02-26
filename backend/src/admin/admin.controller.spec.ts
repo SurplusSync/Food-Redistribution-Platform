@@ -69,7 +69,16 @@ describe('AdminController', () => {
           role: UserRole.NGO,
           isVerified: false,
         },
-        select: ['id', 'name', 'email', 'organizationName', 'phone', 'address', 'certificateUrl', 'createdAt'],
+        select: [
+          'id',
+          'name',
+          'email',
+          'organizationName',
+          'phone',
+          'address',
+          'certificateUrl',
+          'createdAt',
+        ],
       });
       expect(result).toEqual(mockNGOs);
     });
@@ -86,19 +95,29 @@ describe('AdminController', () => {
       };
 
       mockUserRepository.findOne.mockResolvedValue(mockNGO);
-      mockUserRepository.save.mockResolvedValue({ ...mockNGO, isVerified: true });
+      mockUserRepository.save.mockResolvedValue({
+        ...mockNGO,
+        isVerified: true,
+      });
 
       const result = await controller.verifyNgo(ngoId);
 
-      expect(mockUserRepository.findOne).toHaveBeenCalledWith({ where: { id: ngoId } });
-      expect(mockUserRepository.save).toHaveBeenCalledWith({ ...mockNGO, isVerified: true });
+      expect(mockUserRepository.findOne).toHaveBeenCalledWith({
+        where: { id: ngoId },
+      });
+      expect(mockUserRepository.save).toHaveBeenCalledWith({
+        ...mockNGO,
+        isVerified: true,
+      });
       expect(result.message).toContain('verified');
     });
 
     it('should throw NotFoundException if NGO does not exist', async () => {
       mockUserRepository.findOne.mockResolvedValue(null);
 
-      await expect(controller.verifyNgo('invalid-id')).rejects.toThrow(NotFoundException);
+      await expect(controller.verifyNgo('invalid-id')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
@@ -131,7 +150,16 @@ describe('AdminController', () => {
       const result = await controller.getAllUsers();
 
       expect(mockUserRepository.find).toHaveBeenCalledWith({
-        select: ['id', 'name', 'email', 'role', 'organizationName', 'isVerified', 'isActive', 'createdAt'],
+        select: [
+          'id',
+          'name',
+          'email',
+          'role',
+          'organizationName',
+          'isVerified',
+          'isActive',
+          'createdAt',
+        ],
         order: { createdAt: 'DESC' },
       });
       expect(result).toEqual(mockUsers);
@@ -149,11 +177,17 @@ describe('AdminController', () => {
       };
 
       mockUserRepository.findOne.mockResolvedValue(mockUser);
-      mockUserRepository.save.mockResolvedValue({ ...mockUser, isActive: false });
+      mockUserRepository.save.mockResolvedValue({
+        ...mockUser,
+        isActive: false,
+      });
 
       const result = await controller.toggleUserStatus(userId);
 
-      expect(mockUserRepository.save).toHaveBeenCalledWith({ ...mockUser, isActive: false });
+      expect(mockUserRepository.save).toHaveBeenCalledWith({
+        ...mockUser,
+        isActive: false,
+      });
       expect(result.message).toContain('suspended');
       expect(result.isActive).toBe(false);
     });
@@ -168,11 +202,17 @@ describe('AdminController', () => {
       };
 
       mockUserRepository.findOne.mockResolvedValue(mockUser);
-      mockUserRepository.save.mockResolvedValue({ ...mockUser, isActive: true });
+      mockUserRepository.save.mockResolvedValue({
+        ...mockUser,
+        isActive: true,
+      });
 
       const result = await controller.toggleUserStatus(userId);
 
-      expect(mockUserRepository.save).toHaveBeenCalledWith({ ...mockUser, isActive: true });
+      expect(mockUserRepository.save).toHaveBeenCalledWith({
+        ...mockUser,
+        isActive: true,
+      });
       expect(result.message).toContain('unbanned');
       expect(result.isActive).toBe(true);
     });
@@ -195,7 +235,9 @@ describe('AdminController', () => {
     it('should throw NotFoundException if user does not exist', async () => {
       mockUserRepository.findOne.mockResolvedValue(null);
 
-      await expect(controller.toggleUserStatus('invalid-id')).rejects.toThrow(NotFoundException);
+      await expect(controller.toggleUserStatus('invalid-id')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
