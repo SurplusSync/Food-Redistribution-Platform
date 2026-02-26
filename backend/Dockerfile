@@ -38,4 +38,4 @@ COPY --from=builder /app/backend/node_modules ./node_modules
 COPY --from=builder /app/backend/package.json ./
 
 EXPOSE 3000
-CMD ["node", "dist/main"]
+CMD ["npm", "run", "start:prod"]
