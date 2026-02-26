@@ -1,4 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { User } from '../../auth/entities/user.entity';
 
 export enum DonationStatus {
@@ -14,28 +21,28 @@ export class Donation {
   id: string;
 
   @Column()
-  name: string;  // Name of the food item
+  name: string; // Name of the food item
 
   @Column()
-  donorName: string;  // Name of the donor
+  donorName: string; // Name of the donor
 
   @Column({ nullable: true })
-  description: string;  // Food description
+  description: string; // Food description
 
   @Column('simple-json', { nullable: true })
-  hygiene: any;  // Hygiene checklist
+  hygiene: any; // Hygiene checklist
 
   @Column('float', { nullable: true })
-  donorTrustScore: number;  // Donor trust score
+  donorTrustScore: number; // Donor trust score
 
   @Column()
-  foodType: string;  // Type of food (e.g., 'cooked', 'raw')
+  foodType: string; // Type of food (e.g., 'cooked', 'raw')
 
   @Column('decimal', { precision: 10, scale: 2 })
   quantity: number;
 
   @Column()
-  unit: string;  // e.g., "kg", "plates", "servings"
+  unit: string; // e.g., "kg", "plates", "servings"
 
   @Column()
   preparationTime: string;
@@ -56,7 +63,11 @@ export class Donation {
   @Column({ nullable: true })
   specialInstructions: string;
 
-  @Column({ type: 'enum', enum: DonationStatus, default: DonationStatus.AVAILABLE })
+  @Column({
+    type: 'enum',
+    enum: DonationStatus,
+    default: DonationStatus.AVAILABLE,
+  })
   status: DonationStatus;
 
   @Column()

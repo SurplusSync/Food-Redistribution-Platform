@@ -12,4 +12,4 @@ import { AuthModule } from '../auth/auth.module';
   controllers: [DonationsController],
   providers: [DonationsService, CloudinaryService],
 })
-export class DonationsModule { }
+export class DonationsModule {}

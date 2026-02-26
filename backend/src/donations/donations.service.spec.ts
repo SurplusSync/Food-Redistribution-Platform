@@ -25,7 +25,7 @@ const mockDonationRepo = {
   save: jest.fn(),
   find: jest.fn(),
   manager: {
-    transaction: jest.fn((cb) => cb(mockEntityManager)),
+    transaction: jest.fn((cb: any) => cb(mockEntityManager)),
   },
   // 2. Return the SAME object every time
   createQueryBuilder: jest.fn(() => mockQueryBuilder),
@@ -34,13 +34,6 @@ const mockDonationRepo = {
 const mockUserRepo = {
   findOne: jest.fn(),
   save: jest.fn(),
-};
-
-const mockCacheManager = {
-  get: jest.fn(),
-  set: jest.fn(),
-  clear: jest.fn(),
-  reset: jest.fn(),
 };
 
 describe('DonationsService Unit Tests', () => {
@@ -72,7 +65,9 @@ describe('DonationsService Unit Tests', () => {
         expiryTime: pastDate,
         preparationTime: new Date().toISOString(),
       };
-      await expect(service.create(dto as any, 'donor1')).rejects.toThrow(BadRequestException);
+      await expect(service.create(dto as any, 'donor1')).rejects.toThrow(
+        BadRequestException,
+      );
     });
 
     it('should enforce 2-hour rule for High Risk (Cooked) food', async () => {
@@ -84,7 +79,9 @@ describe('DonationsService Unit Tests', () => {
         expiryTime: oneHourFromNow,
         preparationTime: new Date().toISOString(),
       };
-      await expect(service.create(dto as any, 'donor1')).rejects.toThrow(/High-risk food/);
+      await expect(service.create(dto as any, 'donor1')).rejects.toThrow(
+        /High-risk food/,
+      );
     });
 
     it('should accept valid food', async () => {
@@ -97,7 +94,11 @@ describe('DonationsService Unit Tests', () => {
         preparationTime: new Date().toISOString(),
       };
       mockDonationRepo.create.mockReturnValue(dto);
-      mockDonationRepo.save.mockResolvedValue({ id: 'd1', ...dto, status: DonationStatus.AVAILABLE });
+      mockDonationRepo.save.mockResolvedValue({
+        id: 'd1',
+        ...dto,
+        status: DonationStatus.AVAILABLE,
+      });
 
       const result = await service.create(dto as any, 'donor1');
       expect(result.status).toBe(DonationStatus.AVAILABLE);
@@ -110,34 +111,24 @@ describe('DonationsService Unit Tests', () => {
       mockEntityManager.findOne
         .mockResolvedValueOnce({ id: 'd1', status: DonationStatus.AVAILABLE })
         .mockResolvedValueOnce({ id: 'u1', role: UserRole.DONOR });
-      await expect(service.claim('d1', {} as any, 'u1')).rejects.toThrow(/Only NGOs/);
+      await expect(service.claim('d1', {} as any, 'u1')).rejects.toThrow(
+        /Only NGOs/,
+      );
     });
 
     it('should fail if NGO exceeds Daily Capacity', async () => {
       const heavyDonation = { id: 'd1', quantity: 50, status: DonationStatus.AVAILABLE };
-      const fullNgo = {
-        id: 'u1',
-        role: UserRole.NGO,
-        isVerified: true,
-        currentIntakeLoad: 80,
-        dailyIntakeCapacity: 100,
-      };
+      const fullNgo = { id: 'u1', role: UserRole.NGO, currentIntakeLoad: 80, dailyIntakeCapacity: 100 };
       mockEntityManager.findOne.mockResolvedValueOnce(heavyDonation).mockResolvedValueOnce(fullNgo);
       await expect(service.claim('d1', {} as any, 'u1')).rejects.toThrow(/Claim exceeds daily intake capacity/);
     });
 
     it('should succeed and lock donation if capacity is sufficient', async () => {
       const donation = { id: 'd1', quantity: 10, status: DonationStatus.AVAILABLE };
-      const ngo = {
-        id: 'u1',
-        role: UserRole.NGO,
-        isVerified: true,
-        currentIntakeLoad: 50,
-        dailyIntakeCapacity: 100,
-      };
+      const ngo = { id: 'u1', role: UserRole.NGO, currentIntakeLoad: 50, dailyIntakeCapacity: 100 };
       mockEntityManager.findOne.mockResolvedValueOnce(donation).mockResolvedValueOnce(ngo);
       mockEntityManager.save.mockImplementation((entity) => Promise.resolve(entity));
-      
+
       const result = await service.claim('d1', {} as any, 'u1');
       expect(result.status).toBe(DonationStatus.CLAIMED);
     });
@@ -146,33 +137,55 @@ describe('DonationsService Unit Tests', () => {
   // --- TEST SUITE 3: VOLUNTEER WORKFLOW ---
   describe('updateStatus (Volunteer Flow)', () => {
     it('should allow Volunteer to Pickup claimed food', async () => {
-      const donation = { id: 'd1', status: DonationStatus.CLAIMED, claimedById: 'ngo1', donorId: 'donor1' };
+      const donation = {
+        id: 'd1',
+        status: DonationStatus.CLAIMED,
+        claimedById: 'ngo1',
+        donorId: 'donor1',
+      };
       const volunteer = { id: 'vol1', role: UserRole.VOLUNTEER };
-      mockEntityManager.findOne.mockResolvedValueOnce(donation).mockResolvedValueOnce(volunteer);
-      mockEntityManager.save.mockResolvedValue({ ...donation, status: DonationStatus.PICKED_UP });
+      mockEntityManager.findOne
+        .mockResolvedValueOnce(donation)
+        .mockResolvedValueOnce(volunteer);
+      mockEntityManager.save.mockResolvedValue({
+        ...donation,
+        status: DonationStatus.PICKED_UP,
+      });
 
-      const result = await service.updateStatus('d1', DonationStatus.PICKED_UP, 'vol1');
+      const result = await service.updateStatus(
+        'd1',
+        DonationStatus.PICKED_UP,
+        'vol1',
+      );
       expect(result.status).toBe(DonationStatus.PICKED_UP);
     });
 
     it('should fail if unauthorized user tries to update', async () => {
-      const donation = { id: 'd1', status: DonationStatus.CLAIMED, claimedById: 'ngo1' };
+      const donation = {
+        id: 'd1',
+        status: DonationStatus.CLAIMED,
+        claimedById: 'ngo1',
+      };
       const rando = { id: 'rando1', role: UserRole.DONOR };
-      mockEntityManager.findOne.mockResolvedValueOnce(donation).mockResolvedValueOnce(rando);
-      await expect(service.updateStatus('d1', DonationStatus.PICKED_UP, 'rando1')).rejects.toThrow(/not authorized/);
+      mockEntityManager.findOne
+        .mockResolvedValueOnce(donation)
+        .mockResolvedValueOnce(rando);
+      await expect(
+        service.updateStatus('d1', DonationStatus.PICKED_UP, 'rando1'),
+      ).rejects.toThrow(/not authorized/);
     });
   });
 
   // --- TEST SUITE 4: GEOSPATIAL DISCOVERY ---
   describe('findAll (Discovery)', () => {
     it('should use QueryBuilder (Haversine) when lat/lon are provided', async () => {
-      await service.findAll(12.97, 77.59, 5); 
+      await service.findAll(12.97, 77.59, 5);
 
       // 3. 👇 Check against the SHARED mock
       expect(mockDonationRepo.createQueryBuilder).toHaveBeenCalled();
       expect(mockQueryBuilder.addSelect).toHaveBeenCalledWith(
-        expect.stringContaining('6371 * acos'), 
-        'distance'
+        expect.stringContaining('6371 * acos'),
+        'distance',
       );
     });
 

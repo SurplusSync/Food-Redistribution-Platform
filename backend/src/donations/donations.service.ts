@@ -1,4 +1,10 @@
-import { Inject, Injectable, Logger, NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  Logger,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateDonationDto, ClaimDonationDto } from './dto/donations.dto';
@@ -36,7 +42,10 @@ export class DonationsService {
       }
       this.logger.debug('Donation cache invalidated');
     } catch (error) {
-      this.logger.warn('Failed to invalidate cache, it will expire naturally', error);
+      this.logger.warn(
+        'Failed to invalidate cache, it will expire naturally',
+        error,
+      );
     }
   }
 
@@ -73,7 +82,9 @@ export class DonationsService {
 
     // 1. Check if expiry time is in the past
     if (expiryDate <= now) {
-      throw new BadRequestException('Donation expiry time cannot be in the past');
+      throw new BadRequestException(
+        'Donation expiry time cannot be in the past',
+      );
     }
 
     // 2. Check if preparation time is in the future
@@ -84,11 +95,15 @@ export class DonationsService {
     // 3. Define high-risk food types and their safe consumption windows
     const highRiskFoodTypes = ['cooked', 'dairy', 'meat', 'poultry', 'seafood'];
     const foodTypeLower = createDonationDto.foodType.toLowerCase();
-    const isHighRisk = highRiskFoodTypes.some(type => foodTypeLower.includes(type));
+    const isHighRisk = highRiskFoodTypes.some((type) =>
+      foodTypeLower.includes(type),
+    );
 
     // Stricter rule for high-risk food: must have at least 2 hours of shelf life at create time
     const minSafeWindowHours = isHighRisk ? 2 : 1;
-    const safeLimit = new Date(now.getTime() + minSafeWindowHours * 60 * 60 * 1000);
+    const safeLimit = new Date(
+      now.getTime() + minSafeWindowHours * 60 * 60 * 1000,
+    );
 
     if (expiryDate < safeLimit) {
       const message = isHighRisk
@@ -126,7 +141,10 @@ export class DonationsService {
         .orderBy('distance', 'ASC')
         .getMany();
     } catch (error) {
-      console.error('Error with distance query, returning all donations:', error);
+      console.error(
+        'Error with distance query, returning all donations:',
+        error,
+      );
       // Fallback: return all donations without distance filtering
       return await this.donationsRepository.find({
         order: { createdAt: 'DESC' },
@@ -135,74 +153,79 @@ export class DonationsService {
   }
 
   async claim(id: string, claimDto: ClaimDonationDto, userId: string) {
-    return await this.donationsRepository.manager.transaction(async transactionalEntityManager => {
-      // 1. Find the donation and user (NGO)
-      const donation = await transactionalEntityManager.findOne(Donation, { where: { id } });
-      const user = await transactionalEntityManager.findOne(User, { where: { id: userId } });
+    return await this.donationsRepository.manager.transaction(
+      async (transactionalEntityManager) => {
+        // 1. Find the donation and user (NGO)
+        const donation = await transactionalEntityManager.findOne(Donation, {
+          where: { id },
+        });
+        const user = await transactionalEntityManager.findOne(User, {
+          where: { id: userId },
+        });
 
-      // 2. Checks
-      if (!donation) {
-        throw new NotFoundException('Donation not found');
-      }
-      if (donation.status !== DonationStatus.AVAILABLE) {
-        throw new BadRequestException('Donation already claimed');
-      }
-      if (!user) {
-        throw new NotFoundException('User not found');
-      }
+        // 2. Checks
+        if (!donation) {
+          throw new NotFoundException('Donation not found');
+        }
+        if (donation.status !== DonationStatus.AVAILABLE) {
+          throw new BadRequestException('Donation already claimed');
+        }
+        if (!user) {
+          throw new NotFoundException('User not found');
+        }
 
-      // Check role
-      if (user.role !== UserRole.NGO) {
-        throw new BadRequestException('Only NGOs can claim donations');
-      }
+        // Check role
+        if (user.role !== UserRole.NGO) {
+          throw new BadRequestException('Only NGOs can claim donations');
+        }
 
-      // Security: Block unverified NGOs from claiming
-      if (user.role === UserRole.NGO && !user.isVerified) {
-        throw new ForbiddenException(
-          'Your NGO account is pending verification by an Administrator. You cannot claim food yet.',
-        );
-      }
+        // 3. NGO Capacity Validation
+        if (
+          user.dailyIntakeCapacity !== null &&
+          user.dailyIntakeCapacity !== undefined
+        ) {
+          // Check unit match (case-insensitive)
+          if (user.capacityUnit && donation.unit) {
+            const ngoUnit = user.capacityUnit.trim().toLowerCase();
+            const donationUnit = donation.unit.trim().toLowerCase();
 
-      // 3. NGO Capacity Validation
-      if (user.dailyIntakeCapacity !== null && user.dailyIntakeCapacity !== undefined) {
-        // Check unit match (case-insensitive)
-        if (user.capacityUnit && donation.unit) {
-          const ngoUnit = user.capacityUnit.trim().toLowerCase();
-          const donationUnit = donation.unit.trim().toLowerCase();
+            if (ngoUnit !== donationUnit) {
+              throw new BadRequestException(
+                `Unit mismatch: NGO capacity is in ${user.capacityUnit}, but donation is in ${donation.unit}.`,
+              );
+            }
+          }
 
-          if (ngoUnit !== donationUnit) {
+          // Check capacity limit
+          if (
+            user.currentIntakeLoad + donation.quantity >
+            user.dailyIntakeCapacity
+          ) {
             throw new BadRequestException(
-              `Unit mismatch: NGO capacity is in ${user.capacityUnit}, but donation is in ${donation.unit}.`,
+              `Claim exceeds daily intake capacity. Current load: ${user.currentIntakeLoad}, Capacity: ${user.dailyIntakeCapacity}`,
             );
           }
         }
 
-        // Check capacity limit
-        if (user.currentIntakeLoad + donation.quantity > user.dailyIntakeCapacity) {
-          throw new BadRequestException(
-            `Claim exceeds daily intake capacity. Current load: ${user.currentIntakeLoad}, Capacity: ${user.dailyIntakeCapacity}`,
-          );
+        // 4. Update status and NGO current load
+        donation.status = DonationStatus.CLAIMED;
+        donation.claimedById = userId;
+
+        user.currentIntakeLoad += donation.quantity;
+
+        // Award karma to NGO for claiming a donation
+        user.karmaPoints = (user.karmaPoints || 0) + 10;
+        const newBadges = this.checkAndAwardBadges(user);
+        if (newBadges.length > 0) {
+          user.badges = [...new Set([...(user.badges || []), ...newBadges])];
         }
-      }
 
-      // 4. Update status and NGO current load
-      donation.status = DonationStatus.CLAIMED;
-      donation.claimedById = userId;
-
-      user.currentIntakeLoad += donation.quantity;
-
-      // Award karma to NGO for claiming a donation
-      user.karmaPoints = (user.karmaPoints || 0) + 10;
-      const newBadges = this.checkAndAwardBadges(user);
-      if (newBadges.length > 0) {
-        user.badges = [...new Set([...(user.badges || []), ...newBadges])];
-      }
-
-      await transactionalEntityManager.save(user);
-      const saved = await transactionalEntityManager.save(donation);
-      await this.invalidateCache();
-      return saved;
-    });
+        await transactionalEntityManager.save(user);
+        const saved = await transactionalEntityManager.save(donation);
+        await this.invalidateCache();
+        return saved;
+      },
+    );
   }
 
   async updateStatus(id: string, status: DonationStatus, userId: string) {
@@ -231,10 +254,13 @@ export class DonationsService {
         const isAuthorized =
           donation.donorId === userId ||
           donation.claimedById === userId ||
-          (requestingUser.role === UserRole.VOLUNTEER && donation.claimedById !== null);
+          (requestingUser.role === UserRole.VOLUNTEER &&
+            donation.claimedById !== null);
 
         if (!isAuthorized) {
-          throw new BadRequestException('You are not authorized to update this donation status');
+          throw new BadRequestException(
+            'You are not authorized to update this donation status',
+          );
         }
 
         const oldStatus = donation.status;
@@ -242,7 +268,9 @@ export class DonationsService {
         // Handle DELIVERED status with karma awards
         if (status === DonationStatus.DELIVERED) {
           if (oldStatus === DonationStatus.DELIVERED) {
-            throw new BadRequestException('Donation already marked as delivered');
+            throw new BadRequestException(
+              'Donation already marked as delivered',
+            );
           }
 
           // Decrement NGO's intake load and award NGO karma
@@ -252,14 +280,20 @@ export class DonationsService {
             });
 
             if (claimedNgo) {
-              claimedNgo.currentIntakeLoad = Math.max(0, claimedNgo.currentIntakeLoad - donation.quantity);
+              claimedNgo.currentIntakeLoad = Math.max(
+                0,
+                claimedNgo.currentIntakeLoad - donation.quantity,
+              );
 
               const NGO_KARMA = 20;
-              claimedNgo.karmaPoints = (claimedNgo.karmaPoints || 0) + NGO_KARMA;
+              claimedNgo.karmaPoints =
+                (claimedNgo.karmaPoints || 0) + NGO_KARMA;
 
               const ngoBadges = this.checkAndAwardBadges(claimedNgo);
               if (ngoBadges.length > 0) {
-                claimedNgo.badges = [...new Set([...(claimedNgo.badges || []), ...ngoBadges])];
+                claimedNgo.badges = [
+                  ...new Set([...(claimedNgo.badges || []), ...ngoBadges]),
+                ];
               }
 
               await transactionalEntityManager.save(claimedNgo);
@@ -269,11 +303,17 @@ export class DonationsService {
           // Award karma to volunteer (if they're the one marking as delivered)
           if (requestingUser.role === UserRole.VOLUNTEER) {
             const VOLUNTEER_KARMA = 50;
-            requestingUser.karmaPoints = (requestingUser.karmaPoints || 0) + VOLUNTEER_KARMA;
+            requestingUser.karmaPoints =
+              (requestingUser.karmaPoints || 0) + VOLUNTEER_KARMA;
 
             const volunteerNewBadges = this.checkAndAwardBadges(requestingUser);
             if (volunteerNewBadges.length > 0) {
-              requestingUser.badges = [...new Set([...(requestingUser.badges || []), ...volunteerNewBadges])];
+              requestingUser.badges = [
+                ...new Set([
+                  ...(requestingUser.badges || []),
+                  ...volunteerNewBadges,
+                ]),
+              ];
             }
 
             await transactionalEntityManager.save(requestingUser);
@@ -287,11 +327,17 @@ export class DonationsService {
           // Award karma to donor
           if (donation.donor) {
             const DONOR_KARMA = 30;
-            donation.donor.karmaPoints = (donation.donor.karmaPoints || 0) + DONOR_KARMA;
+            donation.donor.karmaPoints =
+              (donation.donor.karmaPoints || 0) + DONOR_KARMA;
 
             const donorNewBadges = this.checkAndAwardBadges(donation.donor);
             if (donorNewBadges.length > 0) {
-              donation.donor.badges = [...new Set([...(donation.donor.badges || []), ...donorNewBadges])];
+              donation.donor.badges = [
+                ...new Set([
+                  ...(donation.donor.badges || []),
+                  ...donorNewBadges,
+                ]),
+              ];
             }
 
             await transactionalEntityManager.save(donation.donor);
@@ -316,13 +362,20 @@ export class DonationsService {
         }
 
         // Handle reversing a claim (CLAIMED/PICKED_UP -> AVAILABLE)
-        if (status === DonationStatus.AVAILABLE && (oldStatus === DonationStatus.CLAIMED || oldStatus === DonationStatus.PICKED_UP)) {
+        if (
+          status === DonationStatus.AVAILABLE &&
+          (oldStatus === DonationStatus.CLAIMED ||
+            oldStatus === DonationStatus.PICKED_UP)
+        ) {
           const claimedUser = await transactionalEntityManager.findOne(User, {
-            where: { id: donation.claimedById }
+            where: { id: donation.claimedById },
           });
 
           if (claimedUser) {
-            claimedUser.currentIntakeLoad = Math.max(0, claimedUser.currentIntakeLoad - donation.quantity);
+            claimedUser.currentIntakeLoad = Math.max(
+              0,
+              claimedUser.currentIntakeLoad - donation.quantity,
+            );
             await transactionalEntityManager.save(claimedUser);
           }
 
@@ -356,7 +409,10 @@ export class DonationsService {
     for (const rule of badgeRules) {
       const badgeName = `${rule.emoji} ${rule.badge}`;
 
-      if (user.karmaPoints >= rule.threshold && !currentBadges.includes(badgeName)) {
+      if (
+        user.karmaPoints >= rule.threshold &&
+        !currentBadges.includes(badgeName)
+      ) {
         newBadges.push(badgeName);
       }
     }
@@ -364,30 +420,4 @@ export class DonationsService {
     return newBadges;
   }
 
-  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
-  async handleDataRetentionPolicy() {
-    this.logger.log('Running Data Retention Cron Job...');
-
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-
-    try {
-      const oldDonations = await this.donationsRepository.find({
-        where: {
-          status: DonationStatus.DELIVERED,
-          deliveredAt: LessThan(thirtyDaysAgo),
-        },
-      });
-
-      if (oldDonations.length > 0) {
-        await this.donationsRepository.remove(oldDonations);
-        await this.invalidateCache();
-        this.logger.log(`Successfully deleted ${oldDonations.length} old donations older than 30 days.`);
-      } else {
-        this.logger.log('No old data found to archive today.');
-      }
-    } catch (error: any) {
-      this.logger.error('Failed to run data retention job', error.stack);
-    }
-  }
 }

@@ -1,18 +1,25 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsString, MinLength, IsEnum, IsOptional, IsNumber } from 'class-validator';
+import {
+  IsEmail,
+  IsString,
+  MinLength,
+  IsEnum,
+  IsOptional,
+  IsNumber,
+} from 'class-validator';
 import { UserRole } from '../../../../shared/types/user.types';
 
 export class RegisterDto {
   @ApiProperty({
     example: 'donor@restaurant.com',
-    description: 'User email address'
+    description: 'User email address',
   })
   @IsEmail()
   email: string;
 
   @ApiProperty({
     example: 'password123',
-    description: 'Password (minimum 6 characters)'
+    description: 'Password (minimum 6 characters)',
   })
   @IsString()
   @MinLength(6)
@@ -20,7 +27,7 @@ export class RegisterDto {
 
   @ApiProperty({
     example: 'Annapurna Restaurant',
-    description: 'Full name or business name'
+    description: 'Full name or business name',
   })
   @IsString()
   name: string;
@@ -28,7 +35,7 @@ export class RegisterDto {
   @ApiProperty({
     enum: UserRole,
     example: UserRole.DONOR,
-    description: 'User role in the platform'
+    description: 'User role in the platform',
   })
   @IsEnum(UserRole)
   role: UserRole;
@@ -36,7 +43,7 @@ export class RegisterDto {
   @ApiProperty({
     required: false,
     example: '+919876543210',
-    description: 'Contact phone number'
+    description: 'Contact phone number',
   })
   @IsOptional()
   @IsString()
@@ -45,7 +52,7 @@ export class RegisterDto {
   @ApiProperty({
     required: false,
     example: 'Green Foods Ltd',
-    description: 'Name of the business or NGO'
+    description: 'Name of the business or NGO',
   })
   @IsOptional()
   @IsString()
@@ -54,7 +61,7 @@ export class RegisterDto {
   @ApiProperty({
     required: false,
     example: 'Restaurant',
-    description: 'Type of organization'
+    description: 'Type of organization',
   })
   @IsOptional()
   @IsString()
@@ -63,7 +70,7 @@ export class RegisterDto {
   @ApiProperty({
     required: false,
     example: '123 Main St, Delhi',
-    description: 'Physical address'
+    description: 'Physical address',
   })
   @IsOptional()
   @IsString()
@@ -81,14 +88,14 @@ export class RegisterDto {
 export class LoginDto {
   @ApiProperty({
     example: 'donor@restaurant.com',
-    description: 'User email address'
+    description: 'User email address',
   })
   @IsEmail()
   email: string;
 
   @ApiProperty({
     example: 'password123',
-    description: 'User password'
+    description: 'User password',
   })
   @IsString()
   password: string;
