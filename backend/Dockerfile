@@ -1,41 +1,41 @@
-# Stage 1: Install all dependencies (used by dev & build)
-FROM node:20-alpine AS deps
+# --- Stage 1: Base (Install Dependencies) ---
+FROM node:20-alpine AS base
 
+# 1. Set Root Workdir
 WORKDIR /app
 
-COPY backend/package*.json ./
+# 2. Copy Package Files (structure must match monorepo)
+COPY backend/package*.json ./backend/
+# Copy shared if it has a package.json, otherwise just the folder structure
+COPY shared/ ./shared/
+
+# 3. Install Dependencies
+WORKDIR /app/backend
 RUN npm install
 
-# Stage 2: Development (all deps, ts-node hot-reload)
-FROM deps AS dev
-
-WORKDIR /app
-
-# Source code is mounted via docker-compose volumes
-EXPOSE 3000
-
+# --- Stage 2: Development (For Local Docker Compose) ---
+FROM base AS dev
+# We don't copy source code here because docker-compose mounts it via volumes!
+WORKDIR /app/backend
 CMD ["npm", "run", "start:dev"]
 
-# Stage 3: Build the application
-FROM deps AS builder
-
+# --- Stage 3: Builder (For Render Production) ---
+FROM base AS builder
 WORKDIR /app
-
-COPY backend/ .
-COPY shared/ /shared/
-
+# Copy all source code (backend + shared)
+COPY . .
+# Build the backend
+WORKDIR /app/backend
 RUN npm run build
 
-# Stage 4: Production (minimal image)
-FROM node:20-alpine AS runner
-
+# Stage 4: Production Runner (For Render)
+FROM node:20-alpine AS production
 WORKDIR /app
 
-COPY --from=builder /app/package*.json ./
-COPY --from=builder /app/dist ./dist
-
-RUN npm ci --omit=dev
+# Copy built artifacts from the correct path
+COPY --from=builder /app/backend/dist ./dist
+COPY --from=builder /app/backend/node_modules ./node_modules
+COPY --from=builder /app/backend/package.json ./
 
 EXPOSE 3000
-
 CMD ["node", "dist/main"]

@@ -53,9 +53,9 @@ services:
       - redis
     # Mount volume for Hot Reloading
     volumes:
-      - ./backend:/app
-      - /app/node_modules
-      - ./shared:/shared
+      - ./backend:/app/backend
+      - /app/backend/node_modules
+      - ./shared:/app/shared
 
   # FRONTEND (React + Vite)
   frontend:
