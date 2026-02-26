@@ -9,9 +9,27 @@ import * as bcrypt from 'bcrypt';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  const configuredOrigins = (process.env.FRONTEND_URL || 'http://localhost:5173')
+    .split(',')
+    .map((origin) => origin.trim().replace(/\/+$/, ''))
+    .filter(Boolean);
+
   // Enable CORS - Allow Frontend to connect
   app.enableCors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:5173', // Keshav's frontend URL
+    origin: (origin, callback) => {
+      if (!origin) {
+        callback(null, true);
+        return;
+      }
+
+      const normalizedOrigin = origin.replace(/\/+$/, '');
+      if (configuredOrigins.includes(normalizedOrigin)) {
+        callback(null, true);
+        return;
+      }
+
+      callback(new Error('Not allowed by CORS'), false);
+    },
     credentials: true,
   });
 
@@ -24,7 +42,7 @@ async function bootstrap() {
     }),
   );
 
-  // --- SUPER ADMIN SEEDER START ---
+  // SUPER ADMIN SEEDER START
   const userRepository = app.get(getRepositoryToken(User));
   const adminEmail = process.env.SUPER_ADMIN_EMAIL || 'admin@surplussync.com';
 
@@ -44,7 +62,7 @@ async function bootstrap() {
     });
     console.log('✅ Super Admin seeded successfully!');
   }
-  // --- SUPER ADMIN SEEDER END ---
+  // SUPER ADMIN SEEDER END
 
   // Setup Swagger Documentation
   const config = new DocumentBuilder()
