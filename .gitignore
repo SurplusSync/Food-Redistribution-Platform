@@ -22,3 +22,6 @@ postgres_data/
 .vscode/
 .idea/
 *.DS_Store
+
+# Ignore database backups
+/backups/
