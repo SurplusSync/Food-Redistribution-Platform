@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from 'react'
 import { getUserProfile, updateUserProfile, type User } from '../../services/api'
 import { User as UserIcon, Building, Phone, Mail, MapPin, Shield, Edit2, Check, Trophy, Star, AlertCircle, Loader2, Download, Award } from 'lucide-react'
 
-// ─── Certificate Modal (Donor Only) ──────────────────────────────────────────
+// ─── Certificate Modal (All Roles) ───────────────────────────────────────────
 
 interface CertificateProps {
     user: User
@@ -15,9 +15,27 @@ function CertificateModal({ user, onClose }: CertificateProps) {
     const today = new Date().toLocaleDateString('en-IN', {
         day: 'numeric', month: 'long', year: 'numeric',
     })
+
+    const role = String(user.role || '').toLowerCase()
+    const isNGO = role === 'ngo'
+    const isVolunteer = role === 'volunteer'
+
     const donations = user.impactStats?.totalDonations ?? 0
     const meals = user.impactStats?.mealsProvided ?? 0
     const kg = user.impactStats?.kgSaved ?? 0
+
+    // Role-specific theming
+    const accentColor = isNGO ? '#2563eb' : isVolunteer ? '#7c3aed' : '#059669'
+    const lightBg = isNGO ? '#eff6ff' : isVolunteer ? '#f5f3ff' : '#f0fdf4'
+    const lightBorder = isNGO ? '#bfdbfe' : isVolunteer ? '#ddd6fe' : '#d1fae5'
+    const seal = isNGO ? '🏛️' : isVolunteer ? '🚴' : '🌾'
+    const roleLabel = isNGO ? 'NGO Partner' : isVolunteer ? 'Volunteer' : 'Food Donor'
+    const actionText = isNGO
+        ? 'food collections and community service'
+        : isVolunteer
+            ? 'food delivery and community service'
+            : 'food donations and sustainability efforts'
+    const stat1Label = isNGO ? 'Collections' : isVolunteer ? 'Deliveries' : 'Donations'
 
     const handlePrint = () => {
         const printContents = certRef.current?.innerHTML
@@ -28,25 +46,26 @@ function CertificateModal({ user, onClose }: CertificateProps) {
       <title>Certificate – ${user.organizationName || user.name}</title>
       <style>
         *{margin:0;padding:0;box-sizing:border-box}
-        body{font-family:Georgia,serif;background:#f0fdf4;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:40px}
-        .wrap{background:#fff;border:3px solid #059669;border-radius:16px;padding:56px;max-width:740px;width:100%;position:relative;box-shadow:0 0 0 8px #d1fae5,0 0 0 12px #059669}
+        body{font-family:Georgia,serif;background:${lightBg};display:flex;align-items:center;justify-content:center;min-height:100vh;padding:40px}
+        .wrap{background:#fff;border:3px solid ${accentColor};border-radius:16px;padding:56px;max-width:740px;width:100%;position:relative;box-shadow:0 0 0 8px ${lightBorder},0 0 0 12px ${accentColor}}
         .corner{position:absolute;width:56px;height:56px}
-        .tl{top:12px;left:12px;border-top:4px solid #059669;border-left:4px solid #059669;border-radius:8px 0 0 0}
-        .tr{top:12px;right:12px;border-top:4px solid #059669;border-right:4px solid #059669;border-radius:0 8px 0 0}
-        .bl{bottom:12px;left:12px;border-bottom:4px solid #059669;border-left:4px solid #059669;border-radius:0 0 0 8px}
-        .br{bottom:12px;right:12px;border-bottom:4px solid #059669;border-right:4px solid #059669;border-radius:0 0 8px 0}
+        .tl{top:12px;left:12px;border-top:4px solid ${accentColor};border-left:4px solid ${accentColor};border-radius:8px 0 0 0}
+        .tr{top:12px;right:12px;border-top:4px solid ${accentColor};border-right:4px solid ${accentColor};border-radius:0 8px 0 0}
+        .bl{bottom:12px;left:12px;border-bottom:4px solid ${accentColor};border-left:4px solid ${accentColor};border-radius:0 0 0 8px}
+        .br{bottom:12px;right:12px;border-bottom:4px solid ${accentColor};border-right:4px solid ${accentColor};border-radius:0 0 8px 0}
         .seal{text-align:center;font-size:52px;margin-bottom:8px}
-        .org{text-align:center;font-size:10px;letter-spacing:4px;color:#059669;text-transform:uppercase;font-family:sans-serif;margin-bottom:12px}
+        .org{text-align:center;font-size:10px;letter-spacing:4px;color:${accentColor};text-transform:uppercase;font-family:sans-serif;margin-bottom:12px}
         h1{text-align:center;font-size:36px;color:#064e3b;margin-bottom:4px}
         .sub{text-align:center;font-size:11px;color:#9ca3af;letter-spacing:3px;text-transform:uppercase;font-family:sans-serif;margin-bottom:28px}
-        .div{width:80px;height:3px;background:linear-gradient(90deg,transparent,#059669,transparent);margin:0 auto 28px}
+        .div{width:80px;height:3px;background:linear-gradient(90deg,transparent,${accentColor},transparent);margin:0 auto 28px}
         .body{text-align:center;font-size:15px;color:#374151;line-height:1.9;margin-bottom:24px}
         .recipient{font-size:28px;font-style:italic;font-weight:bold;color:#064e3b;display:block;margin:6px 0}
+        .rlabel{display:inline-block;background:${accentColor};color:#fff;border-radius:12px;padding:4px 16px;font-size:11px;font-family:sans-serif;margin-bottom:16px}
         .stats{display:flex;justify-content:center;gap:40px;margin:24px 0 32px}
-        .snum{font-size:28px;font-weight:bold;color:#059669;font-family:sans-serif;text-align:center}
+        .snum{font-size:28px;font-weight:bold;color:${accentColor};font-family:sans-serif;text-align:center}
         .slbl{font-size:10px;color:#9ca3af;text-transform:uppercase;letter-spacing:1px;font-family:sans-serif;text-align:center}
-        .kbadge{display:inline-block;background:linear-gradient(135deg,#059669,#047857);color:#fff;border-radius:20px;padding:6px 18px;font-size:12px;font-family:sans-serif}
-        .footer{display:flex;justify-content:space-between;align-items:flex-end;margin-top:32px;padding-top:20px;border-top:1px solid #d1fae5}
+        .kbadge{display:inline-block;background:linear-gradient(135deg,${accentColor},${accentColor}bb);color:#fff;border-radius:20px;padding:6px 18px;font-size:12px;font-family:sans-serif}
+        .footer{display:flex;justify-content:space-between;align-items:flex-end;margin-top:32px;padding-top:20px;border-top:1px solid ${lightBorder}}
         .sig-line{width:160px;border-bottom:1px solid #d1d5db;margin-bottom:6px}
         .sig-lbl{font-size:11px;color:#6b7280;font-family:sans-serif}
         .date{font-size:12px;color:#6b7280;font-family:sans-serif;text-align:right}
@@ -85,48 +104,54 @@ function CertificateModal({ user, onClose }: CertificateProps) {
                 </div>
 
                 {/* Certificate Preview */}
-                <div className="p-8 bg-gradient-to-br from-emerald-50 to-green-50">
+                <div className="p-8" style={{ background: lightBg }}>
                     <div
                         ref={certRef}
-                        className="relative bg-white rounded-2xl p-12"
-                        style={{ border: '3px solid #059669', boxShadow: '0 0 0 8px #d1fae5, 0 0 0 12px #059669' }}
+                        className="relative bg-white rounded-2xl p-12 text-center"
+                        style={{ border: `3px solid ${accentColor}`, boxShadow: `0 0 0 8px ${lightBorder}, 0 0 0 12px ${accentColor}` }}
                     >
                         {/* Corner accents */}
                         {[['top-3 left-3', 'border-t-4 border-l-4 rounded-tl-lg'], ['top-3 right-3', 'border-t-4 border-r-4 rounded-tr-lg'], ['bottom-3 left-3', 'border-b-4 border-l-4 rounded-bl-lg'], ['bottom-3 right-3', 'border-b-4 border-r-4 rounded-br-lg']].map(([pos, style]) => (
-                            <div key={pos} className={`absolute ${pos} w-14 h-14 border-emerald-600 ${style}`} />
+                            <div key={pos} className={`absolute ${pos} w-14 h-14 ${style}`} style={{ borderColor: accentColor }} />
                         ))}
 
-                        <div className="text-center text-5xl mb-2">🌾</div>
-                        <p className="text-center text-xs tracking-widest text-emerald-700 uppercase mb-3" style={{ fontFamily: 'sans-serif', letterSpacing: '4px' }}>Food Redistribution Platform</p>
+                        <div className="text-5xl mb-2">{seal}</div>
+                        <p className="text-xs tracking-widest uppercase mb-3" style={{ color: accentColor, fontFamily: 'sans-serif', letterSpacing: '4px' }}>
+                            SurplusSync Food Redistribution Platform
+                        </p>
 
-                        <h1 className="text-center text-4xl font-bold text-emerald-900 mb-1" style={{ fontFamily: 'Georgia, serif' }}>
+                        <h1 className="text-4xl font-bold mb-1" style={{ color: '#0f172a', fontFamily: 'Georgia, serif' }}>
                             Certificate of Appreciation
                         </h1>
-                        <p className="text-center text-xs tracking-widest text-slate-400 uppercase mb-7" style={{ fontFamily: 'sans-serif', letterSpacing: '2px' }}>
-                            In Recognition of Outstanding Generosity
+                        <p className="text-xs tracking-widest text-slate-400 uppercase mb-7" style={{ fontFamily: 'sans-serif', letterSpacing: '2px' }}>
+                            In Recognition of Outstanding Service
                         </p>
 
-                        <div style={{ width: 80, height: 3, background: 'linear-gradient(90deg,transparent,#059669,transparent)', margin: '0 auto 28px' }} />
+                        <div style={{ width: 80, height: 3, background: `linear-gradient(90deg,transparent,${accentColor},transparent)`, margin: '0 auto 28px' }} />
 
-                        <p className="text-center text-slate-600 mb-1" style={{ fontSize: 16, lineHeight: 1.9, fontFamily: 'Georgia, serif' }}>
+                        <p className="text-slate-600 mb-1" style={{ fontSize: 16, lineHeight: 1.9, fontFamily: 'Georgia, serif' }}>
                             This certificate is proudly presented to
                         </p>
-                        <p className="text-center text-3xl font-bold italic text-emerald-900 mb-2" style={{ fontFamily: 'Georgia, serif' }}>
+                        <p className="text-3xl font-bold italic mb-2" style={{ color: '#0f172a', fontFamily: 'Georgia, serif' }}>
                             {user.organizationName || user.name}
                         </p>
-                        <p className="text-center text-slate-500 text-sm mb-8" style={{ fontFamily: 'sans-serif' }}>
-                            in acknowledgement of their compassionate food donations that have made a tangible difference in our community.
+                        <span className="inline-block text-white text-xs rounded-full px-4 py-1 mb-5" style={{ background: accentColor, fontFamily: 'sans-serif' }}>
+                            {roleLabel}
+                        </span>
+                        <p className="text-slate-500 text-sm mb-8" style={{ fontFamily: 'sans-serif' }}>
+                            in acknowledgement of their outstanding contribution through {actionText},<br />
+                            making a meaningful difference in the lives of people in our community.
                         </p>
 
                         {/* Impact Stats */}
                         <div className="flex justify-center gap-14 mb-7">
                             {[
-                                { value: donations, label: 'Donations' },
+                                { value: donations, label: stat1Label },
                                 { value: meals, label: 'Meals Provided' },
-                                { value: `${kg} kg`, label: 'Food Saved' },
+                                { value: `${kg} kg`, label: 'Food Rescued' },
                             ].map(({ value, label }) => (
                                 <div key={label} className="text-center">
-                                    <div className="text-3xl font-bold text-emerald-600" style={{ fontFamily: 'sans-serif' }}>{value}</div>
+                                    <div className="text-3xl font-bold" style={{ color: accentColor, fontFamily: 'sans-serif' }}>{value}</div>
                                     <div className="text-xs text-slate-400 uppercase tracking-wider mt-1" style={{ fontFamily: 'sans-serif' }}>{label}</div>
                                 </div>
                             ))}
@@ -134,17 +159,17 @@ function CertificateModal({ user, onClose }: CertificateProps) {
 
                         {/* Karma Badge */}
                         <div className="text-center mb-8">
-                            <span className="inline-block bg-gradient-to-r from-emerald-600 to-teal-600 text-white text-sm rounded-full px-5 py-2" style={{ fontFamily: 'sans-serif' }}>
+                            <span className="inline-block text-white text-sm rounded-full px-5 py-2" style={{ background: `linear-gradient(135deg,${accentColor},${accentColor}bb)`, fontFamily: 'sans-serif' }}>
                                 ⭐ {user.karmaPoints ?? 0} Karma Points · Level {user.level ?? 1} Contributor
                             </span>
                         </div>
 
                         {/* Footer */}
-                        <div style={{ borderTop: '1px solid #d1fae5', paddingTop: 20 }} className="flex justify-between items-end">
+                        <div style={{ borderTop: `1px solid ${lightBorder}`, paddingTop: 20 }} className="flex justify-between items-end">
                             <div>
                                 <div style={{ width: 160, borderBottom: '1px solid #d1d5db', marginBottom: 6 }} />
                                 <p className="text-xs text-slate-500" style={{ fontFamily: 'sans-serif' }}>Platform Director</p>
-                                <p className="text-xs font-semibold text-slate-700" style={{ fontFamily: 'sans-serif' }}>Food Redistribution Network</p>
+                                <p className="text-xs font-semibold text-slate-700" style={{ fontFamily: 'sans-serif' }}>SurplusSync Network</p>
                             </div>
                             <div className="text-2xl">🏅</div>
                             <div className="text-right">
@@ -244,10 +269,10 @@ export default function Profile() {
     const level = user.level || 1
     const nextLevelPoints = user.nextLevelPoints || 0
     const progressPercent = nextLevelPoints > 0 ? Math.min(100, ((karmaPoints % 100) / nextLevelPoints) * 100) : 100
-    const isDonor = String(user.role).toLowerCase() === 'donor'
+
+    const roleStr = String(user.role).toLowerCase()
 
     const getRoleBadge = () => {
-        const roleStr = String(user.role).toLowerCase()
         const badgeMap = {
             donor: { bg: 'bg-emerald-500/10', text: 'text-emerald-400', label: 'Donor' },
             ngo: { bg: 'bg-blue-500/10', text: 'text-blue-400', label: 'NGO' },
@@ -256,6 +281,18 @@ export default function Profile() {
         return badgeMap[roleStr as keyof typeof badgeMap] || badgeMap.donor
     }
     const badge = getRoleBadge()
+
+    const certLabel = roleStr === 'ngo'
+        ? 'Impact Report'
+        : roleStr === 'volunteer'
+            ? 'Volunteer Certificate'
+            : 'My Certificate'
+
+    const certDesc = roleStr === 'ngo'
+        ? 'Download your NGO impact report for grants and funding applications'
+        : roleStr === 'volunteer'
+            ? 'Download your volunteer certificate to share on LinkedIn'
+            : 'Download your personalised impact certificate to share with your network'
 
     return (
         <div className="max-w-4xl mx-auto p-6 space-y-6">
@@ -281,15 +318,14 @@ export default function Profile() {
                         </div>
                     </div>
                     <div className="flex items-center gap-3">
-                        {isDonor && (
-                            <button
-                                onClick={() => setShowCertificate(true)}
-                                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-lg text-sm font-medium transition-all shadow-lg shadow-emerald-900/30"
-                            >
-                                <Award className="w-4 h-4" />
-                                My Certificate
-                            </button>
-                        )}
+                        {/* Certificate button available to ALL roles */}
+                        <button
+                            onClick={() => setShowCertificate(true)}
+                            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-lg text-sm font-medium transition-all shadow-lg shadow-emerald-900/30"
+                        >
+                            <Award className="w-4 h-4" />
+                            {certLabel}
+                        </button>
                         <button
                             onClick={() => editing ? handleSave() : setEditing(true)}
                             disabled={saving}
@@ -306,24 +342,22 @@ export default function Profile() {
                 <p className="text-slate-400">Manage your account and view your impact</p>
             </div>
 
-            {/* Donor Certificate CTA */}
-            {isDonor && (
-                <div className="bg-gradient-to-r from-emerald-900/40 to-teal-900/40 border border-emerald-500/30 rounded-xl p-5 flex items-center justify-between gap-4">
-                    <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-emerald-500/20 rounded-xl flex items-center justify-center text-2xl flex-shrink-0">🏅</div>
-                        <div>
-                            <p className="text-white font-semibold">Certificate of Appreciation</p>
-                            <p className="text-slate-400 text-sm">Download your personalised impact certificate to share with your network or use in funding applications</p>
-                        </div>
+            {/* Certificate CTA Banner (all roles) */}
+            <div className="bg-gradient-to-r from-emerald-900/40 to-teal-900/40 border border-emerald-500/30 rounded-xl p-5 flex items-center justify-between gap-4">
+                <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-emerald-500/20 rounded-xl flex items-center justify-center text-2xl flex-shrink-0">🏅</div>
+                    <div>
+                        <p className="text-white font-semibold">Certificate of Appreciation</p>
+                        <p className="text-slate-400 text-sm">{certDesc}</p>
                     </div>
-                    <button
-                        onClick={() => setShowCertificate(true)}
-                        className="flex-shrink-0 flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-colors"
-                    >
-                        <Download className="w-4 h-4" />Download
-                    </button>
                 </div>
-            )}
+                <button
+                    onClick={() => setShowCertificate(true)}
+                    className="flex-shrink-0 flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-colors"
+                >
+                    <Download className="w-4 h-4" />Download
+                </button>
+            </div>
 
             {/* Karma Counter */}
             <div className="bg-gradient-to-r from-purple-600 to-indigo-700 rounded-xl shadow-lg p-8 text-white">
@@ -357,7 +391,7 @@ export default function Profile() {
                 {badges.length === 0 ? (
                     <div className="text-center py-12 text-slate-400">
                         <p className="text-lg mb-2">No badges earned yet</p>
-                        <p className="text-sm">Complete deliveries to earn your first badge!</p>
+                        <p className="text-sm">Earn 10 karma points to get your first badge!</p>
                     </div>
                 ) : (
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -388,7 +422,7 @@ export default function Profile() {
                         <label className="flex items-center gap-2 text-sm text-slate-400 mb-2"><Phone className="w-4 h-4" />Phone Number</label>
                         {editing ? <input type="tel" value={formData.phoneNumber} onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })} className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2.5 text-white focus:border-emerald-500 focus:outline-none" /> : <p className="text-white">{user.phoneNumber || user.phone || 'Not provided'}</p>}
                     </div>
-                    {(String(user.role).toLowerCase() === 'donor' || String(user.role).toLowerCase() === 'ngo') && (
+                    {(roleStr === 'donor' || roleStr === 'ngo') && (
                         <>
                             <div>
                                 <label className="flex items-center gap-2 text-sm text-slate-400 mb-2"><Building className="w-4 h-4" />Organization Name</label>
@@ -403,14 +437,26 @@ export default function Profile() {
                 </div>
             </div>
 
-            {/* Badge Guide */}
+            {/* Badge Guide — thresholds MUST match backend BADGE_RULES exactly */}
             <div className="bg-blue-900/20 border border-blue-500/30 rounded-xl p-6">
                 <h2 className="text-xl font-bold text-white mb-4">📚 Badge Guide</h2>
                 <div className="space-y-3">
-                    {[{ e: '🌱', n: 'Newcomer', p: 50 }, { e: '🦸', n: 'Local Hero', p: 100 }, { e: '🏆', n: 'Champion', p: 250 }, { e: '⭐', n: 'Legend', p: 500 }, { e: '💫', n: 'Superhero', p: 1000 }].map(b => (
+                    {[
+                        { e: '🌱', n: 'Newcomer', p: 10 },
+                        { e: '🦸', n: 'Local Hero', p: 50 },
+                        { e: '🏆', n: 'Champion', p: 150 },
+                        { e: '⭐', n: 'Legend', p: 300 },
+                        { e: '💫', n: 'Superhero', p: 500 },
+                    ].map(b => (
                         <div key={b.n} className="flex items-center space-x-3">
                             <span className="text-2xl">{b.e}</span>
-                            <div><div className="font-semibold text-white">{b.n}</div><div className="text-sm text-slate-400">Earn {b.p} karma points</div></div>
+                            <div>
+                                <div className="font-semibold text-white">{b.n}</div>
+                                <div className="text-sm text-slate-400">Earn {b.p} karma points</div>
+                            </div>
+                            {karmaPoints >= b.p && (
+                                <span className="ml-auto text-xs text-emerald-400 font-semibold">✓ Earned</span>
+                            )}
                         </div>
                     ))}
                 </div>
@@ -421,17 +467,29 @@ export default function Profile() {
                 <h2 className="text-xl font-bold text-white mb-4">💡 How to Earn Karma</h2>
                 <div className="space-y-3">
                     <div className="flex items-start space-x-3">
-                        <span className="text-emerald-400 font-bold text-lg">+50</span>
-                        <div><div className="font-semibold text-white">Volunteer Delivery</div><div className="text-sm text-slate-400">Complete a food delivery as a volunteer</div></div>
+                        <span className="text-emerald-400 font-bold text-lg">+10</span>
+                        <div><div className="font-semibold text-white">Create a Donation</div><div className="text-sm text-slate-400">Donor lists new food for redistribution</div></div>
+                    </div>
+                    <div className="flex items-start space-x-3">
+                        <span className="text-emerald-400 font-bold text-lg">+10</span>
+                        <div><div className="font-semibold text-white">Claim a Donation</div><div className="text-sm text-slate-400">NGO claims available food</div></div>
                     </div>
                     <div className="flex items-start space-x-3">
                         <span className="text-emerald-400 font-bold text-lg">+30</span>
-                        <div><div className="font-semibold text-white">Donor Contribution</div><div className="text-sm text-slate-400">Your donated food is successfully delivered</div></div>
+                        <div><div className="font-semibold text-white">Donation Delivered (Donor)</div><div className="text-sm text-slate-400">Your donated food is successfully delivered</div></div>
+                    </div>
+                    <div className="flex items-start space-x-3">
+                        <span className="text-emerald-400 font-bold text-lg">+20</span>
+                        <div><div className="font-semibold text-white">Donation Delivered (NGO)</div><div className="text-sm text-slate-400">Food you claimed is marked as delivered</div></div>
+                    </div>
+                    <div className="flex items-start space-x-3">
+                        <span className="text-emerald-400 font-bold text-lg">+50</span>
+                        <div><div className="font-semibold text-white">Volunteer Delivery</div><div className="text-sm text-slate-400">Complete a food delivery as a volunteer</div></div>
                     </div>
                 </div>
             </div>
 
-            {!user.isVerified && String(user.role).toLowerCase() === 'ngo' && (
+            {!user.isVerified && roleStr === 'ngo' && (
                 <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-xl">
                     <p className="text-sm text-amber-400 mb-2">⏳ Verification Pending</p>
                     <p className="text-xs text-slate-400">Your NGO account is under review. You'll receive access once verified by our team.</p>
