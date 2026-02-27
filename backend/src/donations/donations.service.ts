@@ -339,6 +339,108 @@ export class DonationsService {
     );
   }
 
+  async getMonthlyStats(userId: string) {
+    try {
+      // Get user to determine role
+      const user = await this.usersRepository.findOne({ where: { id: userId } });
+      const role = user?.role || 'DONOR';
+
+      // Build the last 6 months
+      const months: { year: number; month: number; label: string }[] = [];
+      for (let i = 5; i >= 0; i--) {
+        const d = new Date();
+        d.setDate(1);
+        d.setMonth(d.getMonth() - i);
+        const labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        months.push({ year: d.getFullYear(), month: d.getMonth(), label: labels[d.getMonth()] });
+      }
+
+      const allDonations = await this.donationsRepository.find({
+        where: role === 'NGO'
+          ? { claimedById: userId }
+          : role === 'VOLUNTEER'
+            ? { volunteerId: userId }
+            : { donorId: userId },
+        order: { createdAt: 'ASC' },
+      });
+
+      const monthlyData = months.map(({ year, month, label }) => {
+        const inMonth = allDonations.filter(d => {
+          const dt = new Date(d.createdAt);
+          return dt.getFullYear() === year && dt.getMonth() === month;
+        });
+        const delivered = inMonth.filter(d => d.status === DonationStatus.DELIVERED).length;
+        const claimed = inMonth.filter(d =>
+          d.status === DonationStatus.CLAIMED ||
+          d.status === DonationStatus.PICKED_UP ||
+          d.status === DonationStatus.DELIVERED
+        ).length;
+        return {
+          label,
+          total: inMonth.length,
+          delivered,
+          claimed,
+          meals: delivered * 10,
+        };
+      });
+
+      return { success: true, data: monthlyData };
+    } catch {
+      return { success: true, data: [] };
+    }
+  }
+
+  async getCommunityStats() {
+    try {
+      const total = await this.donationsRepository.count();
+      const delivered = await this.donationsRepository.count({
+        where: { status: DonationStatus.DELIVERED },
+      });
+      const active = await this.donationsRepository.count({
+        where: { status: DonationStatus.AVAILABLE },
+      });
+      const totalDonors = await this.usersRepository.count({
+        where: { role: 'DONOR' as any },
+      });
+      const totalNGOs = await this.usersRepository.count({
+        where: { role: 'NGO' as any },
+      });
+      const totalVolunteers = await this.usersRepository.count({
+        where: { role: 'VOLUNTEER' as any },
+      });
+
+      return {
+        success: true,
+        data: {
+          totalDonations: total,
+          deliveredDonations: delivered,
+          activeDonations: active,
+          mealsProvided: delivered * 10,
+          kgRescued: delivered * 5,
+          co2Saved: Math.floor(delivered * 5 * 2.5),
+          totalDonors,
+          totalNGOs,
+          totalVolunteers,
+        },
+      };
+    } catch (error) {
+      return {
+        success: true,
+        data: {
+          totalDonations: 0,
+          deliveredDonations: 0,
+          activeDonations: 0,
+          mealsProvided: 0,
+          kgRescued: 0,
+          co2Saved: 0,
+          totalDonors: 0,
+          totalNGOs: 0,
+          totalVolunteers: 0,
+        },
+      };
+    }
+  }
+
   // Badge checking based on karma thresholds
   private checkAndAwardBadges(user: User): string[] {
     const newBadges: string[] = [];
