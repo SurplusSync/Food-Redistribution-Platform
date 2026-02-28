@@ -32,10 +32,28 @@ export class EventsGateway
   }
 
   emitDonationCreated(donationData: any) {
-    this.server.emit('donation.created', donationData);
+    const payload = {
+      ...donationData,
+      location: donationData?.location || {
+        lat: Number(donationData?.latitude) || 0,
+        lng: Number(donationData?.longitude) || 0,
+        address: donationData?.address || 'Unknown Location',
+      },
+    };
+
+    this.server.emit('donation.created', payload);
   }
 
-  emitDonationClaimed(donationId: string) {
-    this.server.emit('donation.claimed', donationId);
+  emitDonationClaimed(donation: any) {
+    const payload =
+      typeof donation === 'string'
+        ? { donationId: donation, status: 'CLAIMED' }
+        : {
+            donationId: donation?.id || donation?.donationId,
+            claimedBy: donation?.claimedById || donation?.claimedBy,
+            status: donation?.status || 'CLAIMED',
+          };
+
+    this.server.emit('donation.claimed', payload);
   }
 }

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { getDonations, type Donation } from '../../services/api'
+import { socketService } from '../../services/socket'
 import { PlusCircle, Map, Clock, TrendingUp, AlertTriangle, X, Image as ImageIcon, Shield, CheckCircle2, ChevronLeft, ChevronRight } from 'lucide-react'
 
 export default function DonorHome() {
@@ -26,6 +27,22 @@ export default function DonorHome() {
 
   useEffect(() => {
     load()
+
+    socketService.connect()
+
+    const unsubscribeCreated = socketService.onDonationCreated(() => {
+      load()
+    })
+
+    const unsubscribeClaimed = socketService.onDonationClaimed(() => {
+      load()
+    })
+
+    return () => {
+      unsubscribeCreated()
+      unsubscribeClaimed()
+      socketService.disconnect()
+    }
   }, [])
 
   const activeCount = donations.filter((d) => d.status === 'AVAILABLE').length

@@ -47,20 +47,44 @@ describe('EventsGateway Unit Tests', () => {
   });
 
   it('should emit donation.created event', () => {
-    const payload = { id: 'donation-1', quantity: 10 };
+    const payload = {
+      id: 'donation-1',
+      quantity: 10,
+      latitude: 12.9716,
+      longitude: 77.5946,
+      address: 'MG Road',
+    };
     const emitSpy = (gateway as any).server.emit as jest.Mock;
 
     gateway.emitDonationCreated(payload);
 
-    expect(emitSpy).toHaveBeenCalledWith('donation.created', payload);
+    expect(emitSpy).toHaveBeenCalledWith(
+      'donation.created',
+      expect.objectContaining({
+        id: 'donation-1',
+        location: {
+          lat: 12.9716,
+          lng: 77.5946,
+          address: 'MG Road',
+        },
+      }),
+    );
   });
 
   it('should emit donation.claimed event', () => {
-    const donationId = 'donation-2';
+    const donation = {
+      id: 'donation-2',
+      claimedById: 'ngo-1',
+      status: 'CLAIMED',
+    };
     const emitSpy = (gateway as any).server.emit as jest.Mock;
 
-    gateway.emitDonationClaimed(donationId);
+    gateway.emitDonationClaimed(donation);
 
-    expect(emitSpy).toHaveBeenCalledWith('donation.claimed', donationId);
+    expect(emitSpy).toHaveBeenCalledWith('donation.claimed', {
+      donationId: 'donation-2',
+      claimedBy: 'ngo-1',
+      status: 'CLAIMED',
+    });
   });
 });

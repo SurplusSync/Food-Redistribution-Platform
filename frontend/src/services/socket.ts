@@ -16,7 +16,7 @@ export interface DonationCreatedEvent {
 
 export interface DonationClaimedEvent {
   donationId: string;
-  claimedBy: string;
+  claimedBy?: string;
   status: string;
 }
 
@@ -98,12 +98,30 @@ class SocketService {
       return () => {};
     }
 
-    this.socket.on('donation.created', callback);
+    const normalizedCallback = (rawData: any) => {
+      const normalized: DonationCreatedEvent = {
+        ...rawData,
+        id: String(rawData?.id || ''),
+        name: rawData?.name || 'New Donation',
+        foodType: rawData?.foodType || 'Food',
+        donorName: rawData?.donorName || 'Community Donor',
+        expiryTime: rawData?.expiryTime || new Date().toISOString(),
+        location: rawData?.location || {
+          lat: Number(rawData?.latitude) || 0,
+          lng: Number(rawData?.longitude) || 0,
+          address: rawData?.address || 'Unknown Location',
+        },
+      };
+
+      callback(normalized);
+    };
+
+    this.socket.on('donation.created', normalizedCallback);
 
     // Return unsubscribe function
     return () => {
       if (this.socket) {
-        this.socket.off('donation.created', callback);
+        this.socket.off('donation.created', normalizedCallback);
       }
     };
   }
@@ -117,12 +135,25 @@ class SocketService {
       return () => {};
     }
 
-    this.socket.on('donation.claimed', callback);
+    const normalizedCallback = (rawData: any) => {
+      const normalized: DonationClaimedEvent =
+        typeof rawData === 'string'
+          ? { donationId: rawData, status: 'CLAIMED' }
+          : {
+              donationId: String(rawData?.donationId || rawData?.id || ''),
+              claimedBy: rawData?.claimedBy || rawData?.claimedById,
+              status: rawData?.status || 'CLAIMED',
+            };
+
+      callback(normalized);
+    };
+
+    this.socket.on('donation.claimed', normalizedCallback);
 
     // Return unsubscribe function
     return () => {
       if (this.socket) {
-        this.socket.off('donation.claimed', callback);
+        this.socket.off('donation.claimed', normalizedCallback);
       }
     };
   }
