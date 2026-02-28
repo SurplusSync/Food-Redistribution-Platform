@@ -1,4 +1,9 @@
 {
+  "scripts": {
+    "test": "npm run test:backend && npm run test:frontend",
+    "test:backend": "npm --prefix backend test -- --runInBand",
+    "test:frontend": "npm --prefix frontend run test:run"
+  },
   "devDependencies": {
     "@types/jest": "^30.0.0",
     "jest": "^30.2.0",
