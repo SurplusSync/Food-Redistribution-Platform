@@ -235,7 +235,7 @@ export class DonationsService {
         const saved = await transactionalEntityManager.save(donation);
 
         // 5. Emit Event
-        this.eventsGateway.emitDonationClaimed(saved.id);
+        this.eventsGateway.emitDonationClaimed(saved);
 
         await this.invalidateCache();
         return saved;

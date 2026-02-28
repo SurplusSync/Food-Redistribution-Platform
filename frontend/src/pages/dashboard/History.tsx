@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { getDonations } from '../../services/api'
 import type { Donation } from '../../services/api'
+import { socketService } from '../../services/socket'
 import { TrendingUp, BarChart2, Package } from 'lucide-react'
 
 // ─── Inline SVG Bar Chart ─────────────────────────────────────────────────────
@@ -218,17 +219,34 @@ export default function History() {
     const role = userRole()
     const isNGO = role === 'ngo'
 
-    useEffect(() => {
-        const load = async () => {
-            setLoading(true)
-            try {
-                const data = await getDonations()
-                setDonations(data)
-            } finally {
-                setLoading(false)
-            }
+    const load = async () => {
+        setLoading(true)
+        try {
+            const data = await getDonations()
+            setDonations(data)
+        } finally {
+            setLoading(false)
         }
+    }
+
+    useEffect(() => {
         load()
+
+        socketService.connect()
+
+        const unsubscribeCreated = socketService.onDonationCreated(() => {
+            load()
+        })
+
+        const unsubscribeClaimed = socketService.onDonationClaimed(() => {
+            load()
+        })
+
+        return () => {
+            unsubscribeCreated()
+            unsubscribeClaimed()
+            socketService.disconnect()
+        }
     }, [])
 
     const filtered = filter === 'all' ? donations : donations.filter(d => d.status === filter)
