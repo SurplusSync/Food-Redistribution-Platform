@@ -17,7 +17,7 @@ api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   return config;
 });
 
-// Type
+// Types
 
 export type UserRole = 'DONOR' | 'NGO' | 'VOLUNTEER';
 export type DonationStatus = 'AVAILABLE' | 'CLAIMED' | 'PICKED_UP' | 'DELIVERED';
@@ -93,7 +93,7 @@ export type Badge = {
   requirement?: number;
 };
 
-// Aut─
+// Auth
 
 export const loginUser = async (email: string, password?: string) => {
   if (!password) throw new Error('Password is required');
@@ -106,7 +106,6 @@ export const registerUser = async (data: any) => {
   const headers: Record<string, string> = {};
 
   if (data instanceof FormData) {
-    // Ensure role is uppercase inside FormData
     const currentRole = data.get('role');
     if (currentRole && typeof currentRole === 'string') {
       data.set('role', currentRole.toUpperCase());
@@ -123,7 +122,10 @@ export const registerUser = async (data: any) => {
 
 export const getUserProfile = async (): Promise<User> => {
   const response = await api.get('/auth/profile');
-  const user = response.data;
+  // Backend returns the user object directly (not wrapped in { data: ... })
+  const raw = response.data;
+  // Handle both wrapped ({ data: user }) and flat (user) shapes
+  const user = raw?.id ? raw : (raw?.data ?? raw);
 
   if (!user?.id) {
     throw new Error('Failed to fetch profile');
@@ -159,7 +161,14 @@ export const getDonations = async (filters?: {
 }) => {
   const response = await api.get('/donations');
 
-  let data = response.data.map((item: any) => ({
+  // FIX: safely handle both plain array and wrapped { data: [] } response shapes
+  const rawList = Array.isArray(response.data)
+    ? response.data
+    : Array.isArray(response.data?.data)
+      ? response.data.data
+      : [];
+
+  let data = rawList.map((item: any) => ({
     ...item,
     id: String(item.id),
     quantity: String(item.quantity),
@@ -275,7 +284,51 @@ export const checkExpiringDonations = () => {
   return;
 };
 
-// --- ADMIN API ---
+// Stats API
+
+export interface CommunityStats {
+  totalDonations: number;
+  deliveredDonations: number;
+  activeDonations: number;
+  mealsProvided: number;
+  kgRescued: number;
+  co2Saved: number;
+  totalDonors: number;
+  totalNGOs: number;
+  totalVolunteers: number;
+}
+
+export interface MonthlyStatPoint {
+  label: string;
+  total: number;
+  delivered: number;
+  claimed: number;
+  meals: number;
+}
+
+export const getCommunityStats = async (): Promise<CommunityStats> => {
+  try {
+    const response = await api.get('/donations/stats/community');
+    return response.data?.data || response.data || {};
+  } catch {
+    return {
+      totalDonations: 0, deliveredDonations: 0, activeDonations: 0,
+      mealsProvided: 0, kgRescued: 0, co2Saved: 0,
+      totalDonors: 0, totalNGOs: 0, totalVolunteers: 0,
+    };
+  }
+};
+
+export const getMonthlyStats = async (): Promise<MonthlyStatPoint[]> => {
+  try {
+    const response = await api.get('/donations/stats/monthly');
+    return response.data?.data || [];
+  } catch {
+    return [];
+  }
+};
+
+// Admin API
 export const adminAPI = {
   getPendingNGOs: () => api.get('/admin/pending-ngos'),
   verifyNGO: (id: string) => api.patch(`/admin/verify/${id}`),
