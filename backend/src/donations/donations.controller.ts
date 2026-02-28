@@ -1,9 +1,32 @@
-import { Controller, Get, Post, Patch, Param, Body, Query, UseInterceptors, UploadedFiles, UseGuards, Req } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Param,
+  Body,
+  Query,
+  UseInterceptors,
+  UploadedFiles,
+  UseGuards,
+  Req,
+} from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { DonationsService } from './donations.service';
 import { CloudinaryService } from '../common/cloudinary.service';
-import { CreateDonationDto, ClaimDonationDto, UpdateDonationStatusDto } from './dto/donations.dto';
-import { ApiTags, ApiOperation, ApiResponse, ApiQuery, ApiConsumes, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  CreateDonationDto,
+  ClaimDonationDto,
+  UpdateDonationStatusDto,
+} from './dto/donations.dto';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiQuery,
+  ApiConsumes,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 
@@ -13,7 +36,7 @@ export class DonationsController {
   constructor(
     private readonly donationsService: DonationsService,
     private readonly cloudinaryService: CloudinaryService,
-  ) { }
+  ) {}
 
   // ─── STATIC ROUTES FIRST (must come before any :id param routes) ─────────
 
@@ -99,7 +122,11 @@ export class DonationsController {
     @Body() updateDto: UpdateDonationStatusDto,
     @Req() req: any,
   ) {
-    return this.donationsService.updateStatus(id, updateDto.status, req.user.userId);
+    return this.donationsService.updateStatus(
+      id,
+      updateDto.status,
+      req.user.userId,
+    );
   }
 
   @Patch(':id/deliver')

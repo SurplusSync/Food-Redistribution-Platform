@@ -1,4 +1,11 @@
-import { Controller, Get, Patch, Param, UseGuards, NotFoundException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Patch,
+  Param,
+  UseGuards,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User, UserRole } from '../auth/entities/user.entity';
@@ -24,7 +31,16 @@ export class AdminController {
         role: UserRole.NGO,
         isVerified: false,
       },
-      select: ['id', 'name', 'email', 'organizationName', 'phone', 'address', 'certificateUrl', 'createdAt'], // Don't send passwords!
+      select: [
+        'id',
+        'name',
+        'email',
+        'organizationName',
+        'phone',
+        'address',
+        'certificateUrl',
+        'createdAt',
+      ], // Don't send passwords!
     });
   }
 
@@ -40,15 +56,27 @@ export class AdminController {
     user.isVerified = true;
     await this.userRepository.save(user);
 
-    return { message: `${user.organizationName || user.name} has been successfully verified!`, user };
+    return {
+      message: `${user.organizationName || user.name} has been successfully verified!`,
+      user,
+    };
   }
 
   // 3. Get ALL Users (For the main Admin User Table)
   @Get('users')
   async getAllUsers() {
     return await this.userRepository.find({
-      select: ['id', 'name', 'email', 'role', 'organizationName', 'isVerified', 'isActive', 'createdAt'],
-      order: { createdAt: 'DESC' }
+      select: [
+        'id',
+        'name',
+        'email',
+        'role',
+        'organizationName',
+        'isVerified',
+        'isActive',
+        'createdAt',
+      ],
+      order: { createdAt: 'DESC' },
     });
   }
 
@@ -68,7 +96,7 @@ export class AdminController {
 
     return {
       message: `User ${user.name} has been ${user.isActive ? 'unbanned' : 'suspended'}.`,
-      isActive: user.isActive
+      isActive: user.isActive,
     };
   }
 
@@ -77,7 +105,7 @@ export class AdminController {
   async getAllDonations() {
     return await this.donationRepository.find({
       relations: ['donor'], // Loads the donor details so admin sees who posted it
-      order: { createdAt: 'DESC' }
+      order: { createdAt: 'DESC' },
     });
   }
 }

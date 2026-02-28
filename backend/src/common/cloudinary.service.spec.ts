@@ -29,11 +29,11 @@ describe('CloudinaryService', () => {
 
   it('should return a MOCK url if API keys are missing (Safe Mode)', async () => {
     // 👇 Added 'originalname' to fix the "undefined" error
-    const mockFile = { 
+    const mockFile = {
       buffer: Buffer.from('fake image'),
-      originalname: 'mocked-image.jpg' 
+      originalname: 'mocked-image.jpg',
     } as any;
-    
+
     const result = await service.uploadImage(mockFile);
 
     // The result will look like: https://placehold.co/...?text=mocked-image.jpg

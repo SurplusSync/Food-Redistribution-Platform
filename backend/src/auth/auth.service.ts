@@ -1,11 +1,19 @@
-import { Injectable, UnauthorizedException, ConflictException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { RegisterDto, LoginDto } from './dto/auth.dto';
 import { User } from './entities/user.entity';
-import { Donation, DonationStatus } from '../donations/entities/donation.entity';
+import {
+  Donation,
+  DonationStatus,
+} from '../donations/entities/donation.entity';
 
 @Injectable()
 export class AuthService {
@@ -15,11 +23,11 @@ export class AuthService {
     @InjectRepository(Donation)
     private donationsRepository: Repository<Donation>,
     private jwtService: JwtService,
-  ) { }
+  ) {}
 
   async register(registerDto: RegisterDto) {
     const existingUser = await this.usersRepository.findOne({
-      where: { email: registerDto.email }
+      where: { email: registerDto.email },
     });
 
     if (existingUser) {
@@ -38,7 +46,7 @@ export class AuthService {
     const token = this.jwtService.sign({
       sub: user.id,
       email: user.email,
-      role: user.role
+      role: user.role,
     });
 
     return {
@@ -49,7 +57,7 @@ export class AuthService {
           id: user.id,
           email: user.email,
           name: user.name,
-          role: user.role
+          role: user.role,
         },
       },
       message: 'User registered successfully',
@@ -58,7 +66,7 @@ export class AuthService {
 
   async login(loginDto: LoginDto) {
     const user = await this.usersRepository.findOne({
-      where: { email: loginDto.email }
+      where: { email: loginDto.email },
     });
 
     if (!user || !(await bcrypt.compare(loginDto.password, user.password))) {
@@ -68,7 +76,7 @@ export class AuthService {
     const token = this.jwtService.sign({
       sub: user.id,
       email: user.email,
-      role: user.role
+      role: user.role,
     });
 
     return {
@@ -79,7 +87,7 @@ export class AuthService {
           id: user.id,
           email: user.email,
           name: user.name,
-          role: user.role
+          role: user.role,
         },
       },
       message: 'Login successful',
@@ -102,7 +110,9 @@ export class AuthService {
       const claimed = await this.donationsRepository.find({
         where: { claimedById: userId },
       });
-      const delivered = claimed.filter(d => d.status === DonationStatus.DELIVERED).length;
+      const delivered = claimed.filter(
+        (d) => d.status === DonationStatus.DELIVERED,
+      ).length;
       return {
         totalDonations: claimed.length,
         mealsProvided: delivered * 10,
@@ -114,7 +124,9 @@ export class AuthService {
     const donations = await this.donationsRepository.find({
       where: { donorId: userId },
     });
-    const delivered = donations.filter(d => d.status === DonationStatus.DELIVERED).length;
+    const delivered = donations.filter(
+      (d) => d.status === DonationStatus.DELIVERED,
+    ).length;
     return {
       totalDonations: donations.length,
       mealsProvided: delivered * 10,
@@ -124,16 +136,41 @@ export class AuthService {
 
   // Shared badge catalog — must match donations.service.ts checkAndAwardBadges
   private static readonly BADGE_RULES = [
-    { threshold: 10, badge: 'Newcomer', emoji: '🌱', description: 'Earned 10 karma points' },
-    { threshold: 50, badge: 'Local Hero', emoji: '🦸', description: 'Earned 50 karma points' },
-    { threshold: 150, badge: 'Champion', emoji: '🏆', description: 'Earned 150 karma points' },
-    { threshold: 300, badge: 'Legend', emoji: '⭐', description: 'Earned 300 karma points' },
-    { threshold: 500, badge: 'Superhero', emoji: '💫', description: 'Earned 500 karma points' },
+    {
+      threshold: 10,
+      badge: 'Newcomer',
+      emoji: '🌱',
+      description: 'Earned 10 karma points',
+    },
+    {
+      threshold: 50,
+      badge: 'Local Hero',
+      emoji: '🦸',
+      description: 'Earned 50 karma points',
+    },
+    {
+      threshold: 150,
+      badge: 'Champion',
+      emoji: '🏆',
+      description: 'Earned 150 karma points',
+    },
+    {
+      threshold: 300,
+      badge: 'Legend',
+      emoji: '⭐',
+      description: 'Earned 300 karma points',
+    },
+    {
+      threshold: 500,
+      badge: 'Superhero',
+      emoji: '💫',
+      description: 'Earned 500 karma points',
+    },
   ];
 
   async getProfile(userId: string) {
     const user = await this.usersRepository.findOne({
-      where: { id: userId }
+      where: { id: userId },
     });
 
     if (!user) {
@@ -144,7 +181,8 @@ export class AuthService {
       });
     }
 
-    const { password, ...userWithoutPassword } = user;
+    const userWithoutPassword = { ...user } as any;
+    delete userWithoutPassword.password;
     const impactStats = await this.getImpactStats(userId, user.role);
     const karma = user.karmaPoints || 0;
 
@@ -189,7 +227,7 @@ export class AuthService {
     await this.usersRepository.update(userId, updateData);
 
     const user = await this.usersRepository.findOne({
-      where: { id: userId }
+      where: { id: userId },
     });
 
     if (!user) {
@@ -200,7 +238,8 @@ export class AuthService {
       });
     }
 
-    const { password, ...userWithoutPassword } = user;
+    const userWithoutPassword = { ...user } as any;
+    delete userWithoutPassword.password;
 
     return {
       success: true,
