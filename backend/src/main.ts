@@ -9,7 +9,9 @@ import * as bcrypt from 'bcrypt';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  const configuredOrigins = (process.env.FRONTEND_URL || 'http://localhost:5173')
+  const configuredOrigins = (
+    process.env.FRONTEND_URL || 'http://localhost:5173'
+  )
     .split(',')
     .map((origin) => origin.trim().replace(/\/+$/, ''))
     .filter(Boolean);
@@ -46,11 +48,16 @@ async function bootstrap() {
   const userRepository = app.get(getRepositoryToken(User));
   const adminEmail = process.env.SUPER_ADMIN_EMAIL || 'admin@surplussync.com';
 
-  const existingAdmin = await userRepository.findOne({ where: { role: UserRole.ADMIN } });
+  const existingAdmin = await userRepository.findOne({
+    where: { role: UserRole.ADMIN },
+  });
 
   if (!existingAdmin) {
     console.log('🌱 Seeding Super Admin account...');
-    const hashedPassword = await bcrypt.hash(process.env.SUPER_ADMIN_PASSWORD || 'SecureAdmin123!', 10);
+    const hashedPassword = await bcrypt.hash(
+      process.env.SUPER_ADMIN_PASSWORD || 'SecureAdmin123!',
+      10,
+    );
 
     await userRepository.save({
       name: 'System Admin',

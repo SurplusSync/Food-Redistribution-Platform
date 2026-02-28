@@ -28,4 +28,4 @@ import { CloudinaryService } from '../common/cloudinary.service';
   providers: [AuthService, JwtStrategy, JwtAuthGuard, CloudinaryService],
   exports: [AuthService, JwtAuthGuard],
 })
-export class AuthModule { }
+export class AuthModule {}

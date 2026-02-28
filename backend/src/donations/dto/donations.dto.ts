@@ -1,10 +1,20 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNumber, IsDateString, IsOptional, Min, IsEnum } from 'class-validator';
+import {
+  IsString,
+  IsNumber,
+  IsDateString,
+  IsOptional,
+  Min,
+  IsEnum,
+} from 'class-validator';
 import { Type, Transform } from 'class-transformer';
 import { DonationStatus } from '../entities/donation.entity';
 
 export class CreateDonationDto {
-  @ApiProperty({ example: 'Vegetable Biryani', description: 'Name of the food item' })
+  @ApiProperty({
+    example: 'Vegetable Biryani',
+    description: 'Name of the food item',
+  })
   @IsString()
   name: string;
 
@@ -12,7 +22,10 @@ export class CreateDonationDto {
   @IsString()
   donorId: string;
 
-  @ApiProperty({ example: 'Green Restaurant', description: 'Name of the donor' })
+  @ApiProperty({
+    example: 'Green Restaurant',
+    description: 'Name of the donor',
+  })
   @IsString()
   donorName: string;
 
@@ -26,7 +39,11 @@ export class CreateDonationDto {
   // Automatically parse the JSON string from FormData back to an Object
   @Transform(({ value }) => {
     if (typeof value === 'string') {
-      try { return JSON.parse(value); } catch { return value; }
+      try {
+        return JSON.parse(value);
+      } catch {
+        return value;
+      }
     }
     return value;
   })
@@ -36,7 +53,6 @@ export class CreateDonationDto {
   @IsOptional()
   @Type(() => Number)
   donorTrustScore?: number;
-
 
   @ApiProperty({ example: 'cooked', description: 'Type of food' })
   @IsString()
@@ -52,7 +68,10 @@ export class CreateDonationDto {
   @IsString()
   unit: string;
 
-  @ApiProperty({ example: '2025-01-30T10:00:00Z', description: 'Preparation time' })
+  @ApiProperty({
+    example: '2025-01-30T10:00:00Z',
+    description: 'Preparation time',
+  })
   @IsDateString()
   preparationTime: string;
 
@@ -85,7 +104,7 @@ export class ClaimDonationDto {
   @ApiProperty({
     example: '2025-01-30T15:00:00Z',
     description: 'Estimated pickup time',
-    required: false
+    required: false,
   })
   @IsOptional()
   @IsDateString()

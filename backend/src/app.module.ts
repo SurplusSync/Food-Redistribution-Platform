@@ -5,15 +5,23 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { DonationsModule } from './donations/donations.module';
-import { AdminModule } from './admin/admin.module';
 import { User } from './auth/entities/user.entity';
 import { Donation } from './donations/entities/donation.entity';
 import { CacheModule } from '@nestjs/cache-manager';
+import * as redisStore from 'cache-manager-redis-store';
 import { ScheduleModule } from '@nestjs/schedule';
-import { createKeyv as createKeyvRedis } from '@keyv/redis';
+import { createKeyv } from '@keyv/redis';
+import { EventsModule } from './events/events.module';
 
 @Module({
   imports: [
+    CacheModule.register({
+      isGlobal: true, // Makes caching available everywhere
+      store: redisStore, // Tells NestJS to use Redis, not RAM
+      host: process.env.REDIS_HOST || 'redis', // From docker-compose env
+      port: parseInt(process.env.REDIS_PORT, 10) || 6379,
+      ttl: 30, // Default cache life: 30 seconds
+    }),
     // 1. Load .env variables
     ConfigModule.forRoot({ isGlobal: true }),
 
@@ -24,22 +32,32 @@ import { createKeyv as createKeyvRedis } from '@keyv/redis';
       useFactory: (configService: ConfigService) => {
         const redisUrl = configService.get<string>('REDIS_URL');
         const redisHost = configService.get<string>('REDIS_HOST') || 'redis';
-        const redisPort = parseInt(configService.get<string>('REDIS_PORT') || '6379', 10);
+        const redisPort = parseInt(
+          configService.get<string>('REDIS_PORT') || '6379',
+          10,
+        );
         const redisUsername = configService.get<string>('REDIS_USERNAME');
         const redisPassword = configService.get<string>('REDIS_PASSWORD');
-        const redisTlsEnabled = (configService.get<string>('REDIS_TLS') || 'false') === 'true';
+        const redisTlsEnabled =
+          (configService.get<string>('REDIS_TLS') || 'false') === 'true';
 
-        const encodedUsername = redisUsername ? encodeURIComponent(redisUsername) : '';
-        const encodedPassword = redisPassword ? encodeURIComponent(redisPassword) : '';
-        const authSegment = encodedUsername || encodedPassword
-          ? `${encodedUsername}:${encodedPassword}@`
+        const encodedUsername = redisUsername
+          ? encodeURIComponent(redisUsername)
           : '';
+        const encodedPassword = redisPassword
+          ? encodeURIComponent(redisPassword)
+          : '';
+        const authSegment =
+          encodedUsername || encodedPassword
+            ? `${encodedUsername}:${encodedPassword}@`
+            : '';
 
-        const computedRedisUrl = redisUrl
-          || `${redisTlsEnabled ? 'rediss' : 'redis'}://${authSegment}${redisHost}:${redisPort}`;
+        const computedRedisUrl =
+          redisUrl ||
+          `${redisTlsEnabled ? 'rediss' : 'redis'}://${authSegment}${redisHost}:${redisPort}`;
 
         return {
-          stores: [createKeyvRedis(computedRedisUrl)],
+          stores: [createKeyv(computedRedisUrl)],
           ttl: 30_000,
         };
       },
@@ -53,12 +71,16 @@ import { createKeyv as createKeyvRedis } from '@keyv/redis';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
-        const dbSslEnabled = (configService.get<string>('DB_SSL') || 'false') === 'true';
+        const dbSslEnabled =
+          (configService.get<string>('DB_SSL') || 'false') === 'true';
 
         return {
           type: 'postgres' as const,
           host: configService.get<string>('DATABASE_HOST') || 'postgres',
-          port: parseInt(configService.get<string>('DATABASE_PORT') || '5432', 10),
+          port: parseInt(
+            configService.get<string>('DATABASE_PORT') || '5432',
+            10,
+          ),
           username: configService.get<string>('POSTGRES_USER') || 'student',
           password: configService.get<string>('POSTGRES_PASSWORD') || 'student',
           database: configService.get<string>('POSTGRES_DB') || 'surplus_db',
@@ -71,9 +93,7 @@ import { createKeyv as createKeyvRedis } from '@keyv/redis';
 
     AuthModule,
     DonationsModule,
-
-    // Admin dashboard module
-    AdminModule,
+    EventsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
