@@ -13,6 +13,7 @@ export enum DonationStatus {
   CLAIMED = 'CLAIMED',
   PICKED_UP = 'PICKED_UP',
   DELIVERED = 'DELIVERED',
+  EXPIRED = 'EXPIRED',
 }
 
 @Entity()

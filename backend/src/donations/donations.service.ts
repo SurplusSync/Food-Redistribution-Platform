@@ -6,7 +6,8 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, In, LessThanOrEqual } from 'typeorm';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { CreateDonationDto, ClaimDonationDto } from './dto/donations.dto';
 import { Donation, DonationStatus } from './entities/donation.entity';
 import { User, UserRole } from '../auth/entities/user.entity';
@@ -27,7 +28,7 @@ export class DonationsService {
     private cacheManager: Record<string, any>,
     private eventsGateway: EventsGateway,
     private redisService: RedisService,
-  ) {}
+  ) { }
 
   /**
    * Invalidate all cached donation queries.
@@ -124,6 +125,42 @@ export class DonationsService {
     }
   }
 
+  // ─── CRON JOB: Auto-expire stale donations every hour ───────────────────────
+  @Cron(CronExpression.EVERY_HOUR)
+  async handleExpiredDonations(): Promise<void> {
+    const now = new Date();
+    this.logger.log('Running expiry cron job...');
+
+    try {
+      // Find all AVAILABLE or CLAIMED donations whose expiryTime has passed
+      const expiredDonations = await this.donationsRepository.find({
+        where: {
+          status: In([DonationStatus.AVAILABLE, DonationStatus.CLAIMED]),
+          expiryTime: LessThanOrEqual(now),
+        },
+      });
+
+      if (expiredDonations.length === 0) {
+        this.logger.log('No expired donations found.');
+        return;
+      }
+
+      // Batch update all expired donations
+      for (const donation of expiredDonations) {
+        donation.status = DonationStatus.EXPIRED;
+      }
+
+      await this.donationsRepository.save(expiredDonations);
+      await this.invalidateCache();
+
+      this.logger.log(
+        `Expired ${expiredDonations.length} donation(s) that passed their safe consumption time.`,
+      );
+    } catch (error) {
+      this.logger.error('Expiry cron job failed', error);
+    }
+  }
+
   async findAll(latitude?: number, longitude?: number, radius: number = 5) {
     // 1. If no location provided, just return everything
     if (!latitude || !longitude) {
@@ -183,6 +220,15 @@ export class DonationsService {
         }
         if (!user) {
           throw new NotFoundException('User not found');
+        }
+
+        // 2b. Real-time expiry check (catches expired food before cron runs)
+        if (donation.expiryTime && new Date(donation.expiryTime) <= new Date()) {
+          donation.status = DonationStatus.EXPIRED;
+          await transactionalEntityManager.save(donation);
+          throw new BadRequestException(
+            'This donation has expired and can no longer be claimed.',
+          );
         }
 
         // Check role

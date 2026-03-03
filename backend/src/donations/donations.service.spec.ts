@@ -242,4 +242,56 @@ describe('DonationsService Unit Tests', () => {
       expect(mockDonationRepo.createQueryBuilder).not.toHaveBeenCalled();
     });
   });
+
+  // --- TEST SUITE 5: CRON JOB (Auto-Expire) ---
+  describe('handleExpiredDonations (Cron Job)', () => {
+    it('should expire AVAILABLE/CLAIMED donations past their expiryTime', async () => {
+      const expiredDonations = [
+        { id: 'd1', status: DonationStatus.AVAILABLE, expiryTime: new Date(Date.now() - 3600000) },
+        { id: 'd2', status: DonationStatus.CLAIMED, expiryTime: new Date(Date.now() - 7200000) },
+      ];
+
+      mockDonationRepo.find.mockResolvedValueOnce(expiredDonations);
+      mockDonationRepo.save.mockResolvedValueOnce(expiredDonations);
+
+      await service.handleExpiredDonations();
+
+      // Both donations should be marked as EXPIRED
+      expect(expiredDonations[0].status).toBe(DonationStatus.EXPIRED);
+      expect(expiredDonations[1].status).toBe(DonationStatus.EXPIRED);
+      expect(mockDonationRepo.save).toHaveBeenCalledWith(expiredDonations);
+    });
+
+    it('should do nothing when no donations are expired', async () => {
+      mockDonationRepo.find.mockResolvedValueOnce([]);
+
+      await service.handleExpiredDonations();
+
+      // save should NOT be called since there's nothing to expire
+      expect(mockDonationRepo.save).not.toHaveBeenCalled();
+    });
+  });
+
+  // --- TEST SUITE 6: CLAIM REJECTS EXPIRED FOOD ---
+  describe('claim (Expiry Guard)', () => {
+    it('should reject claiming a donation whose expiryTime has passed', async () => {
+      const expiredDonation = {
+        id: 'd1',
+        status: DonationStatus.AVAILABLE,
+        expiryTime: new Date(Date.now() - 60000), // expired 1 minute ago
+      };
+      const ngo = { id: 'u1', role: UserRole.NGO };
+
+      mockEntityManager.findOne
+        .mockResolvedValueOnce(expiredDonation)
+        .mockResolvedValueOnce(ngo);
+      mockEntityManager.save.mockResolvedValue(expiredDonation);
+
+      await expect(service.claim('d1', {} as any, 'u1')).rejects.toThrow(
+        /expired/,
+      );
+      // Donation should be marked EXPIRED as a side effect
+      expect(expiredDonation.status).toBe(DonationStatus.EXPIRED);
+    });
+  });
 });
