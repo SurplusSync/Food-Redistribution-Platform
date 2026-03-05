@@ -291,10 +291,14 @@ function CertificateModal({ user, role, onClose }: { user: User; role: string; o
 
 // ─── GAMIFICATION: KARMA PROGRESS BAR ────────────────────────────────────────
 
-function KarmaProgress({ karma }: { karma: number }) {
-    const earned = BADGE_CATALOG.filter(b => karma >= b.threshold)
-    const next = BADGE_CATALOG.find(b => karma < b.threshold)
-    const prev = [...BADGE_CATALOG].reverse().find(b => karma >= b.threshold)
+function KarmaProgress({ karma, badgeCatalog }: { karma: number; badgeCatalog?: { id: string; name: string; icon: string; description: string; earned: boolean; requirement: number }[] }) {
+    const catalog = (badgeCatalog && badgeCatalog.length > 0)
+        ? badgeCatalog.map(b => ({ threshold: b.requirement, name: b.name, icon: b.icon, description: b.description }))
+        : BADGE_CATALOG;
+
+    const earned = catalog.filter(b => karma >= b.threshold)
+    const next = catalog.find(b => karma < b.threshold)
+    const prev = [...catalog].reverse().find(b => karma >= b.threshold)
 
     const fromPts = prev?.threshold ?? 0
     const toPts = next?.threshold ?? (prev?.threshold ?? 10)
@@ -312,7 +316,7 @@ function KarmaProgress({ karma }: { karma: number }) {
 
             {/* Badge grid — all 5, earned/locked */}
             <div className="grid grid-cols-5 gap-3 mb-6">
-                {BADGE_CATALOG.map(b => {
+                {catalog.map(b => {
                     const isEarned = karma >= b.threshold
                     const ptsLeft = Math.max(0, b.threshold - karma)
                     return (
@@ -356,7 +360,7 @@ function KarmaProgress({ karma }: { karma: number }) {
                     </div>
                 </div>
             )}
-            {!next && earned.length === BADGE_CATALOG.length && (
+            {!next && earned.length === catalog.length && (
                 <div className="bg-gradient-to-r from-amber-500/20 to-yellow-500/20 border border-amber-500/30 rounded-xl p-4 text-center">
                     <p className="text-lg">🎉</p>
                     <p className="text-sm font-bold text-amber-400 mt-1">All badges unlocked! You're a Superhero!</p>
@@ -585,7 +589,7 @@ export default function Impact() {
             </div>
 
             {/* US2 — Badges & Gamification */}
-            <KarmaProgress karma={karma} />
+            <KarmaProgress karma={karma} badgeCatalog={user.badgeCatalog} />
 
             {/* US3/US5 — Community Counters */}
             {community && <CommunityCounters stats={community} />}
