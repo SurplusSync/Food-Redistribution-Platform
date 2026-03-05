@@ -66,6 +66,14 @@ export interface User {
   trustScore?: number;
   karmaPoints?: number;
   badges?: string[];
+  badgeCatalog?: {
+    id: string;
+    name: string;
+    icon: string;
+    description: string;
+    earned: boolean;
+    requirement: number;
+  }[];
   level?: number;
   nextLevelPoints?: number;
   impactStats?: {
@@ -136,6 +144,7 @@ export const getUserProfile = async (): Promise<User> => {
     phoneNumber: user.phoneNumber || user.phone || '',
     karmaPoints: user.karmaPoints || 0,
     badges: user.badges || [],
+    badgeCatalog: user.badgeCatalog || [],
     level: user.level || 1,
     nextLevelPoints: user.nextLevelPoints || 0,
     impactStats: user.impactStats || {
@@ -261,27 +270,51 @@ export const updateDonationStatus = async (id: string, status: DonationStatus) =
   return response.data;
 };
 
-// Notifications (mock)
+// Notifications — in-memory store backed by WebSocket events
+
+let notificationStore: Notification[] = [
+  {
+    id: 'welcome-1',
+    title: 'Welcome!',
+    message: 'Welcome to SurplusSync.',
+    type: 'new_food_nearby',
+    read: false,
+    createdAt: new Date(),
+  },
+];
+
+export const addNotification = (notif: {
+  id: string;
+  title: string;
+  message: string;
+  type: string;
+  read: boolean;
+  createdAt: string;
+}) => {
+  const mapped: Notification = {
+    ...notif,
+    type: (['food_claimed', 'pickup_assigned', 'delivery_confirmed', 'near_expiry', 'new_food_nearby'].includes(notif.type)
+      ? notif.type
+      : 'new_food_nearby') as Notification['type'],
+    createdAt: new Date(notif.createdAt),
+  };
+  notificationStore = [mapped, ...notificationStore];
+};
+
+export const getNotificationStore = (): Notification[] => notificationStore;
 
 export const getNotifications = async (_userId: string): Promise<Notification[]> => {
-  return [
-    {
-      id: '1',
-      title: 'Welcome!',
-      message: 'Welcome to SurplusSync.',
-      type: 'new_food_nearby',
-      read: false,
-      createdAt: new Date(),
-    },
-  ];
+  return [...notificationStore];
 };
 
-export const markNotificationRead = async (_id: string) => {
-  return;
+export const markNotificationRead = async (id: string) => {
+  notificationStore = notificationStore.map(n =>
+    n.id === id ? { ...n, read: true } : n
+  );
 };
 
-export const checkExpiringDonations = () => {
-  return;
+export const markAllNotificationsRead = () => {
+  notificationStore = notificationStore.map(n => ({ ...n, read: true }));
 };
 
 // Stats API
