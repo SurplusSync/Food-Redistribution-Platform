@@ -20,6 +20,15 @@ export interface DonationClaimedEvent {
   status: string;
 }
 
+export interface NotificationEvent {
+  id: string;
+  title: string;
+  message: string;
+  type: string;
+  read: boolean;
+  createdAt: string;
+}
+
 class SocketService {
   private socket: Socket | null = null;
   private reconnectAttempts = 0;
@@ -95,7 +104,7 @@ class SocketService {
   onDonationCreated(callback: (data: DonationCreatedEvent) => void): () => void {
     if (!this.socket) {
       console.warn('Socket not initialized');
-      return () => {};
+      return () => { };
     }
 
     const normalizedCallback = (rawData: any) => {
@@ -132,7 +141,7 @@ class SocketService {
   onDonationClaimed(callback: (data: DonationClaimedEvent) => void): () => void {
     if (!this.socket) {
       console.warn('Socket not initialized');
-      return () => {};
+      return () => { };
     }
 
     const normalizedCallback = (rawData: any) => {
@@ -140,10 +149,10 @@ class SocketService {
         typeof rawData === 'string'
           ? { donationId: rawData, status: 'CLAIMED' }
           : {
-              donationId: String(rawData?.donationId || rawData?.id || ''),
-              claimedBy: rawData?.claimedBy || rawData?.claimedById,
-              status: rawData?.status || 'CLAIMED',
-            };
+            donationId: String(rawData?.donationId || rawData?.id || ''),
+            claimedBy: rawData?.claimedBy || rawData?.claimedById,
+            status: rawData?.status || 'CLAIMED',
+          };
 
       callback(normalized);
     };
@@ -154,6 +163,24 @@ class SocketService {
     return () => {
       if (this.socket) {
         this.socket.off('donation.claimed', normalizedCallback);
+      }
+    };
+  }
+
+  /**
+   * Listen for notification events
+   */
+  onNotification(callback: (data: NotificationEvent) => void): () => void {
+    if (!this.socket) {
+      console.warn('Socket not initialized');
+      return () => { };
+    }
+
+    this.socket.on('notification', callback);
+
+    return () => {
+      if (this.socket) {
+        this.socket.off('notification', callback);
       }
     };
   }
@@ -193,3 +220,4 @@ class SocketService {
 
 // Export singleton instance
 export const socketService = new SocketService();
+
