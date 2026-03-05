@@ -70,6 +70,13 @@ export class DonationsService {
       const newBadges = this.checkAndAwardBadges(donor);
       if (newBadges.length > 0) {
         donor.badges = [...new Set([...(donor.badges || []), ...newBadges])];
+        for (const badge of newBadges) {
+          this.eventsGateway.emitNotification({
+            title: 'New Badge Earned!',
+            message: `Congratulations! You earned the ${badge} badge.`,
+            type: 'new_food_nearby',
+          });
+        }
       }
       await this.usersRepository.save(donor);
     }
@@ -77,9 +84,15 @@ export class DonationsService {
     // 1. Emit the event over websockets
     this.eventsGateway.emitDonationCreated(saved);
 
-    // 2. Clear Redis cache for donation listings
+    // 2. Emit notification for new donation
+    this.eventsGateway.emitNotification({
+      title: 'New Donation Available',
+      message: `${saved.name || 'A new food donation'} is now available for pickup.`,
+      type: 'new_food_nearby',
+    });
+
+    // 3. Clear Redis cache for donation listings
     if (this.redisService) {
-      // Assuming keys are stored like "/donations*" or clear all cache if needed
       await this.redisService.deleteKeysByPattern('*donations*');
     }
 
@@ -275,6 +288,13 @@ export class DonationsService {
         const newBadges = this.checkAndAwardBadges(user);
         if (newBadges.length > 0) {
           user.badges = [...new Set([...(user.badges || []), ...newBadges])];
+          for (const badge of newBadges) {
+            this.eventsGateway.emitNotification({
+              title: 'New Badge Earned!',
+              message: `Congratulations! You earned the ${badge} badge.`,
+              type: 'new_food_nearby',
+            });
+          }
         }
 
         await transactionalEntityManager.save(user);
@@ -282,6 +302,13 @@ export class DonationsService {
 
         // 5. Emit Event
         this.eventsGateway.emitDonationClaimed(saved);
+
+        // 6. Emit notification for donation claimed
+        this.eventsGateway.emitNotification({
+          title: 'Donation Claimed',
+          message: `Your donation has been claimed by an NGO.`,
+          type: 'food_claimed',
+        });
 
         await this.invalidateCache();
         return saved;
@@ -408,6 +435,13 @@ export class DonationsService {
           donation.deliveredAt = new Date();
           await transactionalEntityManager.save(donation);
           await this.invalidateCache();
+
+          // Emit notification for delivery completed
+          this.eventsGateway.emitNotification({
+            title: 'Delivery Confirmed',
+            message: `A donation has been successfully delivered!`,
+            type: 'delivery_confirmed',
+          });
 
           return {
             ...donation,
