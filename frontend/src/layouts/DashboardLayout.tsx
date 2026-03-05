@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { LayoutDashboard, PlusCircle, Map, History, LogOut, Bell, TrendingUp, User } from 'lucide-react'
-import { getNotifications, checkExpiringDonations } from "../services/api";
+import { getNotifications, addNotification } from "../services/api";
+import { socketService } from "../services/socket";
 
 export default function DashboardLayout() {
   const navigate = useNavigate()
@@ -31,11 +32,22 @@ export default function DashboardLayout() {
   }, [userRole, location.pathname, navigate])
 
   useEffect(() => {
+    // Initialize socket connection
+    socketService.connect();
+
+    // Load initial notification count
     loadNotifications()
-    const interval = setInterval(() => {
-      checkExpiringDonations()
-    }, 60000)
-    return () => clearInterval(interval)
+
+    // Listen for real-time notifications
+    const unsubNotif = socketService.onNotification((data) => {
+      addNotification(data);
+      // Update unread count
+      setUnreadCount(prev => prev + 1);
+    });
+
+    return () => {
+      unsubNotif();
+    };
   }, [])
 
   const loadNotifications = async () => {
