@@ -48,6 +48,7 @@ const mockCacheManager = {
 const mockEventsGateway = {
   emitDonationCreated: jest.fn(),
   emitDonationClaimed: jest.fn(),
+  emitNotification: jest.fn(),
 };
 
 const mockRedisService = {
