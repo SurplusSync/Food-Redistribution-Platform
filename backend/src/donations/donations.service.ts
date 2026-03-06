@@ -30,14 +30,8 @@ export class DonationsService {
     private redisService: RedisService,
   ) { }
 
-  /**
-   * Invalidate all cached donation queries.
-   * Called after any write operation (create, claim, status update, deliver)
-   * so that subsequent GET /donations requests fetch fresh data.
-   */
   private async invalidateCache(): Promise<void> {
     try {
-      // cache-manager v7 uses clear(), older versions use reset()
       if (typeof this.cacheManager.clear === 'function') {
         await this.cacheManager.clear();
       } else if (typeof this.cacheManager.reset === 'function') {
@@ -63,7 +57,6 @@ export class DonationsService {
 
     const saved = await this.donationsRepository.save(donation);
 
-    // Award karma to donor for creating a donation
     const donor = await this.usersRepository.findOne({ where: { id: userId } });
     if (donor) {
       donor.karmaPoints = (donor.karmaPoints || 0) + 10;
@@ -81,17 +74,14 @@ export class DonationsService {
       await this.usersRepository.save(donor);
     }
 
-    // 1. Emit the event over websockets
     this.eventsGateway.emitDonationCreated(saved);
 
-    // 2. Emit notification for new donation
     this.eventsGateway.emitNotification({
       title: 'New Donation Available',
       message: `${saved.name || 'A new food donation'} is now available for pickup.`,
       type: 'new_food_nearby',
     });
 
-    // 3. Clear Redis cache for donation listings
     if (this.redisService) {
       await this.redisService.deleteKeysByPattern('*donations*');
     }
@@ -124,28 +114,28 @@ export class DonationsService {
       foodTypeLower.includes(type),
     );
 
-    // Stricter rule for high-risk food: must have at least 2 hours of shelf life at create time
-    const minSafeWindowHours = isHighRisk ? 2 : 1;
-    const safeLimit = new Date(
-      now.getTime() + minSafeWindowHours * 60 * 60 * 1000,
-    );
+    // 4. Apply stricter rules only for high-risk foods
+    if (isHighRisk) {
+      const minSafeWindowHours = 2;
+      const safeLimit = new Date(
+        now.getTime() + minSafeWindowHours * 60 * 60 * 1000,
+      );
 
-    if (expiryDate < safeLimit) {
-      const message = isHighRisk
-        ? `High-risk food (${createDonationDto.foodType}) must have at least ${minSafeWindowHours} hours of safe consumption window remaining.`
-        : `Food must have at least ${minSafeWindowHours} hour of safe consumption window remaining.`;
-      throw new BadRequestException(message);
+      if (expiryDate < safeLimit) {
+        throw new BadRequestException(
+          `High-risk food (${createDonationDto.foodType}) must have at least ${minSafeWindowHours} hours of safe consumption window remaining.`,
+        );
+      }
     }
+    // Non-high-risk foods (e.g. bakery, produce, canned): only reject if already expired (handled above)
   }
 
-  // ─── CRON JOB: Auto-expire stale donations every hour ───────────────────────
   @Cron(CronExpression.EVERY_HOUR)
   async handleExpiredDonations(): Promise<void> {
     const now = new Date();
     this.logger.log('Running expiry cron job...');
 
     try {
-      // Find all AVAILABLE or CLAIMED donations whose expiryTime has passed
       const expiredDonations = await this.donationsRepository.find({
         where: {
           status: In([DonationStatus.AVAILABLE, DonationStatus.CLAIMED]),
@@ -158,7 +148,6 @@ export class DonationsService {
         return;
       }
 
-      // Batch update all expired donations
       for (const donation of expiredDonations) {
         donation.status = DonationStatus.EXPIRED;
       }
@@ -175,7 +164,6 @@ export class DonationsService {
   }
 
   async findAll(latitude?: number, longitude?: number, radius: number = 5) {
-    // 1. If no location provided, just return everything
     if (!latitude || !longitude) {
       try {
         return await this.donationsRepository.find({
@@ -187,9 +175,6 @@ export class DonationsService {
       }
     }
 
-    // 2. THE "MEDIUM COMPLEXITY" ALGORITHM
-    // This runs a raw SQL query to calculate distance on the database server.
-    // It finds all food within 'radius' km and sorts by closest first.
     try {
       return await this.donationsRepository
         .createQueryBuilder('donation')
@@ -206,7 +191,6 @@ export class DonationsService {
         'Error with distance query, returning all donations:',
         error,
       );
-      // Fallback: return all donations without distance filtering
       return await this.donationsRepository.find({
         order: { createdAt: 'DESC' },
       });
@@ -216,7 +200,6 @@ export class DonationsService {
   async claim(id: string, claimDto: ClaimDonationDto, userId: string) {
     return await this.donationsRepository.manager.transaction(
       async (transactionalEntityManager) => {
-        // 1. Find the donation and user (NGO)
         const donation = await transactionalEntityManager.findOne(Donation, {
           where: { id },
         });
@@ -224,7 +207,6 @@ export class DonationsService {
           where: { id: userId },
         });
 
-        // 2. Checks
         if (!donation) {
           throw new NotFoundException('Donation not found');
         }
@@ -235,7 +217,6 @@ export class DonationsService {
           throw new NotFoundException('User not found');
         }
 
-        // 2b. Real-time expiry check (catches expired food before cron runs)
         if (donation.expiryTime && new Date(donation.expiryTime) <= new Date()) {
           donation.status = DonationStatus.EXPIRED;
           await transactionalEntityManager.save(donation);
@@ -244,17 +225,14 @@ export class DonationsService {
           );
         }
 
-        // Check role
         if (user.role !== UserRole.NGO) {
           throw new BadRequestException('Only NGOs can claim donations');
         }
 
-        // 3. NGO Capacity Validation
         if (
           user.dailyIntakeCapacity !== null &&
           user.dailyIntakeCapacity !== undefined
         ) {
-          // Check unit match (case-insensitive)
           if (user.capacityUnit && donation.unit) {
             const ngoUnit = user.capacityUnit.trim().toLowerCase();
             const donationUnit = donation.unit.trim().toLowerCase();
@@ -266,7 +244,6 @@ export class DonationsService {
             }
           }
 
-          // Check capacity limit
           if (
             user.currentIntakeLoad + donation.quantity >
             user.dailyIntakeCapacity
@@ -277,13 +254,11 @@ export class DonationsService {
           }
         }
 
-        // 4. Update status and NGO current load
         donation.status = DonationStatus.CLAIMED;
         donation.claimedById = userId;
 
         user.currentIntakeLoad += donation.quantity;
 
-        // Award karma to NGO for claiming a donation
         user.karmaPoints = (user.karmaPoints || 0) + 10;
         const newBadges = this.checkAndAwardBadges(user);
         if (newBadges.length > 0) {
@@ -300,10 +275,8 @@ export class DonationsService {
         await transactionalEntityManager.save(user);
         const saved = await transactionalEntityManager.save(donation);
 
-        // 5. Emit Event
         this.eventsGateway.emitDonationClaimed(saved);
 
-        // 6. Emit notification for donation claimed
         this.eventsGateway.emitNotification({
           title: 'Donation Claimed',
           message: `Your donation has been claimed by an NGO.`,
@@ -319,17 +292,15 @@ export class DonationsService {
   async updateStatus(id: string, status: DonationStatus, userId: string) {
     return await this.donationsRepository.manager.transaction(
       async (transactionalEntityManager) => {
-        // Find the donation
         const donation = await transactionalEntityManager.findOne(Donation, {
           where: { id },
-          relations: ['donor'], // Load donor relation for karma
+          relations: ['donor'],
         });
 
         if (!donation) {
           throw new NotFoundException('Donation not found');
         }
 
-        // Find the user making the request
         const requestingUser = await transactionalEntityManager.findOne(User, {
           where: { id: userId },
         });
@@ -338,7 +309,6 @@ export class DonationsService {
           throw new NotFoundException('User not found');
         }
 
-        // Authorization: donor, claiming NGO, or assigned volunteer
         const isAuthorized =
           donation.donorId === userId ||
           donation.claimedById === userId ||
@@ -353,7 +323,6 @@ export class DonationsService {
 
         const oldStatus = donation.status;
 
-        // Handle DELIVERED status with karma awards
         if (status === DonationStatus.DELIVERED) {
           if (oldStatus === DonationStatus.DELIVERED) {
             throw new BadRequestException(
@@ -361,7 +330,6 @@ export class DonationsService {
             );
           }
 
-          // Decrement NGO's intake load and award NGO karma
           if (donation.claimedById) {
             const claimedNgo = await transactionalEntityManager.findOne(User, {
               where: { id: donation.claimedById },
@@ -388,7 +356,6 @@ export class DonationsService {
             }
           }
 
-          // Award karma to volunteer (if they're the one marking as delivered)
           if (requestingUser.role === UserRole.VOLUNTEER) {
             const VOLUNTEER_KARMA = 50;
             requestingUser.karmaPoints =
@@ -406,13 +373,11 @@ export class DonationsService {
 
             await transactionalEntityManager.save(requestingUser);
 
-            // Ensure volunteerId is set even if PICKED_UP was skipped
             if (!donation.volunteerId) {
               donation.volunteerId = userId;
             }
           }
 
-          // Award karma to donor
           if (donation.donor) {
             const DONOR_KARMA = 30;
             donation.donor.karmaPoints =
@@ -436,7 +401,6 @@ export class DonationsService {
           await transactionalEntityManager.save(donation);
           await this.invalidateCache();
 
-          // Emit notification for delivery completed
           this.eventsGateway.emitNotification({
             title: 'Delivery Confirmed',
             message: `A donation has been successfully delivered!`,
@@ -450,13 +414,11 @@ export class DonationsService {
           };
         }
 
-        // Handle PICKED_UP status
         if (status === DonationStatus.PICKED_UP) {
           donation.pickedUpAt = new Date();
           donation.volunteerId = userId;
         }
 
-        // Handle reversing a claim (CLAIMED/PICKED_UP -> AVAILABLE)
         if (
           status === DonationStatus.AVAILABLE &&
           (oldStatus === DonationStatus.CLAIMED ||
@@ -477,7 +439,6 @@ export class DonationsService {
           donation.claimedById = null;
         }
 
-        // Update status
         donation.status = status;
         await transactionalEntityManager.save(donation);
         await this.invalidateCache();
@@ -489,11 +450,9 @@ export class DonationsService {
 
   async getMonthlyStats(userId: string) {
     try {
-      // Get user to determine role
       const user = await this.usersRepository.findOne({ where: { id: userId } });
       const role = user?.role || 'DONOR';
 
-      // Build the last 6 months
       const months: { year: number; month: number; label: string }[] = [];
       for (let i = 5; i >= 0; i--) {
         const d = new Date();
@@ -589,7 +548,6 @@ export class DonationsService {
     }
   }
 
-  // Badge checking based on karma thresholds
   private checkAndAwardBadges(user: User): string[] {
     const newBadges: string[] = [];
     const currentBadges = user.badges || [];
@@ -602,7 +560,6 @@ export class DonationsService {
       { threshold: 500, badge: 'Superhero', emoji: '💫' },
     ];
 
-    // Check each badge rule
     for (const rule of badgeRules) {
       const badgeName = `${rule.emoji} ${rule.badge}`;
 
