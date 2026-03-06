@@ -7,11 +7,12 @@ import { AuthModule } from './auth/auth.module';
 import { DonationsModule } from './donations/donations.module';
 import { User } from './auth/entities/user.entity';
 import { Donation } from './donations/entities/donation.entity';
+import { DonationFeedback } from './feedback/entities/donation-feedback.entity';
 import { CacheModule } from '@nestjs/cache-manager';
 import { ScheduleModule } from '@nestjs/schedule';
 import { createKeyv } from '@keyv/redis';
 import { EventsModule } from './events/events.module';
-
+import { FeedbackModule } from './feedback/feedback.module';
 @Module({
   imports: [
     // 1. Load .env variables
@@ -76,7 +77,7 @@ import { EventsModule } from './events/events.module';
           username: configService.get<string>('POSTGRES_USER') || 'student',
           password: configService.get<string>('POSTGRES_PASSWORD') || 'student',
           database: configService.get<string>('POSTGRES_DB') || 'surplus_db',
-          entities: [User, Donation],
+          entities: [User, Donation, DonationFeedback],
           synchronize: true,
           ssl: dbSslEnabled ? { rejectUnauthorized: false } : false,
         };
@@ -86,6 +87,7 @@ import { EventsModule } from './events/events.module';
     AuthModule,
     DonationsModule,
     EventsModule,
+    FeedbackModule,
   ],
   controllers: [AppController],
   providers: [AppService],

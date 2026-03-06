@@ -6,7 +6,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, In, LessThanOrEqual } from 'typeorm';
+import { Repository, In, LessThanOrEqual, Between } from 'typeorm';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { CreateDonationDto, ClaimDonationDto } from './dto/donations.dto';
 import { Donation, DonationStatus } from './entities/donation.entity';
@@ -160,6 +160,42 @@ export class DonationsService {
       );
     } catch (error) {
       this.logger.error('Expiry cron job failed', error);
+    }
+  }
+
+  async findNearExpiryDonations(): Promise<Donation[]> {
+    const now = new Date();
+    const thirtyMinutesFromNow = new Date(now.getTime() + 30 * 60 * 1000);
+
+    return await this.donationsRepository.find({
+      where: {
+        status: In([DonationStatus.AVAILABLE, DonationStatus.CLAIMED]),
+        // Expiry time is greater than now, but less than or equal to 30 mins from now
+        expiryTime: Between(now, thirtyMinutesFromNow),
+      },
+    });
+  }
+
+  @Cron(CronExpression.EVERY_5_MINUTES)
+  async checkNearExpiryDonations(): Promise<void> {
+    try {
+      this.logger.log('Checking for near-expiry donations...');
+      const nearExpiryDonations = await this.findNearExpiryDonations();
+
+      if (nearExpiryDonations.length === 0) {
+        return;
+      }
+
+      this.logger.log(`Found ${nearExpiryDonations.length} donation(s) nearing expiry.`);
+
+      for (const donation of nearExpiryDonations) {
+        this.eventsGateway.emitNearExpiryAlert({
+          donationId: donation.id,
+          expiresAt: donation.expiryTime,
+        });
+      }
+    } catch (error) {
+      this.logger.error('Error checking near-expiry donations', error);
     }
   }
 

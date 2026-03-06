@@ -14,8 +14,7 @@ import { Server, Socket } from 'socket.io';
   },
 })
 export class EventsGateway
-  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
-{
+  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server: Server;
   private logger: Logger = new Logger('EventsGateway');
 
@@ -49,12 +48,16 @@ export class EventsGateway
       typeof donation === 'string'
         ? { donationId: donation, status: 'CLAIMED' }
         : {
-            donationId: donation?.id || donation?.donationId,
-            claimedBy: donation?.claimedById || donation?.claimedBy,
-            status: donation?.status || 'CLAIMED',
-          };
+          donationId: donation?.id || donation?.donationId,
+          claimedBy: donation?.claimedById || donation?.claimedBy,
+          status: donation?.status || 'CLAIMED',
+        };
 
     this.server.emit('donation.claimed', payload);
+  }
+
+  emitNearExpiryAlert(payload: { donationId: string; expiresAt: Date }) {
+    this.server.emit('donation.near_expiry', payload);
   }
 
   emitNotification(notification: {
