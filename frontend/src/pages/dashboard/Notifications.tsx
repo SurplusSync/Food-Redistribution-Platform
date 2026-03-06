@@ -1,5 +1,6 @@
 import { useEffect, useState, type ReactElement } from 'react'
-import { getNotifications, markNotificationRead, type Notification } from '../../services/api'
+import { getNotifications, markNotificationRead, addNotification, type Notification } from '../../services/api'
+import { socketService } from '../../services/socket'
 import { Bell, CheckCircle, AlertTriangle, MapPin, Package } from 'lucide-react'
 
 export default function Notifications() {
@@ -11,6 +12,23 @@ export default function Notifications() {
 
     useEffect(() => {
         loadNotifications()
+
+        // Subscribe to real-time notifications
+        const unsubNotif = socketService.onNotification((data) => {
+            addNotification(data);
+            const mapped: Notification = {
+                ...data,
+                type: (['food_claimed', 'pickup_assigned', 'delivery_confirmed', 'near_expiry', 'new_food_nearby'].includes(data.type)
+                    ? data.type
+                    : 'new_food_nearby') as Notification['type'],
+                createdAt: new Date(data.createdAt),
+            };
+            setNotifications(prev => [mapped, ...prev]);
+        });
+
+        return () => {
+            unsubNotif();
+        };
     }, [])
 
     const loadNotifications = async () => {
@@ -25,7 +43,7 @@ export default function Notifications() {
 
     const handleMarkRead = async (id: string) => {
         await markNotificationRead(id)
-        setNotifications(notifications.map(n => 
+        setNotifications(notifications.map(n =>
             n.id === id ? { ...n, read: true } : n
         ))
     }
@@ -36,8 +54,8 @@ export default function Notifications() {
         setNotifications(notifications.map(n => ({ ...n, read: true })))
     }
 
-    const filtered = filter === 'all' 
-        ? notifications 
+    const filtered = filter === 'all'
+        ? notifications
         : notifications.filter(n => !n.read)
 
     const unreadCount = notifications.filter(n => !n.read).length
@@ -78,21 +96,19 @@ export default function Notifications() {
                 <div className="flex gap-2">
                     <button
                         onClick={() => setFilter('all')}
-                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                            filter === 'all'
+                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${filter === 'all'
                                 ? 'bg-emerald-500 text-white'
                                 : 'bg-slate-900 text-slate-400 hover:text-white'
-                        }`}
+                            }`}
                     >
                         All
                     </button>
                     <button
                         onClick={() => setFilter('unread')}
-                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                            filter === 'unread'
+                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${filter === 'unread'
                                 ? 'bg-emerald-500 text-white'
                                 : 'bg-slate-900 text-slate-400 hover:text-white'
-                        }`}
+                            }`}
                     >
                         Unread {unreadCount > 0 && `(${unreadCount})`}
                     </button>
@@ -123,33 +139,29 @@ export default function Notifications() {
                     filtered.map((notification) => (
                         <div
                             key={notification.id}
-                            className={`p-4 rounded-lg border transition-all ${
-                                notification.read
+                            className={`p-4 rounded-lg border transition-all ${notification.read
                                     ? 'bg-slate-900 border-slate-800'
                                     : 'bg-slate-900/50 border-emerald-500/30 shadow-lg shadow-emerald-500/5'
-                            }`}
+                                }`}
                         >
                             <div className="flex items-start gap-4">
-                                <div className={`p-2 rounded-lg ${
-                                    notification.read ? 'bg-slate-800' : 'bg-slate-800/80'
-                                }`}>
+                                <div className={`p-2 rounded-lg ${notification.read ? 'bg-slate-800' : 'bg-slate-800/80'
+                                    }`}>
                                     {getIcon(notification.type)}
                                 </div>
 
                                 <div className="flex-1 min-w-0">
                                     <div className="flex items-start justify-between gap-4 mb-1">
-                                        <h3 className={`font-medium ${
-                                            notification.read ? 'text-slate-300' : 'text-white'
-                                        }`}>
+                                        <h3 className={`font-medium ${notification.read ? 'text-slate-300' : 'text-white'
+                                            }`}>
                                             {notification.title}
                                         </h3>
                                         <span className="text-xs text-slate-500 whitespace-nowrap">
                                             {formatTime(notification.createdAt)}
                                         </span>
                                     </div>
-                                    <p className={`text-sm ${
-                                        notification.read ? 'text-slate-500' : 'text-slate-400'
-                                    }`}>
+                                    <p className={`text-sm ${notification.read ? 'text-slate-500' : 'text-slate-400'
+                                        }`}>
                                         {notification.message}
                                     </p>
 

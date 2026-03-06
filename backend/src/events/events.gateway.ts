@@ -56,4 +56,19 @@ export class EventsGateway
 
     this.server.emit('donation.claimed', payload);
   }
+
+  emitNotification(notification: {
+    title: string;
+    message: string;
+    type: string;
+  }) {
+    const payload = {
+      id: `notif-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      ...notification,
+      read: false,
+      createdAt: new Date().toISOString(),
+    };
+    this.logger.log(`Emitting notification: ${notification.title}`);
+    this.server.emit('notification', payload);
+  }
 }
