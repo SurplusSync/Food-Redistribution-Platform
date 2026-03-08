@@ -11,10 +11,10 @@ import {
 } from '../../services/api'
 import { socketService } from '../../services/socket'
 import {
-  CheckCircle2, MapPin, Clock, X, ChevronLeft, ChevronRight,
+  CheckCircle2, MapPin, X, ChevronLeft, ChevronRight,
   Image as ImageIcon, Navigation, Truck, Package, Award,
-  ToggleLeft, ToggleRight, Car, Bike, User as UserIcon,
-  Star, TrendingUp, AlertTriangle, Zap, Route,
+  ToggleLeft, ToggleRight, Car, Bike,
+  Star, TrendingUp, AlertTriangle, Zap, Router,
 } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -320,7 +320,7 @@ function CompletedTrips({ userId }: { userId: string }) {
     return (
       <div className="p-10 text-center">
         <div className="w-14 h-14 rounded-full bg-slate-800 flex items-center justify-center mx-auto mb-3">
-          <Route className="w-6 h-6 text-slate-600" />
+          <Router className="w-6 h-6 text-slate-600" />
         </div>
         <p className="text-slate-500 text-sm">No completed trips yet.</p>
         <p className="text-slate-600 text-xs mt-1">Complete your first delivery to see it here.</p>
