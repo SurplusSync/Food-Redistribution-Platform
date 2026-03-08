@@ -275,6 +275,42 @@ export class DonationsService {
         await transactionalEntityManager.save(user);
         const saved = await transactionalEntityManager.save(donation);
 
+        // Auto-assign nearest available volunteer
+        try {
+          const availableVolunteers = await this.usersRepository.find({
+            where: { role: UserRole.VOLUNTEER, isAvailable: true } as any,
+          });
+
+          if (availableVolunteers.length > 0) {
+            let assigned = availableVolunteers[0];
+            if (saved.latitude && saved.longitude) {
+              const withDistance = availableVolunteers.map((v: any) => {
+                const dLat = ((v.latitude || 0) - saved.latitude) * (Math.PI / 180);
+                const dLon = ((v.longitude || 0) - saved.longitude) * (Math.PI / 180);
+                const a = Math.sin(dLat / 2) ** 2 + Math.cos(saved.latitude * Math.PI / 180) * Math.cos((v.latitude || 0) * Math.PI / 180) * Math.sin(dLon / 2) ** 2;
+                return { volunteer: v, dist: 6371 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)) };
+              });
+              withDistance.sort((a, b) => a.dist - b.dist);
+              assigned = withDistance[0].volunteer;
+            }
+            const ngo = await this.usersRepository.findOne({ where: { id: userId } });
+            this.eventsGateway.emitVolunteerAssigned({
+              volunteerId: assigned.id,
+              donationId: saved.id,
+              donationName: saved.name,
+              donorAddress: saved.address || 'See donation details',
+              ngoName: ngo?.organizationName || ngo?.name || 'NGO',
+            });
+            this.eventsGateway.emitNotification({
+              title: '🚗 Pickup Assignment',
+              message: `You've been assigned to pick up "${saved.name}". Check your dashboard!`,
+              type: 'pickup_assigned',
+            });
+          }
+        } catch (e) {
+          this.logger.warn('Auto-assign volunteer failed (non-critical):', e);
+        }
+
         this.eventsGateway.emitDonationClaimed(saved);
 
         this.eventsGateway.emitNotification({
