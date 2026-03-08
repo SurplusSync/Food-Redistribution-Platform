@@ -54,7 +54,7 @@ export default function AdminDashboard() {
 
   const handleViewCertificate = (certificateUrl?: string) => {
     if (!certificateUrl) {
-      toast.error('No registration certificate uploaded for this NGO');
+      toast.error(t('noCertificateUploaded'));
       return;
     }
     setCertificatePreviewUrl(certificateUrl);
@@ -69,7 +69,7 @@ export default function AdminDashboard() {
   const handleSignOut = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-    toast.success('Signed out successfully');
+    toast.success(t('signedOutSuccessfully'));
     navigate('/login');
   };
 
@@ -140,7 +140,7 @@ export default function AdminDashboard() {
                       <span className="text-slate-400">{new Date(item.createdAt).toLocaleDateString()}</span>
                       {activeTab === 'users' && (
                         <span className={`ml-2 px-2 py-0.5 rounded-full text-xs ${item.isActive ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-red-500/20 text-red-400 border border-red-500/30'}`}>
-                          {item.isActive ? 'Active' : 'Suspended'}
+                          {item.isActive ? t('active') : t('suspended')}
                         </span>
                       )}
                     </td>

@@ -52,15 +52,22 @@ export default function AddFood() {
     const user = JSON.parse(localStorage.getItem('user') || '{}')
 
     const foodTypes = [
-        { id: 'cooked', label: 'Cooked', expiryHours: 4, icon: '🍛' },
-        { id: 'raw', label: 'Raw', expiryHours: 24, icon: '🥬' },
-        { id: 'packaged', label: 'Packaged', expiryHours: 720, icon: '📦' },
-        { id: 'fruits', label: 'Fruits', expiryHours: 48, icon: '🍎' },
-        { id: 'bakery', label: 'Bakery', expiryHours: 24, icon: '🥖' },
-        { id: 'dairy', label: 'Dairy', expiryHours: 48, icon: '🥛' },
+        { id: 'cooked', label: t('cooked'), expiryHours: 4, icon: '🍛' },
+        { id: 'raw', label: t('raw'), expiryHours: 24, icon: '🥬' },
+        { id: 'packaged', label: t('packaged'), expiryHours: 720, icon: '📦' },
+        { id: 'fruits', label: t('fruits'), expiryHours: 48, icon: '🍎' },
+        { id: 'bakery', label: t('bakery'), expiryHours: 24, icon: '🥖' },
+        { id: 'dairy', label: t('dairy'), expiryHours: 48, icon: '🥛' },
     ]
 
-    const units = ['kg', 'g', 'pieces', 'servings', 'boxes', 'liters']
+    const units = [
+        { value: 'kg', label: t('unitKg') },
+        { value: 'g', label: t('unitG') },
+        { value: 'pieces', label: t('unitPieces') },
+        { value: 'servings', label: t('unitServings') },
+        { value: 'boxes', label: t('unitBoxes') },
+        { value: 'liters', label: t('unitLiters') },
+    ]
 
     const selectedFoodType = foodTypes.find(f => f.id === formData.foodType)
 
@@ -111,18 +118,18 @@ export default function AddFood() {
 
         // Check if time is in the future
         if (timeStatus?.futureTime) {
-            setError('Preparation time cannot be in the future')
+            setError(t('prepTimeError'))
             return
         }
 
         // Validate time safety
         if (timeStatus?.expired) {
-            setError(`This ${formData.foodType} food has exceeded the safe consumption window of ${selectedFoodType?.expiryHours} hours`)
+            setError(t('exceededSafeWindow', { foodType: formData.foodType, hours: selectedFoodType?.expiryHours }))
             return
         }
 
         if (!location) {
-            setError('Please select a pickup location on the map')
+            setError(t('selectPickupLocation'))
             return
         }
 
@@ -130,7 +137,7 @@ export default function AddFood() {
         const donorName = String(user?.organizationName ?? user?.name ?? '').trim()
 
         if (!donorId || !donorName) {
-            setError('Missing donor information. Please sign in again.')
+            setError(t('missingDonorInfo'))
             return
         }
 
@@ -166,7 +173,7 @@ export default function AddFood() {
             navigate('/dashboard')
         } catch (err: any) {
             console.error(err);
-            setError(err.response?.data?.message || err.message || 'Failed to create donation')
+            setError(err.response?.data?.message || err.message || t('failedCreateDonationGeneric'))
         } finally {
             setIsSubmitting(false)
         }
@@ -220,7 +227,7 @@ export default function AddFood() {
                         <div className="mt-3 p-3 bg-slate-800 rounded-lg">
                             <p className="text-xs text-slate-400">
                                 <Clock className="w-3 h-3 inline mr-1" />
-                                Safe consumption window: <span className="text-emerald-400 font-medium">{selectedFoodType.expiryHours} hours</span> from preparation
+                                {t('safeConsumptionWindow', { hours: selectedFoodType.expiryHours })}
                             </p>
                         </div>
                     )}
@@ -241,7 +248,7 @@ export default function AddFood() {
                         <div className="mt-3 p-3 bg-amber-500/10 border border-amber-500/20 rounded-lg flex items-center gap-2">
                             <AlertTriangle className="w-4 h-4 text-amber-400" />
                             <p className="text-sm text-amber-400">
-                                Preparation time cannot be in the future
+                                {t('prepTimeError')}
                             </p>
                         </div>
                     )}
@@ -249,7 +256,7 @@ export default function AddFood() {
                         <div className="mt-3 p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-lg flex items-center gap-2">
                             <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                             <p className="text-sm text-emerald-400">
-                                Safe for <span className="font-semibold">{timeStatus.hours}h {timeStatus.minutes}m</span> more
+                                {t('safeFor')} <span className="font-semibold">{timeStatus.hours}h {timeStatus.minutes}m</span> {t('more')}
                             </p>
                         </div>
                     )}
@@ -257,7 +264,7 @@ export default function AddFood() {
                         <div className="mt-3 p-3 bg-red-500/10 border border-red-500/20 rounded-lg flex items-center gap-2">
                             <AlertTriangle className="w-4 h-4 text-red-400" />
                             <p className="text-sm text-red-400">
-                                This food has exceeded safe consumption limits
+                                {t('exceededSafeLimits')}
                             </p>
                         </div>
                     )}
@@ -272,7 +279,7 @@ export default function AddFood() {
                             name="foodName"
                             value={formData.foodName}
                             onChange={handleChange}
-                            placeholder="e.g., Vegetable Biryani"
+                            placeholder={t('foodNamePlaceholder')}
                             required
                             className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-white placeholder-slate-600 focus:border-emerald-500 focus:outline-none"
                         />
@@ -301,8 +308,8 @@ export default function AddFood() {
                                 onChange={handleChange}
                                 className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-white focus:border-emerald-500 focus:outline-none"
                             >
-                                {units.map((unit) => (
-                                    <option key={unit} value={unit}>{unit}</option>
+                                {units.map((u) => (
+                                    <option key={u.value} value={u.value}>{u.label}</option>
                                 ))}
                             </select>
                         </div>
@@ -314,7 +321,7 @@ export default function AddFood() {
                             name="description"
                             value={formData.description}
                             onChange={handleChange}
-                            placeholder="Any additional details (ingredients, dietary info, special instructions)..."
+                            placeholder={t('descriptionPlaceholder')}
                             rows={3}
                             className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-white placeholder-slate-600 focus:border-emerald-500 focus:outline-none resize-none"
                         />
@@ -343,7 +350,7 @@ export default function AddFood() {
                         </div>
                         {images.length > 0 && (
                             <p className="text-xs text-emerald-400 mt-2">
-                                {images.length} file(s) selected
+                                {t('filesSelected', { count: images.length })}
                             </p>
                         )}
                     </div>

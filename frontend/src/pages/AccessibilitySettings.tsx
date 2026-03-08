@@ -1,23 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { translationEvents } from '../i18n';
-import { clearTranslationCache } from '../services/translationService';
 
 const languages = [
   { code: 'en', label: 'English', flag: '🇬🇧' },
   { code: 'hi', label: 'हिन्दी', flag: '🇮🇳' },
   { code: 'ta', label: 'தமிழ்', flag: '🇮🇳' },
-  { code: 'te', label: 'తెలుగు', flag: '🇮🇳' },
-  { code: 'kn', label: 'ಕನ್ನಡ', flag: '🇮🇳' },
-  { code: 'ml', label: 'മലയാളം', flag: '🇮🇳' },
-  { code: 'bn', label: 'বাংলা', flag: '🇮🇳' },
-  { code: 'mr', label: 'मराठी', flag: '🇮🇳' },
-  { code: 'es', label: 'Español', flag: '🇪🇸' },
-  { code: 'fr', label: 'Français', flag: '🇫🇷' },
-  { code: 'de', label: 'Deutsch', flag: '🇩🇪' },
-  { code: 'zh', label: '中文', flag: '🇨🇳' },
-  { code: 'ar', label: 'العربية', flag: '🇸🇦' },
-  { code: 'ja', label: '日本語', flag: '🇯🇵' },
 ];
 
 export default function AccessibilitySettings() {
@@ -25,8 +12,7 @@ export default function AccessibilitySettings() {
   const [isDark, setIsDark] = useState(() => {
     return localStorage.getItem('theme') === 'dark';
   });
-  const [translating, setTranslating] = useState(false);
-  const [progress, setProgress] = useState({ done: 0, total: 0 });
+
 
   // Apply dark class on mount and when toggled
   useEffect(() => {
@@ -38,16 +24,7 @@ export default function AccessibilitySettings() {
     localStorage.setItem('theme', isDark ? 'dark' : 'light');
   }, [isDark]);
 
-  // Listen for translation progress events
-  useEffect(() => {
-    const handler = (e: Event) => {
-      const detail = (e as CustomEvent).detail;
-      setTranslating(detail.loading);
-      setProgress({ done: detail.done, total: detail.total });
-    };
-    translationEvents.addEventListener('translating', handler);
-    return () => translationEvents.removeEventListener('translating', handler);
-  }, []);
+
 
   const changeLanguage = (langCode: string) => {
     i18n.changeLanguage(langCode);
@@ -69,29 +46,6 @@ export default function AccessibilitySettings() {
           <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
             {t('language')}
           </p>
-
-          {/* Translation progress bar */}
-          {translating && (
-            <div className="mb-4 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm text-green-700 dark:text-green-300 font-medium">
-                  Translating... {progress.done}/{progress.total}
-                </span>
-                <span className="text-xs text-green-600 dark:text-green-400">
-                  {progress.total > 0 ? Math.round((progress.done / progress.total) * 100) : 0}%
-                </span>
-              </div>
-              <div className="w-full bg-green-200 dark:bg-green-800 rounded-full h-2 overflow-hidden">
-                <div
-                  className="h-full bg-green-500 rounded-full transition-all duration-300"
-                  style={{ width: `${progress.total > 0 ? (progress.done / progress.total) * 100 : 0}%` }}
-                />
-              </div>
-              <p className="text-xs text-green-600 dark:text-green-400 mt-1">
-                First-time translation — cached for instant loading next time
-              </p>
-            </div>
-          )}
 
           <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
             {languages.map((lang) => (
@@ -118,7 +72,7 @@ export default function AccessibilitySettings() {
             {t('highContrast')} / {t('darkMode')}
           </h2>
           <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-            Toggle high-contrast dark mode for improved readability.
+            {t('toggleHighContrastDesc')}
           </p>
 
           <button
@@ -138,33 +92,10 @@ export default function AccessibilitySettings() {
           </span>
         </div>
 
-        {/* Cache Management */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 mt-6 border border-gray-200 dark:border-gray-700">
-          <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-1">
-            Translation Cache
-          </h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-            Translations are cached locally for instant loading. Clear the cache to re-translate.
-          </p>
-          <button
-            onClick={() => {
-              clearTranslationCache();
-              if (i18n.language !== 'en') {
-                const lang = i18n.language;
-                i18n.changeLanguage('en');
-                setTimeout(() => i18n.changeLanguage(lang), 100);
-              }
-            }}
-            className="px-4 py-2 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg text-sm font-medium hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors"
-          >
-            Clear Translation Cache
-          </button>
-        </div>
-
         {/* Live Preview */}
         <div className="mt-8 bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-200 dark:border-gray-700">
           <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">
-            Preview
+            {t('preview')}
           </h2>
           <div className="space-y-2 text-gray-700 dark:text-gray-300">
             <p><strong>{t('welcome')}</strong></p>

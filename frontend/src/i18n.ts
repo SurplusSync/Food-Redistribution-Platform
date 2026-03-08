@@ -1,6 +1,7 @@
 ﻿import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import { translateAll, getCachedTranslations } from './services/translationService';
+import hiStrings from './locales/hi';
+import taStrings from './locales/ta';
 
 // â”€â”€â”€ English source strings (the ONLY static dictionary) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Every other language is translated dynamically via API and cached in localStorage.
@@ -99,6 +100,8 @@ export const enStrings: Record<string, string> = {
       builtDifferent: 'Built different',
       geoAwareFoodMap: 'Geo-aware food map',
       geoMapDesc: 'Interactive map powered by Leaflet showing all available donations in your radius. Filter by distance, food type, and urgency.',
+      discovery: 'Discovery',
+      analytics: 'Analytics',
       fiveKmRadius: '5 km radius',
       realTimePins: 'Real-time pins',
       routePreview: 'Route preview',
@@ -440,76 +443,127 @@ export const enStrings: Record<string, string> = {
       deliverDonationDesc: '+20 karma for each successful delivery',
       firstDonation: 'First Donation',
       firstDonationDesc: '+25 karma bonus for your first contribution',
+
+      // ── Food types ──
+      cooked: 'Cooked',
+      raw: 'Raw',
+      packaged: 'Packaged',
+      fruits: 'Fruits',
+      bakery: 'Bakery',
+      dairy: 'Dairy',
+
+      // ── Units ──
+      unitKg: 'kg',
+      unitG: 'g',
+      unitPieces: 'pieces',
+      unitServings: 'servings',
+      unitBoxes: 'boxes',
+      unitLiters: 'liters',
+
+      // ── Time formatting ──
+      justNow: 'Just now',
+      minutesAgo: '{{count}}m ago',
+      hoursAgo: '{{count}}h ago',
+      daysAgo: '{{count}}d ago',
+      left: 'left',
+
+      // ── Month abbreviations ──
+      jan: 'Jan', feb: 'Feb', mar: 'Mar', apr: 'Apr', may: 'May', jun: 'Jun',
+      jul: 'Jul', aug: 'Aug', sep: 'Sep', oct: 'Oct', nov: 'Nov', dec: 'Dec',
+
+      // ── AddFood extras ──
+      safeFor: 'Safe for',
+      more: 'more',
+      hoursFromPreparation: 'from preparation',
+      filesSelected: '{{count}} file(s) selected',
+      failedCreateDonationGeneric: 'Failed to create donation',
+
+      // ── NGO / Discovery extras ──
+      newFoodAlert: 'New Food Alert',
+      foodClaimedAlert: 'Food Claimed',
+      claiming: 'Claiming...',
+
+      // ── Volunteer extras ──
+      noAdditionalDetails: 'No additional details.',
+
+      // ── Admin extras ──
+      signedOutSuccessfully: 'Signed out successfully',
+      noCertificateUploaded: 'No registration certificate uploaded for this NGO',
+
+      // ── Profile extras ──
+      noUserDataAvailable: 'No user data available',
+      reload: 'Reload',
+      surplusSyncPlatformName: 'SurplusSync Food Redistribution Platform',
+
+      // ── Accessibility extras ──
+      translating: 'Translating...',
+      translatingProgress: 'Translating... {{done}}/{{total}}',
+      firstTimeTranslation: 'First-time translation — cached for instant loading next time',
+      toggleHighContrastDesc: 'Toggle high-contrast dark mode for improved readability.',
+      translationCache: 'Translation Cache',
+      translationCacheDesc: 'Translations are cached locally for instant loading. Clear the cache to re-translate.',
+      clearTranslationCache: 'Clear Translation Cache',
+
+      // ── Login/Register extras ──
+      foodRedistributionPlatform: 'Food Redistribution Platform',
+      emailPlaceholder: 'you@example.com',
+      passwordPlaceholder: '••••••••',
+      namePlaceholder: 'John Doe',
+      phonePlaceholder: '+91 98765 43210',
+      minSixChars: 'Min 6 characters',
+      restaurantNamePlaceholder: 'Restaurant name',
+      ngoNamePlaceholder: 'NGO name',
+      fullAddressPlaceholder: 'Full address',
+      mealsSavedStat: '10,000+',
+      activeDonorsStat: '500+',
+      partnerNGOsStat: '120+',
+
+      // ── Landing page extras ──
+      surplusListed: 'Surplus Listed',
+      ngoDiscovers: 'NGO Discovers',
+      foodClaimed: 'Food Claimed',
+      volunteerPicksUp: 'Volunteer Picks Up',
+      communityFed: 'Community Fed',
+      lessThan2Min: '< 2 min',
+      hundredPercent: '100%',
+      fiveKm: '5 km',
+      testimonial1Quote: 'SurplusSync has transformed how our restaurant handles excess food. What used to go to waste now feeds families every single day.',
+      testimonial1Name: 'Priya Sharma',
+      testimonial1Role: 'Restaurant Owner & Donor',
+      testimonial2Quote: 'The geo-aware map is a game changer. We can instantly see what\'s available nearby and claim it before it expires.',
+      testimonial2Name: 'Ravi Menon',
+      testimonial2Role: 'NGO Coordinator',
+      testimonial3Quote: 'As a college student, volunteering through SurplusSync lets me make a real impact. The tracking features make it seamless.',
+      testimonial3Name: 'Ananya Gupta',
+      testimonial3Role: 'Student Volunteer',
+      footerDesc: 'A food redistribution platform connecting surplus food with communities in need. Built to feed communities, not landfills.',
+      openSourceProject: 'Open Source Project',
+      contactEmail: 'surplussync@platform.org',
+      builtWithLove: 'Built with ♥ to feed communities',
+      co2Label: 'CO₂',
+      mealsLabel: 'Meals',
+      kgLabel: 'Kg',
+      joinSurplusSync: 'Join SurplusSync',
 };
 
-// â”€â”€â”€ Dynamic translation event bus â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// Components can listen to these events to show loading indicators.
-
-export const translationEvents = new EventTarget();
-
-// â”€â”€â”€ i18next initialization (English-only static resource) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ——— i18next initialization (static resources for en / hi / ta) ———
 
 const savedLang = localStorage.getItem('i18nLanguage') || 'en';
 
 i18n.use(initReactI18next).init({
   resources: {
     en: { translation: enStrings },
+    hi: { translation: hiStrings },
+    ta: { translation: taStrings },
   },
   lng: savedLang,
   fallbackLng: 'en',
   interpolation: { escapeValue: false },
 });
 
-// Load cached translations for the initial non-English language (instant)
-if (savedLang !== 'en') {
-  const cached = getCachedTranslations(savedLang);
-  if (cached) {
-    i18n.addResourceBundle(savedLang, 'translation', cached, true, true);
-  } else {
-    // First visit in this language â€” kick off background translation
-    translateAll(enStrings, savedLang, (partial, done, total) => {
-      i18n.addResourceBundle(savedLang, 'translation', partial, true, true);
-      translationEvents.dispatchEvent(
-        new CustomEvent('translating', { detail: { loading: done < total, done, total } }),
-      );
-    });
-  }
-}
-
-// â”€â”€â”€ Dynamic translation on every language change â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-
-i18n.on('languageChanged', async (lng: string) => {
+// Persist language choice
+i18n.on('languageChanged', (lng: string) => {
   localStorage.setItem('i18nLanguage', lng);
-  if (lng === 'en') return;
-
-  // Try cache first (synchronous â†’ instant)
-  const cached = getCachedTranslations(lng);
-  if (cached && Object.keys(cached).length >= Object.keys(enStrings).length) {
-    i18n.addResourceBundle(lng, 'translation', cached, true, true);
-    return;
-  }
-
-  // Signal start
-  translationEvents.dispatchEvent(
-    new CustomEvent('translating', { detail: { loading: true, done: 0, total: Object.keys(enStrings).length } }),
-  );
-
-  // Translate progressively â€” UI updates as batches arrive
-  const translated = await translateAll(enStrings, lng, (partial, done, total) => {
-    i18n.addResourceBundle(lng, 'translation', partial, true, true);
-    translationEvents.dispatchEvent(
-      new CustomEvent('translating', { detail: { loading: done < total, done, total } }),
-    );
-  });
-
-  i18n.addResourceBundle(lng, 'translation', translated, true, true);
-  translationEvents.dispatchEvent(
-    new CustomEvent('translating', { detail: { loading: false, done: Object.keys(enStrings).length, total: Object.keys(enStrings).length } }),
-  );
 });
-
-// â”€â”€â”€ REMOVED: Hindi & Tamil static dictionaries â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// All non-English translations are now fetched dynamically via the MyMemory API
-// and cached permanently in localStorage. This reduced this file from 1156 â†’ ~250 lines.
 
 export default i18n;

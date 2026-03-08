@@ -11,12 +11,12 @@ import {
 
 // ─── BADGE CATALOG (mirrors backend BADGE_RULES exactly) ─────────────────────
 
-const BADGE_CATALOG = [
-    { threshold: 10, name: 'Newcomer', icon: '🌱', description: 'Earned first 10 karma points' },
-    { threshold: 50, name: 'Local Hero', icon: '🦸', description: 'Reached 50 karma points' },
-    { threshold: 150, name: 'Champion', icon: '🏆', description: 'Reached 150 karma points' },
-    { threshold: 300, name: 'Legend', icon: '⭐', description: 'Reached 300 karma points' },
-    { threshold: 500, name: 'Superhero', icon: '💫', description: 'Reached 500 karma points' },
+const BADGE_CATALOG_KEYS = [
+    { threshold: 10, nameKey: 'newcomer', icon: '🌱', descKey: 'newcomerDesc' },
+    { threshold: 50, nameKey: 'localHero', icon: '🦸', descKey: 'localHeroDesc' },
+    { threshold: 150, nameKey: 'champion', icon: '🏆', descKey: 'championDesc' },
+    { threshold: 300, nameKey: 'legend', icon: '⭐', descKey: 'legendDesc' },
+    { threshold: 500, nameKey: 'superhero', icon: '💫', descKey: 'superheroDesc' },
 ]
 
 // ─── INLINE SVG BAR CHART ─────────────────────────────────────────────────────
@@ -210,7 +210,7 @@ function CertificateModal({ user, role, onClose }: { user: User; role: string; o
                 <div className="flex justify-between items-center px-6 py-4 border-b border-slate-200 bg-slate-50 rounded-t-2xl">
                     <h3 className="text-base font-semibold text-slate-800 flex items-center gap-2">
                         <Award className="w-5 h-5 text-emerald-600" />
-                        Certificate of Appreciation
+                        {t('certificateOfAppreciation')}
                     </h3>
                     <div className="flex gap-2">
                         <button onClick={handlePrint}
@@ -294,9 +294,10 @@ function CertificateModal({ user, role, onClose }: { user: User; role: string; o
 
 function KarmaProgress({ karma, badgeCatalog }: { karma: number; badgeCatalog?: { id: string; name: string; icon: string; description: string; earned: boolean; requirement: number }[] }) {
     const { t } = useTranslation()
+    const localizedCatalog = BADGE_CATALOG_KEYS.map(b => ({ threshold: b.threshold, name: t(b.nameKey), icon: b.icon, description: t(b.descKey) }))
     const catalog = (badgeCatalog && badgeCatalog.length > 0)
         ? badgeCatalog.map(b => ({ threshold: b.requirement, name: b.name, icon: b.icon, description: b.description }))
-        : BADGE_CATALOG;
+        : localizedCatalog;
 
     const earned = catalog.filter(b => karma >= b.threshold)
     const next = catalog.find(b => karma < b.threshold)

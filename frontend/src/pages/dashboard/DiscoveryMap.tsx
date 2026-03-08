@@ -50,7 +50,7 @@ export default function DiscoveryMap() {
 
         // Listen for new donations
         const unsubscribeCreated = socketService.onDonationCreated((data) => {
-            toast.success(`🍕 New Food Alert: ${data.foodType} available nearby!`, {
+            toast.success(`🍕 ${t('newFoodAlert')}: ${data.foodType}!`, {
                 description: `${data.name} - ${data.location.address}`,
                 duration: 5000,
             })
@@ -60,7 +60,7 @@ export default function DiscoveryMap() {
 
         // Listen for claimed donations
         const unsubscribeClaimed = socketService.onDonationClaimed((data) => {
-            toast.info(`🔔 Food Claimed`, {
+            toast.info(`🔔 ${t('foodClaimedAlert')}`, {
                 description: `${data.donationId} has been claimed`,
                 duration: 3000,
             })
@@ -184,7 +184,7 @@ export default function DiscoveryMap() {
                                         : 'bg-slate-800 text-slate-400 hover:text-white'
                                 }`}
                             >
-                                {f === 'AVAILABLE' ? t('available') : f.toLowerCase()}
+                                {f === 'AVAILABLE' ? t('available') : f === 'CLAIMED' ? t('claimed') : t('all')}
                             </button>
                         ))}
                     </div>
@@ -228,13 +228,13 @@ export default function DiscoveryMap() {
                                                     ? 'bg-emerald-500/20 text-emerald-400'
                                                     : 'bg-amber-500/20 text-amber-400'
                                             }`}>
-                                                {donation.status === 'AVAILABLE' ? 'available' : donation.status.toLowerCase()}
+                                                {donation.status === 'AVAILABLE' ? t('available') : donation.status.toLowerCase()}
                                             </span>
                                             {donation.status === 'AVAILABLE' && (
                                                 <span className={`text-[10px] font-medium ${
                                                     getTimeRemaining(donation.expiryTime).urgent ? 'text-red-400' : 'text-emerald-400'
                                                 }`}>
-                                                    {getTimeRemaining(donation.expiryTime).text} left
+                                                    {getTimeRemaining(donation.expiryTime).text} {t('left')}
                                                 </span>
                                             )}
                                         </div>
@@ -367,7 +367,7 @@ export default function DiscoveryMap() {
                                 {/* Time */}
                                 <div className="flex items-center gap-2 text-sm text-slate-400">
                                     <Clock className="w-4 h-4" />
-                                    <span>Prepared: {new Date(selectedDonation.preparationTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                                    <span>{t('prepared', { time: new Date(selectedDonation.preparationTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) })}</span>
                                 </div>
                             </div>
 
@@ -381,7 +381,7 @@ export default function DiscoveryMap() {
                                             className="w-full py-3 bg-emerald-500 hover:bg-emerald-400 disabled:bg-slate-700 text-white rounded-lg font-semibold transition-all shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2"
                                         >
                                             {claiming === selectedDonation.id ? (
-                                                <>Claiming...</>
+                                                <>{t('claiming')}</>
                                             ) : (
                                                 <>
                                                     <MapPin className="w-4 h-4" />
@@ -391,7 +391,7 @@ export default function DiscoveryMap() {
                                         </button>
                                     ) : (
                                         <div className="text-center p-3 bg-slate-800 rounded-lg text-slate-400 text-sm">
-                                            Log in as NGO or Volunteer to claim
+                                            {t('loginAsNGO')}
                                         </div>
                                     )
                                 ) : (

@@ -89,7 +89,7 @@ function CertificateModal({ user, onClose }: CertificateProps) {
                 <div className="flex justify-between items-center px-6 py-4 border-b border-slate-200 bg-slate-50 rounded-t-2xl">
                     <h3 className="text-lg font-semibold text-slate-800 flex items-center gap-2">
                         <Award className="w-5 h-5 text-emerald-600" />
-                        Certificate of Appreciation
+                        {t('certificateOfAppreciation')}
                     </h3>
                     <div className="flex gap-3">
                         <button
@@ -119,7 +119,7 @@ function CertificateModal({ user, onClose }: CertificateProps) {
 
                         <div className="text-5xl mb-2">{seal}</div>
                         <p className="text-xs tracking-widest uppercase mb-3" style={{ color: accentColor, fontFamily: 'sans-serif', letterSpacing: '4px' }}>
-                            SurplusSync Food Redistribution Platform
+                            {t('surplusSyncPlatformName')}
                         </p>
 
                         <h1 className="text-4xl font-bold mb-1" style={{ color: '#0f172a', fontFamily: 'Georgia, serif' }}>
@@ -260,8 +260,8 @@ export default function Profile() {
         <div className="flex items-center justify-center min-h-screen">
             <div className="text-center">
                 <AlertCircle className="w-16 h-16 text-yellow-400 mx-auto mb-4" />
-                <p className="text-slate-400 text-xl">No user data available</p>
-                <button onClick={loadProfile} className="mt-4 bg-emerald-500 hover:bg-emerald-400 text-white font-medium py-2 px-6 rounded-lg transition-colors">Reload</button>
+                <p className="text-slate-400 text-xl">{t('noUserDataAvailable')}</p>
+                <button onClick={loadProfile} className="mt-4 bg-emerald-500 hover:bg-emerald-400 text-white font-medium py-2 px-6 rounded-lg transition-colors">{t('reload')}</button>
             </div>
         </div>
     )
@@ -295,6 +295,10 @@ export default function Profile() {
         : roleStr === 'volunteer'
             ? t('downloadVolunteerLinkedIn')
             : t('downloadPersonalisedCert')
+
+    return (
+        <div className="max-w-4xl mx-auto p-6 space-y-6">
+            {showCertificate && <CertificateModal user={user} onClose={() => setShowCertificate(false)} />}
 
             {/* Header */}
             <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
@@ -345,7 +349,7 @@ export default function Profile() {
                 <div className="flex items-center gap-4">
                     <div className="w-12 h-12 bg-emerald-500/20 rounded-xl flex items-center justify-center text-2xl flex-shrink-0">🏅</div>
                     <div>
-                        <p className="text-white font-semibold">Certificate of Appreciation</p>
+                        <p className="text-white font-semibold">{t('certificateOfAppreciation')}</p>
                         <p className="text-slate-400 text-sm">{certDesc}</p>
                     </div>
                 </div>
@@ -440,20 +444,20 @@ export default function Profile() {
                 <h2 className="text-xl font-bold text-white mb-4">📚 {t('badgeGuide')}</h2>
                 <div className="space-y-3">
                     {[
-                        { e: '🌱', n: 'Newcomer', p: 10 },
-                        { e: '🦸', n: 'Local Hero', p: 50 },
-                        { e: '🏆', n: 'Champion', p: 150 },
-                        { e: '⭐', n: 'Legend', p: 300 },
-                        { e: '💫', n: 'Superhero', p: 500 },
+                        { e: '🌱', nKey: 'newcomer', p: 10 },
+                        { e: '🦸', nKey: 'localHero', p: 50 },
+                        { e: '🏆', nKey: 'champion', p: 150 },
+                        { e: '⭐', nKey: 'legend', p: 300 },
+                        { e: '💫', nKey: 'superhero', p: 500 },
                     ].map(b => (
-                        <div key={b.n} className="flex items-center space-x-3">
+                        <div key={b.nKey} className="flex items-center space-x-3">
                             <span className="text-2xl">{b.e}</span>
                             <div>
-                                <div className="font-semibold text-white">{b.n}</div>
-                                <div className="text-sm text-slate-400">Earn {b.p} karma points</div>
+                                <div className="font-semibold text-white">{t(b.nKey)}</div>
+                                <div className="text-sm text-slate-400">{t('earnKarma', { points: b.p })}</div>
                             </div>
                             {karmaPoints >= b.p && (
-                                <span className="ml-auto text-xs text-emerald-400 font-semibold">✓ Earned</span>
+                                <span className="ml-auto text-xs text-emerald-400 font-semibold">{t('earned')}</span>
                             )}
                         </div>
                     ))}

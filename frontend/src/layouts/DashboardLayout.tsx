@@ -91,12 +91,12 @@ export default function DashboardLayout() {
   }
 
   const getRoleLabel = () => {
-    const labels = {
-      donor: 'Donor',
-      ngo: 'NGO',
-      volunteer: 'Volunteer'
+    const labels: Record<string, string> = {
+      donor: t('donor'),
+      ngo: t('ngo'),
+      volunteer: t('volunteer')
     }
-    return labels[userRole as keyof typeof labels] || 'User'
+    return labels[userRole] || t('user')
   }
 
   return (

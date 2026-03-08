@@ -215,7 +215,7 @@ export default function VolunteerDashboard() {
                   </button>
                 </div>
 
-                <p className="text-sm text-slate-300 mt-4">{selectedDonation.description || 'No additional details.'}</p>
+                <p className="text-sm text-slate-300 mt-4">{selectedDonation.description || t('noAdditionalDetails')}</p>
 
                 <div className="mt-4 flex items-center gap-3">
                   {selectedDonation.status === 'CLAIMED' && (
@@ -224,7 +224,7 @@ export default function VolunteerDashboard() {
                       disabled={processingId === selectedDonation.id}
                       className="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-white rounded-md"
                     >
-                      {processingId === selectedDonation.id ? 'Processing...' : (<><MapPin className="inline w-4 h-4 mr-2" /> Confirm Pickup</>)}
+                      {processingId === selectedDonation.id ? t('processing') : (<><MapPin className="inline w-4 h-4 mr-2" /> {t('confirmPickup')}</>)}
                     </button>
                   )}
 
@@ -234,7 +234,7 @@ export default function VolunteerDashboard() {
                       disabled={processingId === selectedDonation.id}
                       className="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-white rounded-md"
                     >
-                      {processingId === selectedDonation.id ? 'Processing...' : (<><CheckCircle2 className="inline w-4 h-4 mr-2" /> Confirm Delivery</>)}
+                      {processingId === selectedDonation.id ? t('processing') : (<><CheckCircle2 className="inline w-4 h-4 mr-2" /> {t('confirmDelivery')}</>)}
                     </button>
                   )}
                 </div>

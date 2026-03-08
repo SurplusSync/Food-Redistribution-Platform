@@ -37,7 +37,7 @@ export default function NGODashboard() {
 
     // Listen for new donations
     const unsubscribeCreated = socketService.onDonationCreated((data) => {
-      toast.success(`🍕 New Food Alert: ${data.foodType} available nearby!`, {
+      toast.success(`🍕 ${t('newFoodAlert')}: ${data.foodType}!`, {
         description: `${data.name} - ${data.location.address}`,
         duration: 5000,
       })
@@ -47,7 +47,7 @@ export default function NGODashboard() {
 
     // Listen for claimed donations
     const unsubscribeClaimed = socketService.onDonationClaimed((data) => {
-      toast.info(`🔔 Food Claimed`, {
+      toast.info(`🔔 ${t('foodClaimedAlert')}`, {
         description: `${data.donationId} has been claimed`,
         duration: 3000,
       })
@@ -160,7 +160,7 @@ export default function NGODashboard() {
           <div className="flex items-center justify-between mb-3">
             <span className="text-xl text-emerald-400">●</span>
             <span className="text-xs font-medium px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 uppercase">
-              Available
+              {t('available')}
             </span>
           </div>
           <p className="text-sm text-slate-400 mb-1">{t('readyToClaim')}</p>
@@ -171,7 +171,7 @@ export default function NGODashboard() {
           <div className="flex items-center justify-between mb-3">
             <span className="text-xl text-amber-400">◷</span>
             <span className="text-xs font-medium px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 uppercase">
-              In Progress
+              {t('inProgress')}
             </span>
           </div>
           <p className="text-sm text-slate-400 mb-1">{t('claimedPending')}</p>
@@ -182,7 +182,7 @@ export default function NGODashboard() {
           <div className="flex items-center justify-between mb-3">
             <span className="text-xl text-slate-400">✓</span>
             <span className="text-xs font-medium px-2 py-0.5 rounded bg-slate-500/10 text-slate-400 uppercase">
-              Complete
+              {t('complete')}
             </span>
           </div>
           <p className="text-sm text-slate-400 mb-1">{t('delivered')}</p>
@@ -235,7 +235,7 @@ export default function NGODashboard() {
         </div>
 
         {loading && (
-          <div className="p-8 text-center text-slate-500">Loading...</div>
+          <div className="p-8 text-center text-slate-500">{t('loading')}</div>
         )}
 
         {!loading && donations.filter(d => d.status === 'AVAILABLE').length === 0 && (
@@ -336,7 +336,7 @@ export default function NGODashboard() {
                       {t('viewDetails')}
                     </button>
                     <span className={`px-3 py-1 rounded-md text-xs font-medium whitespace-nowrap ${getStatusStyle(donation.status)}`}>
-                      {donation.status === 'PICKED_UP' ? t('pickedUp') : t('claimed')}}
+                      {donation.status === 'PICKED_UP' ? t('pickedUp') : t('claimed')}
                     </span>
                   </div>
                 </div>
@@ -456,7 +456,7 @@ export default function NGODashboard() {
                 {/* Time */}
                 <div className="flex items-center gap-2 text-sm text-slate-400">
                   <Clock className="w-4 h-4" />
-                  <span>Prepared: {new Date(selectedDonation.preparationTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                  <span>{t('prepared', { time: new Date(selectedDonation.preparationTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) })}</span>
                 </div>
               </div>
 
@@ -469,7 +469,7 @@ export default function NGODashboard() {
                     className="w-full py-3 bg-emerald-500 hover:bg-emerald-400 disabled:bg-slate-700 text-white rounded-lg font-semibold transition-all shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2"
                   >
                     {claiming === selectedDonation.id ? (
-                      <>Claiming...</>
+                      <>{t('claiming')}</>
                     ) : (
                       <>
                         <MapPin className="w-4 h-4" />

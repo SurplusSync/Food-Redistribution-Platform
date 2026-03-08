@@ -121,7 +121,7 @@ export default function DonorHome() {
           <p className="text-3xl font-semibold text-emerald-400">{activeCount}</p>
           {urgentDonations.length > 0 && (
             <p className="text-xs text-red-400 mt-2">
-              {urgentDonations.length} expiring soon
+              {t('expiringSoon', { count: urgentDonations.length })}
             </p>
           )}
         </div>
@@ -196,7 +196,7 @@ export default function DonorHome() {
         </div>
 
         {loading && (
-          <div className="p-8 text-center text-slate-500">Loading...</div>
+          <div className="p-8 text-center text-slate-500">{t('loading')}</div>
         )}
 
         {!loading && donations.length === 0 && (
@@ -304,7 +304,7 @@ export default function DonorHome() {
               ) : (
                 <div className="w-full h-full flex flex-col items-center justify-center text-slate-600">
                   <ImageIcon className="w-12 h-12 mb-2 opacity-50" />
-                  <span className="text-sm">No image uploaded</span>
+                  <span className="text-sm">{t('noImageUploaded')}</span>
                 </div>
               )}
             </div>
@@ -369,7 +369,7 @@ export default function DonorHome() {
                 {/* Time */}
                 <div className="flex items-center gap-2 text-sm text-slate-400">
                   <Clock className="w-4 h-4" />
-                  <span>Prepared: {new Date(selectedDonation.preparationTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                  <span>{t('prepared', { time: new Date(selectedDonation.preparationTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) })}</span>
                 </div>
               </div>
 

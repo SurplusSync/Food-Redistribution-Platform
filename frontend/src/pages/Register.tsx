@@ -106,7 +106,7 @@ export default function Register() {
                                 <h1 className="text-2xl font-bold text-white">
                                     Surplus<span className="text-emerald-400">Sync</span>
                                 </h1>
-                                <p className="text-sm text-slate-500">Food Redistribution Platform</p>
+                                <p className="text-sm text-slate-500">{t('foodRedistributionPlatform')}</p>
                             </div>
                         </div>
 
@@ -134,9 +134,9 @@ export default function Register() {
                     {/* Stats bar */}
                     <div className="flex gap-6 pt-6 border-t border-slate-800/40">
                         {[
-                            { value: '10,000+', label: 'Meals saved' },
-                            { value: '500+', label: 'Active donors' },
-                            { value: '120+', label: 'Partner NGOs' },
+                            { value: t('mealsSavedStat'), label: t('mealsSaved') },
+                            { value: t('activeDonorsStat'), label: t('activeDonors') },
+                            { value: t('partnerNGOsStat'), label: t('partnerNGOs') },
                         ].map((stat, i) => (
                             <div key={i}>
                                 <p className="text-2xl font-extrabold text-white tracking-tight">{stat.value}</p>
@@ -205,33 +205,33 @@ export default function Register() {
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-sm font-medium text-slate-300 mb-2">{t('yourName')}</label>
-                                    <input type="text" name="name" value={formData.name} onChange={handleChange} required placeholder="John Doe" className={inputClass} />
+                                    <input type="text" name="name" value={formData.name} onChange={handleChange} required placeholder={t('namePlaceholder')} className={inputClass} />
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-slate-300 mb-2">{t('phone')}</label>
-                                    <input type="tel" name="phone" value={formData.phone} onChange={handleChange} required placeholder="+91 98765 43210" className={inputClass} />
+                                    <input type="tel" name="phone" value={formData.phone} onChange={handleChange} required placeholder={t('phonePlaceholder')} className={inputClass} />
                                 </div>
                             </div>
 
                             <div>
                                 <label className="block text-sm font-medium text-slate-300 mb-2">{t('email')}</label>
-                                <input type="email" name="email" value={formData.email} onChange={handleChange} required placeholder="you@example.com" className={inputClass} />
+                                <input type="email" name="email" value={formData.email} onChange={handleChange} required placeholder={t('emailPlaceholder')} className={inputClass} />
                             </div>
 
                             <div>
                                 <label className="block text-sm font-medium text-slate-300 mb-2">{t('password')}</label>
-                                <input type="password" name="password" value={formData.password} onChange={handleChange} required placeholder="Min 6 characters" className={inputClass} />
+                                <input type="password" name="password" value={formData.password} onChange={handleChange} required placeholder={t('minSixChars')} className={inputClass} />
                             </div>
 
                             {showOrganizationFields && (
                                 <>
                                     <div>
                                         <label className="block text-sm font-medium text-slate-300 mb-2">{formData.role === 'DONOR' ? t('businessName') : t('organizationName')}</label>
-                                        <input type="text" name="organizationName" value={formData.organizationName} onChange={handleChange} required placeholder={formData.role === 'DONOR' ? 'Restaurant name' : 'NGO name'} className={inputClass} />
+                                        <input type="text" name="organizationName" value={formData.organizationName} onChange={handleChange} required placeholder={formData.role === 'DONOR' ? t('restaurantNamePlaceholder') : t('ngoNamePlaceholder')} className={inputClass} />
                                     </div>
                                     <div>
                                         <label className="block text-sm font-medium text-slate-300 mb-2">{t('address')}</label>
-                                        <textarea name="address" value={formData.address} onChange={handleChange} required placeholder="Full address" className={`${inputClass} resize-none`} rows={2} />
+                                        <textarea name="address" value={formData.address} onChange={handleChange} required placeholder={t('fullAddressPlaceholder')} className={`${inputClass} resize-none`} rows={2} />
                                     </div>
                                 </>
                             )}

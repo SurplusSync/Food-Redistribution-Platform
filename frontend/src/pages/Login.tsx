@@ -76,7 +76,7 @@ export default function Login() {
                 <h1 className="text-2xl font-bold text-white">
                   Surplus<span className="text-emerald-400">Sync</span>
                 </h1>
-                <p className="text-sm text-slate-500">Food Redistribution Platform</p>
+                <p className="text-sm text-slate-500">{t('foodRedistributionPlatform')}</p>
               </div>
             </div>
 
@@ -149,7 +149,7 @@ export default function Login() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@example.com"
+                  placeholder={t('emailPlaceholder')}
                   required
                   className="w-full bg-slate-800/60 border border-slate-700/60 rounded-xl px-4 py-3.5 text-white placeholder-slate-500 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none transition-all"
                 />
@@ -161,7 +161,7 @@ export default function Login() {
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
+                  placeholder={t('passwordPlaceholder')}
                   required
                   className="w-full bg-slate-800/60 border border-slate-700/60 rounded-xl px-4 py-3.5 text-white placeholder-slate-500 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none transition-all"
                 />

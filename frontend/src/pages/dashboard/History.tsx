@@ -393,7 +393,7 @@ export default function History() {
 
                     <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
                         {loading ? (
-                            <div className="p-8 text-center text-slate-500">Loading...</div>
+                            <div className="p-8 text-center text-slate-500">{t('loading')}</div>
                         ) : filtered.length === 0 ? (
                             <div className="p-8 text-center text-slate-500">{t('noDonationsFound')}</div>
                         ) : (

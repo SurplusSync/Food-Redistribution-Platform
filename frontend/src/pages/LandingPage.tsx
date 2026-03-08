@@ -35,66 +35,67 @@ function useCountUp(target: number, duration = 2000) {
 }
 
 // ─── Data ───────────────────────────────────────────────────────────────────────
-const roles = [
+// ─── Data (keys only — translated inside component via t()) ──────────────────
+const roleConfigs = [
     {
-        title: 'Donor',
-        subtitle: 'Restaurants · Caterers · Individuals',
-        description: 'List surplus food in seconds. Upload photos, set quantities, and our safety engine auto-calculates expiry windows.',
+        titleKey: 'donor',
+        subtitleKey: 'donorSubtitle',
+        descriptionKey: 'donorDesc',
         color: 'emerald',
         Icon: Store,
         stats: [
-            { label: 'Avg listing time', value: '< 2 min' },
-            { label: 'Safety validated', value: '100%' },
+            { labelKey: 'avgListingTime', valueKey: 'lessThan2Min' },
+            { labelKey: 'safetyValidated', valueKey: 'hundredPercent' },
         ],
     },
     {
-        title: 'NGO',
-        subtitle: 'Food banks · Shelters · Charities',
-        description: 'Discover nearby donations on a live map. Claim food, track pickups, and manage your daily intake capacity.',
+        titleKey: 'ngo',
+        subtitleKey: 'ngoSubtitle',
+        descriptionKey: 'ngoDesc',
         color: 'blue',
         Icon: Building2,
         stats: [
-            { label: 'Geo-filtered', value: '5 km' },
-            { label: 'Capacity tracked', value: 'Daily' },
+            { labelKey: 'geoFiltered', valueKey: 'fiveKm' },
+            { labelKey: 'capacityTracked', valueKey: 'daily' },
         ],
     },
     {
-        title: 'Volunteer',
-        subtitle: 'Drivers · Students · Community',
-        description: 'Pick up claimed food from donors and deliver it to NGOs. Track your deliveries and build your impact score.',
+        titleKey: 'volunteer',
+        subtitleKey: 'volunteerSubtitle',
+        descriptionKey: 'volunteerDesc',
         color: 'purple',
         Icon: Car,
         stats: [
-            { label: 'Status updates', value: 'Real-time' },
-            { label: 'Impact tracked', value: 'Always' },
+            { labelKey: 'statusUpdates', valueKey: 'realTime' },
+            { labelKey: 'impactTracked', valueKey: 'always' },
         ],
     },
 ]
 
-const steps = [
-    { icon: ClipboardList, title: 'List', desc: 'Donor lists surplus food with photos & details', color: 'emerald' },
-    { icon: Search, title: 'Discover', desc: 'NGOs find nearby donations on the live map', color: 'blue' },
-    { icon: Truck, title: 'Pickup', desc: 'Volunteer picks up food from the donor', color: 'amber' },
-    { icon: Package, title: 'Deliver', desc: 'Food reaches the community through NGOs', color: 'purple' },
+const stepConfigs = [
+    { icon: ClipboardList, titleKey: 'stepList', descKey: 'stepListDesc', color: 'emerald' },
+    { icon: Search, titleKey: 'stepDiscover', descKey: 'stepDiscoverDesc', color: 'blue' },
+    { icon: Truck, titleKey: 'stepPickup', descKey: 'stepPickupDesc', color: 'amber' },
+    { icon: Package, titleKey: 'stepDeliver', descKey: 'stepDeliverDesc', color: 'purple' },
 ]
 
-const testimonials = [
+const testimonialConfigs = [
     {
-        quote: 'SurplusSync has transformed how our restaurant handles excess food. What used to go to waste now feeds families every single day.',
-        name: 'Priya Sharma',
-        role: 'Restaurant Owner & Donor',
+        quoteKey: 'testimonial1Quote',
+        nameKey: 'testimonial1Name',
+        roleKey: 'testimonial1Role',
         avatar: '👩‍🍳',
     },
     {
-        quote: 'The geo-aware map is a game changer. We can instantly see what\'s available nearby and claim it before it expires.',
-        name: 'Ravi Menon',
-        role: 'NGO Coordinator',
+        quoteKey: 'testimonial2Quote',
+        nameKey: 'testimonial2Name',
+        roleKey: 'testimonial2Role',
         avatar: '👨‍💼',
     },
     {
-        quote: 'As a college student, volunteering through SurplusSync lets me make a real impact. The tracking features make it seamless.',
-        name: 'Ananya Gupta',
-        role: 'Student Volunteer',
+        quoteKey: 'testimonial3Quote',
+        nameKey: 'testimonial3Name',
+        roleKey: 'testimonial3Role',
         avatar: '👩‍🎓',
     },
 ]
@@ -220,10 +221,10 @@ export default function LandingPage() {
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-                        {steps.map((step, i) => {
+                        {stepConfigs.map((step, i) => {
                             const c = colorMap[step.color]
                             return (
-                                <div key={step.title} className={`reveal-section reveal-delay-${i + 1}`}>
+                                <div key={step.titleKey} className={`reveal-section reveal-delay-${i + 1}`}>
                                     <div className="bento-card p-6 text-center h-full">
                                         {/* Step number */}
                                         <div className="text-xs font-bold text-slate-600 uppercase tracking-widest mb-4">
@@ -233,8 +234,8 @@ export default function LandingPage() {
                                         <div className={`w-14 h-14 rounded-2xl mx-auto mb-4 flex items-center justify-center ${c.bg}`}>
                                             <step.icon className={`w-7 h-7 ${c.text}`} />
                                         </div>
-                                        <h3 className="text-lg font-bold mb-2">{step.title}</h3>
-                                        <p className="text-sm text-slate-400 leading-relaxed">{step.desc}</p>
+                                        <h3 className="text-lg font-bold mb-2">{t(step.titleKey)}</h3>
+                                        <p className="text-sm text-slate-400 leading-relaxed">{t(step.descKey)}</p>
                                     </div>
                                 </div>
                             )
@@ -249,8 +250,8 @@ export default function LandingPage() {
                     {[...Array(2)].map((_, setIdx) => (
                         <div key={setIdx} className="flex items-center gap-6 px-3" style={{ width: '50%' }}>
                             {[
-                                'Surplus Listed', '→', 'NGO Discovers', '→', 'Food Claimed',
-                                '→', 'Volunteer Picks Up', '→', 'Delivered', '→', 'Community Fed', '•',
+                                t('surplusListed'), '→', t('ngoDiscovers'), '→', t('foodClaimed'),
+                                '→', t('volunteerPicksUp'), '→', t('delivered'), '→', t('communityFed'), '•',
                             ].map((item, i) => (
                                 <span
                                     key={i}
@@ -275,31 +276,31 @@ export default function LandingPage() {
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
-                        {roles.map((role, i) => {
+                        {roleConfigs.map((role, i) => {
                             const c = colorMap[role.color]
                             return (
                                 <div
-                                    key={role.title}
+                                    key={role.titleKey}
                                     className={`bento-card p-6 sm:p-7 reveal-section reveal-delay-${i + 2} ${i === 2 ? 'sm:col-span-2 md:col-span-1' : ''}`}
                                 >
                                     <div className={`w-12 h-12 rounded-xl mb-5 flex items-center justify-center ${c.bg}`}>
                                         <role.Icon className={`w-6 h-6 ${c.text}`} />
                                     </div>
-                                    <h3 className="text-xl font-bold mb-1">{role.title}</h3>
+                                    <h3 className="text-xl font-bold mb-1">{t(role.titleKey)}</h3>
                                     <p className="text-xs text-slate-500 font-medium mb-4 uppercase tracking-wider">
-                                        {role.subtitle}
+                                        {t(role.subtitleKey)}
                                     </p>
                                     <p className="text-sm text-slate-400 leading-relaxed mb-6">
-                                        {role.description}
+                                        {t(role.descriptionKey)}
                                     </p>
                                     <div className="flex gap-3">
                                         {role.stats.map((stat) => (
                                             <div
-                                                key={stat.label}
+                                                key={stat.labelKey}
                                                 className="flex-1 p-3 rounded-xl bg-slate-800/40 border border-slate-700/30"
                                             >
-                                                <p className={`text-sm font-bold ${c.text}`}>{stat.value}</p>
-                                                <p className="text-xs text-slate-500 mt-0.5">{stat.label}</p>
+                                                <p className={`text-sm font-bold ${c.text}`}>{t(stat.valueKey)}</p>
+                                                <p className="text-xs text-slate-500 mt-0.5">{t(stat.labelKey)}</p>
                                             </div>
                                         ))}
                                     </div>
@@ -325,7 +326,7 @@ export default function LandingPage() {
                         <div className="bento-card p-6 sm:p-8 md:col-span-4 reveal-section reveal-delay-1">
                             <div className="flex items-start justify-between mb-6">
                                 <div>
-                                    <p className="text-xs text-slate-500 uppercase tracking-widest mb-2">Discovery</p>
+                                    <p className="text-xs text-slate-500 uppercase tracking-widest mb-2">{t('discovery')}</p>
                                     <h3 className="text-xl font-bold">{t('geoAwareFoodMap')}</h3>
                                 </div>
                                 <div className="w-11 h-11 rounded-xl bg-emerald-500/10 flex items-center justify-center flex-shrink-0">
@@ -336,7 +337,7 @@ export default function LandingPage() {
                                 {t('geoMapDesc')}
                             </p>
                             <div className="grid grid-cols-3 gap-3">
-                                {['5 km radius', 'Real-time pins', 'Route preview'].map((f) => (
+                                {[t('fiveKmRadius'), t('realTimePins'), t('routePreview')].map((f) => (
                                     <div key={f} className="text-center p-3 rounded-xl bg-slate-800/30 border border-slate-700/20">
                                         <p className="text-xs text-slate-400">{f}</p>
                                     </div>
@@ -370,7 +371,7 @@ export default function LandingPage() {
                         <div className="bento-card p-6 sm:p-8 md:col-span-4 reveal-section reveal-delay-4">
                             <div className="flex items-start justify-between mb-6">
                                 <div>
-                                    <p className="text-xs text-slate-500 uppercase tracking-widest mb-2">Analytics</p>
+                                    <p className="text-xs text-slate-500 uppercase tracking-widest mb-2">{t('analytics')}</p>
                                     <h3 className="text-xl font-bold">{t('impactDashboard')}</h3>
                                 </div>
                                 <div className="w-11 h-11 rounded-xl bg-purple-500/10 flex items-center justify-center flex-shrink-0">
@@ -382,9 +383,9 @@ export default function LandingPage() {
                             </p>
                             <div className="flex gap-6">
                                 {[
-                                    { value: 'CO₂', label: 'Emissions tracked' },
-                                    { value: 'Meals', label: 'Per donation' },
-                                    { value: 'Kg', label: 'Food saved' },
+                                    { value: t('co2Label'), label: t('emissionsTracked') },
+                                    { value: t('mealsLabel'), label: t('perDonation') },
+                                    { value: t('kgLabel'), label: t('foodSaved') },
                                 ].map((m) => (
                                     <div key={m.label}>
                                         <p className="text-lg font-bold text-emerald-400">{m.value}</p>
@@ -408,19 +409,19 @@ export default function LandingPage() {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                        {testimonials.map((t, i) => (
+                        {testimonialConfigs.map((item, i) => (
                             <div key={i} className={`testimonial-card p-6 sm:p-7 reveal-section reveal-delay-${i + 1}`}>
                                 <Quote className="w-8 h-8 text-emerald-500/30 mb-4" />
                                 <p className="text-sm text-slate-300 leading-relaxed mb-6 italic">
-                                    "{t.quote}"
+                                    "{t(item.quoteKey)}"
                                 </p>
                                 <div className="flex items-center gap-3 pt-4 border-t border-slate-700/40">
                                     <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-lg">
-                                        {t.avatar}
+                                        {item.avatar}
                                     </div>
                                     <div>
-                                        <p className="text-sm font-semibold text-white">{t.name}</p>
-                                        <p className="text-xs text-slate-500">{t.role}</p>
+                                        <p className="text-sm font-semibold text-white">{t(item.nameKey)}</p>
+                                        <p className="text-xs text-slate-500">{t(item.roleKey)}</p>
                                     </div>
                                 </div>
                             </div>
@@ -466,8 +467,7 @@ export default function LandingPage() {
                                 </span>
                             </div>
                             <p className="text-sm text-slate-500 leading-relaxed max-w-xs">
-                                A food redistribution platform connecting surplus food
-                                with communities in need. Built to feed communities, not landfills.
+                                {t('footerDesc')}
                             </p>
                         </div>
 
@@ -485,10 +485,10 @@ export default function LandingPage() {
                         <div>
                             <h4 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-4">{t('connect')}</h4>
                             <div className="space-y-2.5">
-                                <p className="text-sm text-slate-500">surplussync@platform.org</p>
-                                <p className="text-sm text-slate-500">Open Source Project</p>
+                                <p className="text-sm text-slate-500">{t('contactEmail')}</p>
+                                <p className="text-sm text-slate-500">{t('openSourceProject')}</p>
                                 <Link to="/register" className="inline-flex items-center gap-1.5 text-sm text-emerald-400 hover:text-emerald-300 font-medium transition-colors">
-                                    Join SurplusSync <ArrowRight className="w-3.5 h-3.5" />
+                                    {t('joinSurplusSync')} <ArrowRight className="w-3.5 h-3.5" />
                                 </Link>
                             </div>
                         </div>
@@ -500,7 +500,7 @@ export default function LandingPage() {
                             <Utensils className="w-3.5 h-3.5 flex-shrink-0" />
                             <span>SurplusSync © {new Date().getFullYear()}</span>
                         </div>
-                        <p>Built with ♥ to feed communities</p>
+                        <p>{t('builtWithLove')}</p>
                     </div>
                 </div>
             </footer>
