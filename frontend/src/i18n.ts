@@ -3,11 +3,11 @@ import { initReactI18next } from 'react-i18next';
 import hiStrings from './locales/hi';
 import taStrings from './locales/ta';
 
-// â”€â”€â”€ English source strings (the ONLY static dictionary) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+//â”€ English source strings (the ONLY static dictionary)â”€
 // Every other language is translated dynamically via API and cached in localStorage.
 
 export const enStrings: Record<string, string> = {
-  // â”€â”€ Common / Shared â”€â”€
+  // Common / Shared
   welcome: 'Welcome',
   dashboard: 'Dashboard',
   logout: 'Logout',
@@ -54,7 +54,7 @@ export const enStrings: Record<string, string> = {
       required: 'Required',
       optional: 'Optional',
 
-      // â”€â”€ Sidebar / Nav â”€â”€
+      // Sidebar / Nav
       addFood: 'Add Food',
       discover: 'Discover',
       history: 'History',
@@ -63,7 +63,7 @@ export const enStrings: Record<string, string> = {
       profile: 'Profile',
       accessibilitySettings: 'Accessibility',
 
-      // â”€â”€ Landing Page â”€â”€
+      // Landing Page
       heroTitle1: 'Food waste is a',
       heroTitle2: 'solvable problem',
       heroSubtitle: 'SurplusSync connects donors, NGOs, and volunteers on one platform, turning meals that would be wasted into meals that are shared.',
@@ -129,7 +129,7 @@ export const enStrings: Record<string, string> = {
       forNGOs: 'For NGOs',
       forVolunteers: 'For Volunteers',
 
-      // â”€â”€ Login Page â”€â”€
+      // Login Page
       welcomeBack: 'Welcome back',
       signInToContinue: 'Sign in to continue making a difference',
       emailAddress: 'Email address',
@@ -142,7 +142,7 @@ export const enStrings: Record<string, string> = {
       makeSocialImpact: 'Make a social impact',
       mealsSaved: 'Meals saved',
 
-      // â”€â”€ Register Page â”€â”€
+      // Register Page
       createYourAccount: 'Create your account',
       startMakingDifference: 'Start making a difference today',
       joinAs: 'I want to join as',
@@ -166,7 +166,7 @@ export const enStrings: Record<string, string> = {
       transformSurplus: 'Transform surplus into sustenance',
       joinThousands: 'Join thousands of donors, NGOs, and volunteers making a difference in the fight against food waste.',
 
-      // â”€â”€ Donor Home â”€â”€
+      // Donor Home
       goodMorning: 'Good morning',
       goodAfternoon: 'Good afternoon',
       goodEvening: 'Good evening',
@@ -195,7 +195,7 @@ export const enStrings: Record<string, string> = {
       dirtyContainer: 'Dirty Container',
       prepared: 'Prepared: {{time}}',
 
-      // â”€â”€ NGO Dashboard â”€â”€
+      // NGO Dashboard
       findClaimDonations: 'Find and claim food donations to help your community',
       dailyIntakeCapacity: 'Daily Intake Capacity',
       currentLoad: 'Current load: {{current}} / {{capacity}} {{unit}}',
@@ -213,7 +213,7 @@ export const enStrings: Record<string, string> = {
       alreadyPickedUp: 'Already Picked Up - Pending Delivery',
       yourClaimedDonations: 'Your Claimed Donations',
 
-      // â”€â”€ Add Food â”€â”€
+      // Add Food
       addFoodDonation: 'Add Food Donation',
       shareSurplusFoodNeed: 'Share surplus food with those in need',
       prepTimeError: 'Preparation time cannot be in the future',
@@ -241,7 +241,7 @@ export const enStrings: Record<string, string> = {
       creatingDonation: 'Creating Donation...',
       failedCreateDonation: 'Failed to create donation',
 
-      // â”€â”€ Discovery Map â”€â”€
+      // Discovery Map
       discoveryMapTitle: 'Discovery Map',
       loadingDonations: 'Loading donations...',
       viewDetailsImage: 'View Details & Image',
@@ -251,7 +251,7 @@ export const enStrings: Record<string, string> = {
       confirmPickup: 'Confirm Pickup',
       confirmDelivery: 'Confirm Delivery',
 
-      // â”€â”€ History â”€â”€
+      // History
       historyTitle: 'History',
       yourPastContributions: 'Your past contributions',
       total: 'Total',
@@ -272,7 +272,7 @@ export const enStrings: Record<string, string> = {
       noDonationsFound: 'No donations found',
       item: 'Item',
 
-      // â”€â”€ Impact â”€â”€
+      // Impact
       newcomer: 'Newcomer',
       newcomerDesc: 'Earned first 10 karma points',
       localHero: 'Local Hero',
@@ -313,7 +313,7 @@ export const enStrings: Record<string, string> = {
       claimsEachMonth: 'Donations claimed each month',
       highDeliveryTip: 'A high delivery rate demonstrates operational efficiency â€” highlight this in funding applications',
 
-      // â”€â”€ Notifications â”€â”€
+      // Notifications
       stayUpdated: 'Stay updated on your donations and deliveries',
       unread: 'Unread {{count}}',
       markAllRead: 'Mark all as read',
@@ -322,7 +322,7 @@ export const enStrings: Record<string, string> = {
       noNotificationsYet: 'No notifications yet',
       markAsRead: 'Mark as read',
 
-      // â”€â”€ Profile â”€â”€
+      // Profile
       printSavePDF: 'Print / Save PDF',
       inRecognitionOutstanding: 'In Recognition of Outstanding Service',
       loadingProfile: 'Loading profile...',
@@ -362,7 +362,7 @@ export const enStrings: Record<string, string> = {
       myCertificate: 'My Certificate',
       editProfile: 'Edit Profile',
 
-      // â”€â”€ Volunteer Dashboard â”€â”€
+      // Volunteer Dashboard
       volunteerDashboard: 'Volunteer Dashboard',
       managePickupsDeliveries: 'Manage pickups and deliveries assigned to you.',
       assignedTasks: 'Assigned Tasks',
@@ -370,7 +370,7 @@ export const enStrings: Record<string, string> = {
       view: 'View',
       noImage: 'No image',
 
-      // â”€â”€ Admin Dashboard â”€â”€
+      // Admin Dashboard
       pendingNGOs: 'Pending NGOs',
       allUsers: 'All Users',
       platformDonations: 'Platform Donations',

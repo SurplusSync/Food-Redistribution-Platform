@@ -36,8 +36,8 @@ function SvgBarChart({
 
     return (
         <div>
-            <p className="text-sm font-semibold text-white mb-0.5">{title}</p>
-            {subtitle && <p className="text-xs text-slate-500 mb-3">{subtitle}</p>}
+            <p className="text-sm font-semibold text-gray-900 dark:text-white mb-0.5">{title}</p>
+            {subtitle && <p className="text-xs text-gray-500 dark:text-slate-500 mb-3">{subtitle}</p>}
             <div className="overflow-x-auto">
                 <svg viewBox={`0 0 ${W} ${H}`} width="100%" style={{ minWidth: 280 }}>
                     {[0.25, 0.5, 0.75, 1].map(f => {
@@ -99,8 +99,8 @@ function SvgLineChart({
 
     return (
         <div>
-            <p className="text-sm font-semibold text-white mb-0.5">{title}</p>
-            {subtitle && <p className="text-xs text-slate-500 mb-3">{subtitle}</p>}
+            <p className="text-sm font-semibold text-gray-900 dark:text-white mb-0.5">{title}</p>
+            {subtitle && <p className="text-xs text-gray-500 dark:text-slate-500 mb-3">{subtitle}</p>}
             <div className="overflow-x-auto">
                 <svg viewBox={`0 0 ${W} ${H}`} width="100%" style={{ minWidth: 280 }}>
                     <defs>
@@ -208,7 +208,7 @@ function CertificateModal({ user, role, onClose }: { user: User; role: string; o
             <div className="w-full max-w-3xl bg-white rounded-2xl shadow-2xl overflow-auto max-h-[92vh]">
                 {/* Toolbar */}
                 <div className="flex justify-between items-center px-6 py-4 border-b border-slate-200 bg-slate-50 rounded-t-2xl">
-                    <h3 className="text-base font-semibold text-slate-800 flex items-center gap-2">
+                    <h3 className="text-base font-semibold text-gray-200 dark:text-slate-800 flex items-center gap-2">
                         <Award className="w-5 h-5 text-emerald-600" />
                         {t('certificateOfAppreciation')}
                     </h3>
@@ -218,7 +218,7 @@ function CertificateModal({ user, role, onClose }: { user: User; role: string; o
                             <Download className="w-4 h-4" />{t('printSavePDF')}
                         </button>
                         <button onClick={onClose}
-                            className="bg-slate-200 hover:bg-slate-300 text-slate-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                            className="bg-slate-200 hover:bg-slate-300 text-gray-300 dark:text-slate-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors">
                             {t('close')}
                         </button>
                     </div>
@@ -240,16 +240,16 @@ function CertificateModal({ user, role, onClose }: { user: User; role: string; o
                         <h1 className="text-4xl font-bold mb-1 text-slate-900" style={{ fontFamily: 'Georgia, serif' }}>
                             {t('certificateOfAppreciation')}
                         </h1>
-                        <p className="text-xs tracking-widest text-slate-400 uppercase mb-6" style={{ fontFamily: 'sans-serif', letterSpacing: 3 }}>
+                        <p className="text-xs tracking-widest text-gray-500 dark:text-slate-400 uppercase mb-6" style={{ fontFamily: 'sans-serif', letterSpacing: 3 }}>
                             {t('inRecognitionService')}
                         </p>
                         <div style={{ width: 72, height: 3, background: `linear-gradient(90deg,transparent,${accentColor},transparent)`, margin: '0 auto 24px' }} />
 
-                        <p className="text-slate-600 mb-1 text-base" style={{ fontFamily: 'Georgia, serif', lineHeight: 1.9 }}>{t('certPresentedTo')}</p>
+                        <p className="text-gray-400 dark:text-slate-600 mb-1 text-base" style={{ fontFamily: 'Georgia, serif', lineHeight: 1.9 }}>{t('certPresentedTo')}</p>
                         <p className="text-3xl font-bold italic text-slate-900 mb-2" style={{ fontFamily: 'Georgia, serif' }}>{orgName}</p>
-                        <span className="inline-block text-white text-xs rounded-full px-4 py-1 mb-5" style={{ background: accentColor, fontFamily: 'sans-serif' }}>{roleLabel}</span>
+                        <span className="inline-block text-gray-900 dark:text-white text-xs rounded-full px-4 py-1 mb-5" style={{ background: accentColor, fontFamily: 'sans-serif' }}>{roleLabel}</span>
 
-                        <p className="text-slate-500 text-sm mb-6" style={{ fontFamily: 'sans-serif' }}>
+                        <p className="text-gray-500 dark:text-slate-500 text-sm mb-6" style={{ fontFamily: 'sans-serif' }}>
                             {t('certAcknowledgement', { actionText })}
                         </p>
 
@@ -258,14 +258,14 @@ function CertificateModal({ user, role, onClose }: { user: User; role: string; o
                             {[stat1, stat2, stat3].map(({ value, label }) => (
                                 <div key={label}>
                                     <div className="text-3xl font-bold" style={{ color: accentColor, fontFamily: 'sans-serif' }}>{value}</div>
-                                    <div className="text-xs text-slate-400 uppercase tracking-wider mt-1" style={{ fontFamily: 'sans-serif' }}>{label}</div>
+                                    <div className="text-xs text-gray-500 dark:text-slate-400 uppercase tracking-wider mt-1" style={{ fontFamily: 'sans-serif' }}>{label}</div>
                                 </div>
                             ))}
                         </div>
 
                         {/* Karma badge */}
                         <div className="mb-7">
-                            <span className="inline-block text-white text-sm rounded-full px-5 py-2" style={{ background: `linear-gradient(135deg,${accentColor},${accentColor}bb)`, fontFamily: 'sans-serif' }}>
+                            <span className="inline-block text-gray-900 dark:text-white text-sm rounded-full px-5 py-2" style={{ background: `linear-gradient(135deg,${accentColor},${accentColor}bb)`, fontFamily: 'sans-serif' }}>
                                 {t('karmaPointsLevel', { karma, level })}
                             </span>
                         </div>
@@ -274,13 +274,13 @@ function CertificateModal({ user, role, onClose }: { user: User; role: string; o
                         <div style={{ borderTop: `1px solid ${lightBorder}`, paddingTop: 18, marginTop: 4 }} className="flex justify-between items-end">
                             <div>
                                 <div style={{ width: 150, borderBottom: '1px solid #d1d5db', marginBottom: 5 }} />
-                                <p className="text-xs text-slate-500" style={{ fontFamily: 'sans-serif' }}>{t('platformDirector')}</p>
-                                <p className="text-xs font-semibold text-slate-700" style={{ fontFamily: 'sans-serif' }}>{t('surplusSyncNetwork')}</p>
+                                <p className="text-xs text-gray-500 dark:text-slate-500" style={{ fontFamily: 'sans-serif' }}>{t('platformDirector')}</p>
+                                <p className="text-xs font-semibold text-gray-300 dark:text-slate-700" style={{ fontFamily: 'sans-serif' }}>{t('surplusSyncNetwork')}</p>
                             </div>
                             <div className="text-2xl">🏅</div>
                             <div className="text-right">
-                                <p className="text-xs text-slate-500" style={{ fontFamily: 'sans-serif' }}>{t('dateOfIssue')}</p>
-                                <p className="text-sm font-semibold text-slate-700" style={{ fontFamily: 'sans-serif' }}>{today}</p>
+                                <p className="text-xs text-gray-500 dark:text-slate-500" style={{ fontFamily: 'sans-serif' }}>{t('dateOfIssue')}</p>
+                                <p className="text-sm font-semibold text-gray-300 dark:text-slate-700" style={{ fontFamily: 'sans-serif' }}>{today}</p>
                             </div>
                         </div>
                     </div>
@@ -308,9 +308,9 @@ function KarmaProgress({ karma, badgeCatalog }: { karma: number; badgeCatalog?: 
     const pct = next ? Math.min(100, ((karma - fromPts) / (toPts - fromPts)) * 100) : 100
 
     return (
-        <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6">
+        <div className="bg-white/80 dark:bg-slate-900/50 border border-gray-200 dark:border-slate-800 rounded-2xl p-6">
             <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold text-white flex items-center gap-2">
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
                     <Trophy className="w-5 h-5 text-amber-400" />
                     {t('karmaAchievements')}
                 </h2>
@@ -324,16 +324,16 @@ function KarmaProgress({ karma, badgeCatalog }: { karma: number; badgeCatalog?: 
                     const ptsLeft = Math.max(0, b.threshold - karma)
                     return (
                         <div key={b.name}
-                            className={`relative p-3 rounded-xl border text-center transition-all ${isEarned ? 'bg-gradient-to-b from-amber-500/20 to-amber-600/10 border-amber-500/40' : 'bg-slate-900/40 border-slate-800 opacity-50'}`}
+                            className={`relative p-3 rounded-xl border text-center transition-all ${isEarned ? 'bg-gradient-to-b from-amber-500/20 to-amber-600/10 border-amber-500/40' : 'bg-gray-50/80 dark:bg-slate-900/40 border-gray-200 dark:border-slate-800 opacity-50'}`}
                         >
                             {isEarned && (
                                 <div className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-emerald-500 rounded-full flex items-center justify-center">
-                                    <span className="text-white text-xs font-bold leading-none">✓</span>
+                                    <span className="text-gray-900 dark:text-white text-xs font-bold leading-none">✓</span>
                                 </div>
                             )}
                             <div className="text-3xl mb-1">{b.icon}</div>
-                            <p className={`text-xs font-semibold ${isEarned ? 'text-white' : 'text-slate-500'}`}>{b.name}</p>
-                            {!isEarned && <p className="text-xs text-slate-600 mt-0.5">{ptsLeft} pts</p>}
+                            <p className={`text-xs font-semibold ${isEarned ? 'text-gray-900 dark:text-white' : 'text-gray-500 dark:text-slate-500'}`}>{b.name}</p>
+                            {!isEarned && <p className="text-xs text-gray-400 dark:text-slate-600 mt-0.5">{ptsLeft} pts</p>}
                             {isEarned && <p className="text-xs text-amber-400 mt-0.5">{b.threshold}+ pts</p>}
                         </div>
                     )
@@ -342,22 +342,22 @@ function KarmaProgress({ karma, badgeCatalog }: { karma: number; badgeCatalog?: 
 
             {/* Next badge progress */}
             {next && (
-                <div className="bg-slate-800/50 rounded-xl p-4">
+                <div className="bg-gray-100/80 dark:bg-slate-800/50 rounded-xl p-4">
                     <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
                             <span className="text-xl">{next.icon}</span>
                             <div>
-                                <p className="text-sm font-semibold text-white">Next: {next.name}</p>
-                                <p className="text-xs text-slate-400">{next.description}</p>
+                                <p className="text-sm font-semibold text-gray-900 dark:text-white">Next: {next.name}</p>
+                                <p className="text-xs text-gray-500 dark:text-slate-400">{next.description}</p>
                             </div>
                         </div>
                         <span className="text-sm font-bold text-emerald-400">{next.threshold - karma} {t('pointsToGo', { points: '' }).replace(/\s*$/, '')}</span>
                     </div>
-                    <div className="w-full bg-slate-700 rounded-full h-2.5 overflow-hidden">
+                    <div className="w-full bg-gray-200 dark:bg-slate-700 rounded-full h-2.5 overflow-hidden">
                         <div className="h-full bg-gradient-to-r from-amber-400 to-amber-500 rounded-full transition-all duration-700"
                             style={{ width: `${pct}%` }} />
                     </div>
-                    <div className="flex justify-between text-xs text-slate-500 mt-1">
+                    <div className="flex justify-between text-xs text-gray-500 dark:text-slate-500 mt-1">
                         <span>{fromPts}</span>
                         <span>{next.threshold} pts</span>
                     </div>
@@ -386,23 +386,23 @@ function CommunityCounters({ stats }: { stats: CommunityStats }) {
         { icon: '🚴', value: stats.totalVolunteers.toLocaleString(), label: t('volunteers'), color: 'text-cyan-400' },
     ]
     return (
-        <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6">
-            <h2 className="text-lg font-semibold text-white mb-1 flex items-center gap-2">
+        <div className="bg-white/80 dark:bg-slate-900/50 border border-gray-200 dark:border-slate-800 rounded-2xl p-6">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-1 flex items-center gap-2">
                 <Globe className="w-5 h-5 text-emerald-400" />
                 {t('communityImpact')}
             </h2>
-            <p className="text-xs text-slate-500 mb-5">{t('communityImpactDesc')}</p>
+            <p className="text-xs text-gray-500 dark:text-slate-500 mb-5">{t('communityImpactDesc')}</p>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {counters.map(c => (
-                    <div key={c.label} className="bg-slate-800/50 rounded-xl p-4 text-center border border-slate-700/50">
+                    <div key={c.label} className="bg-gray-100/80 dark:bg-slate-800/50 rounded-xl p-4 text-center border border-slate-700/50">
                         <div className="text-2xl mb-1">{c.icon}</div>
                         <p className={`text-2xl font-bold ${c.color}`}>{c.value}</p>
-                        <p className="text-xs text-slate-400 mt-1">{c.label}</p>
+                        <p className="text-xs text-gray-500 dark:text-slate-400 mt-1">{c.label}</p>
                     </div>
                 ))}
             </div>
             <div className="mt-4 p-3 bg-emerald-500/5 border border-emerald-500/15 rounded-xl">
-                <p className="text-xs text-slate-400 text-center">
+                <p className="text-xs text-gray-500 dark:text-slate-400 text-center">
                     <span className="text-emerald-400 font-semibold">{t('totalDonationsProcessed', { count: stats.totalDonations.toLocaleString() })}</span> ·{' '}
                     <span className="text-blue-400 font-semibold">{t('successfullyDelivered', { count: stats.deliveredDonations.toLocaleString() })}</span> ·{' '}
                     <span className="text-amber-400 font-semibold">{t('currentlyActive', { count: stats.activeDonations.toLocaleString() })}</span>
@@ -421,17 +421,17 @@ function NGOGrowthCharts({ monthly }: { monthly: MonthlyStatPoint[] }) {
     const deliveryRate = totalAll > 0 ? Math.round((totalDelivered / totalAll) * 100) : 0
 
     return (
-        <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6">
+        <div className="bg-white/80 dark:bg-slate-900/50 border border-gray-200 dark:border-slate-800 rounded-2xl p-6">
             <div className="flex items-center justify-between mb-1">
-                <h2 className="text-lg font-semibold text-white flex items-center gap-2">
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
                     <TrendingUp className="w-5 h-5 text-blue-400" />
                     {t('ngoGrowthReports')}
                 </h2>
-                <span className="text-xs text-slate-400 bg-blue-500/10 border border-blue-500/20 px-3 py-1 rounded-full">
+                <span className="text-xs text-gray-500 dark:text-slate-400 bg-blue-500/10 border border-blue-500/20 px-3 py-1 rounded-full">
                     {t('lastSixMonths')}
                 </span>
             </div>
-            <p className="text-xs text-slate-500 mb-6">{t('ngoGrowthSubtitle')}</p>
+            <p className="text-xs text-gray-500 dark:text-slate-500 mb-6">{t('ngoGrowthSubtitle')}</p>
 
             <div className="space-y-8">
                 <SvgBarChart
@@ -455,21 +455,21 @@ function NGOGrowthCharts({ monthly }: { monthly: MonthlyStatPoint[] }) {
             </div>
 
             {/* Summary row */}
-            <div className="grid grid-cols-3 gap-4 mt-6 pt-6 border-t border-slate-800">
+            <div className="grid grid-cols-3 gap-4 mt-6 pt-6 border-t border-gray-200 dark:border-slate-800">
                 <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-4 text-center">
                     <p className="text-2xl font-bold text-emerald-400">{totalAll}</p>
-                    <p className="text-xs text-slate-400 mt-1">{t('totalReceived')}</p>
+                    <p className="text-xs text-gray-500 dark:text-slate-400 mt-1">{t('totalReceived')}</p>
                 </div>
                 <div className="bg-indigo-500/10 border border-indigo-500/20 rounded-xl p-4 text-center">
                     <p className="text-2xl font-bold text-indigo-400">{totalDelivered}</p>
-                    <p className="text-xs text-slate-400 mt-1">{t('delivered')}</p>
+                    <p className="text-xs text-gray-500 dark:text-slate-400 mt-1">{t('delivered')}</p>
                 </div>
                 <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 text-center">
                     <p className="text-2xl font-bold text-amber-400">{deliveryRate}%</p>
-                    <p className="text-xs text-slate-400 mt-1">{t('deliveryRate')}</p>
+                    <p className="text-xs text-gray-500 dark:text-slate-400 mt-1">{t('deliveryRate')}</p>
                 </div>
             </div>
-            <p className="text-xs text-slate-500 mt-3 text-center">
+            <p className="text-xs text-gray-500 dark:text-slate-500 mt-3 text-center">
                 {t('highDeliveryRateTip')}
             </p>
         </div>
@@ -516,7 +516,7 @@ export default function Impact() {
             <div className="flex items-center justify-center h-96">
                 <div className="text-center">
                     <div className="w-12 h-12 rounded-full border-2 border-emerald-500 border-t-transparent animate-spin mx-auto mb-4" />
-                    <p className="text-slate-400">{t('loadingYourImpact')}</p>
+                    <p className="text-gray-500 dark:text-slate-400">{t('loadingYourImpact')}</p>
                 </div>
             </div>
         )
@@ -549,8 +549,8 @@ export default function Impact() {
 
             {/* Header */}
             <div>
-                <h1 className="text-3xl font-bold text-white mb-1">{pageTitle}</h1>
-                <p className="text-slate-400">{pageSubtitle}</p>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-1">{pageTitle}</h1>
+                <p className="text-gray-500 dark:text-slate-400">{pageSubtitle}</p>
             </div>
 
             {/* US1 — Personal Impact Stats */}
@@ -560,22 +560,22 @@ export default function Impact() {
                     { label: stat2Label, value: stats.mealsProvided, icon: <span className="text-2xl">🍽️</span>, grad: 'from-blue-500 to-blue-600', accent: 'text-blue-400', sub: t('peopleImpacted') },
                     { label: stat3Label, value: `${stats.kgSaved} kg`, icon: <span className="text-2xl">♻️</span>, grad: 'from-purple-500 to-purple-600', accent: 'text-purple-400', sub: t('kilograms') },
                 ].map(s => (
-                    <div key={s.label} className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6">
+                    <div key={s.label} className="bg-white/80 dark:bg-slate-900/50 border border-gray-200 dark:border-slate-800 rounded-2xl p-6">
                         <div className="flex items-center gap-3 mb-4">
                             <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${s.grad} flex items-center justify-center shadow-lg`}>
                                 {s.icon}
                             </div>
-                            <span className="text-sm text-slate-400">{s.label}</span>
+                            <span className="text-sm text-gray-500 dark:text-slate-400">{s.label}</span>
                         </div>
-                        <p className="text-5xl font-bold text-white mb-2">{s.value}</p>
+                        <p className="text-5xl font-bold text-gray-900 dark:text-white mb-2">{s.value}</p>
                         <p className={`text-sm ${s.accent}`}>{s.sub}</p>
                     </div>
                 ))}
             </div>
 
             {/* Environmental Impact */}
-            <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6">
-                <h2 className="text-lg font-semibold text-white mb-5 flex items-center gap-2">
+            <div className="bg-white/80 dark:bg-slate-900/50 border border-gray-200 dark:border-slate-800 rounded-2xl p-6">
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-5 flex items-center gap-2">
                     <Leaf className="w-5 h-5 text-emerald-400" />
                     {t('environmentalImpact')}
                 </h2>
@@ -587,7 +587,7 @@ export default function Impact() {
                         { icon: <Trophy className="w-4 h-4 text-amber-400" />, value: (user.trustScore?.toFixed(1) || '0.0'), label: t('trustScoreLabel'), color: 'text-amber-400' },
                     ].map(item => (
                         <div key={item.label}>
-                            <div className="flex items-center gap-1.5 mb-1">{item.icon}<p className="text-xs text-slate-500">{item.label}</p></div>
+                            <div className="flex items-center gap-1.5 mb-1">{item.icon}<p className="text-xs text-gray-500 dark:text-slate-500">{item.label}</p></div>
                             <p className={`text-3xl font-bold ${item.color}`}>{item.value}</p>
                         </div>
                     ))}
@@ -605,13 +605,13 @@ export default function Impact() {
 
             {/* Volunteer Performance (role-specific extra panel) */}
             {role === 'volunteer' && (
-                <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6">
-                    <h2 className="text-lg font-semibold text-white mb-5">📊 {t('performanceMetrics')}</h2>
+                <div className="bg-white/80 dark:bg-slate-900/50 border border-gray-200 dark:border-slate-800 rounded-2xl p-6">
+                    <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-5">📊 {t('performanceMetrics')}</h2>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
-                        <div><p className="text-xs text-slate-500 mb-1">{t('distanceCovered')}</p><p className="text-3xl font-bold text-blue-400">{Math.floor(stats.totalDonations * 5.2)} km</p></div>
-                        <div><p className="text-xs text-slate-500 mb-1">{t('avgResponse')}</p><p className="text-3xl font-bold text-emerald-400">18 min</p></div>
-                        <div><p className="text-xs text-slate-500 mb-1">{t('successRate')}</p><p className="text-3xl font-bold text-purple-400">98%</p></div>
-                        <div><p className="text-xs text-slate-500 mb-1">{t('rating')}</p><p className="text-3xl font-bold text-amber-400">{user.trustScore?.toFixed(1) || '5.0'} ⭐</p></div>
+                        <div><p className="text-xs text-gray-500 dark:text-slate-500 mb-1">{t('distanceCovered')}</p><p className="text-3xl font-bold text-blue-400">{Math.floor(stats.totalDonations * 5.2)} km</p></div>
+                        <div><p className="text-xs text-gray-500 dark:text-slate-500 mb-1">{t('avgResponse')}</p><p className="text-3xl font-bold text-emerald-400">18 min</p></div>
+                        <div><p className="text-xs text-gray-500 dark:text-slate-500 mb-1">{t('successRate')}</p><p className="text-3xl font-bold text-purple-400">98%</p></div>
+                        <div><p className="text-xs text-gray-500 dark:text-slate-500 mb-1">{t('rating')}</p><p className="text-3xl font-bold text-amber-400">{user.trustScore?.toFixed(1) || '5.0'} ⭐</p></div>
                     </div>
                 </div>
             )}
@@ -620,10 +620,10 @@ export default function Impact() {
             <div className={`bg-gradient-to-br ${role === 'ngo' ? 'from-blue-500/10 to-indigo-500/10 border-blue-500/20' : role === 'volunteer' ? 'from-purple-500/10 to-violet-500/10 border-purple-500/20' : 'from-emerald-500/10 to-teal-500/10 border-emerald-500/20'} border rounded-2xl p-6`}>
                 <div className="flex items-center justify-between mb-4">
                     <div>
-                        <h3 className="text-lg font-semibold text-white mb-1">
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
                             {role === 'ngo' ? t('impactReportFunding') : t('shareYourImpact')}
                         </h3>
-                        <p className="text-sm text-slate-400">
+                        <p className="text-sm text-gray-500 dark:text-slate-400">
                             {role === 'ngo'
                                 ? t('generateProfessionalReport')
                                 : role === 'volunteer'

@@ -192,8 +192,8 @@ export default function AddFood() {
 
     return (
         <div className="max-w-2xl mx-auto">
-            <h1 className="text-2xl font-semibold text-white mb-1">{t('addFoodDonation')}</h1>
-            <p className="text-slate-500 mb-8">{t('shareSurplusFoodNeed')}</p>
+            <h1 className="text-2xl font-semibold text-gray-900 dark:text-white mb-1">{t('addFoodDonation')}</h1>
+            <p className="text-gray-500 dark:text-slate-500 mb-8">{t('shareSurplusFoodNeed')}</p>
 
             {error && (
                 <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-lg flex items-start gap-3">
@@ -204,8 +204,8 @@ export default function AddFood() {
 
             <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Food Type */}
-                <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
-                    <label className="block text-sm text-slate-400 mb-3">{t('foodType')}</label>
+                <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl p-5">
+                    <label className="block text-sm text-gray-500 dark:text-slate-400 mb-3">{t('foodType')}</label>
                     <div className="grid grid-cols-3 gap-2">
                         {foodTypes.map((type) => (
                             <button
@@ -215,7 +215,7 @@ export default function AddFood() {
                                 className={`py-3 rounded-lg text-sm font-medium transition-all ${
                                     formData.foodType === type.id
                                         ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20'
-                                        : 'bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-750'
+                                        : 'bg-gray-100 dark:bg-slate-800 text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-slate-750'
                                 }`}
                             >
                                 <div className="text-lg mb-1">{type.icon}</div>
@@ -224,8 +224,8 @@ export default function AddFood() {
                         ))}
                     </div>
                     {selectedFoodType && (
-                        <div className="mt-3 p-3 bg-slate-800 rounded-lg">
-                            <p className="text-xs text-slate-400">
+                        <div className="mt-3 p-3 bg-gray-100 dark:bg-slate-800 rounded-lg">
+                            <p className="text-xs text-gray-500 dark:text-slate-400">
                                 <Clock className="w-3 h-3 inline mr-1" />
                                 {t('safeConsumptionWindow', { hours: selectedFoodType.expiryHours })}
                             </p>
@@ -234,15 +234,15 @@ export default function AddFood() {
                 </div>
 
                 {/* Preparation Time */}
-                <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
-                    <label className="block text-sm text-slate-400 mb-2">{t('whenPrepared')}</label>
+                <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl p-5">
+                    <label className="block text-sm text-gray-500 dark:text-slate-400 mb-2">{t('whenPrepared')}</label>
                     <input
                         type="datetime-local"
                         name="preparationTime"
                         value={formData.preparationTime}
                         onChange={handleChange}
                         required
-                        className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-white focus:border-emerald-500 focus:outline-none"
+                        className="w-full bg-gray-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-800 rounded-lg px-4 py-3 text-gray-900 dark:text-white focus:border-emerald-500 focus:outline-none"
                     />
                     {timeStatus?.futureTime && formData.preparationTime && (
                         <div className="mt-3 p-3 bg-amber-500/10 border border-amber-500/20 rounded-lg flex items-center gap-2">
@@ -271,9 +271,9 @@ export default function AddFood() {
                 </div>
 
                 {/* Details */}
-                <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-4">
+                <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl p-5 space-y-4">
                     <div>
-                        <label className="block text-sm text-slate-400 mb-2">{t('foodName')}</label>
+                        <label className="block text-sm text-gray-500 dark:text-slate-400 mb-2">{t('foodName')}</label>
                         <input
                             type="text"
                             name="foodName"
@@ -281,13 +281,13 @@ export default function AddFood() {
                             onChange={handleChange}
                             placeholder={t('foodNamePlaceholder')}
                             required
-                            className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-white placeholder-slate-600 focus:border-emerald-500 focus:outline-none"
+                            className="w-full bg-gray-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-800 rounded-lg px-4 py-3 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-600 focus:border-emerald-500 focus:outline-none"
                         />
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm text-slate-400 mb-2">{t('quantity')}</label>
+                            <label className="block text-sm text-gray-500 dark:text-slate-400 mb-2">{t('quantity')}</label>
                             <input
                                 type="number"
                                 name="quantity"
@@ -297,16 +297,16 @@ export default function AddFood() {
                                 min="0.1"
                                 step="0.1"
                                 required
-                                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-white placeholder-slate-600 focus:border-emerald-500 focus:outline-none"
+                                className="w-full bg-gray-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-800 rounded-lg px-4 py-3 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-600 focus:border-emerald-500 focus:outline-none"
                             />
                         </div>
                         <div>
-                            <label className="block text-sm text-slate-400 mb-2">{t('unit')}</label>
+                            <label className="block text-sm text-gray-500 dark:text-slate-400 mb-2">{t('unit')}</label>
                             <select
                                 name="unit"
                                 value={formData.unit}
                                 onChange={handleChange}
-                                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-white focus:border-emerald-500 focus:outline-none"
+                                className="w-full bg-gray-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-800 rounded-lg px-4 py-3 text-gray-900 dark:text-white focus:border-emerald-500 focus:outline-none"
                             >
                                 {units.map((u) => (
                                     <option key={u.value} value={u.value}>{u.label}</option>
@@ -316,36 +316,36 @@ export default function AddFood() {
                     </div>
 
                     <div>
-                        <label className="block text-sm text-slate-400 mb-2">{t('descriptionOptional')}</label>
+                        <label className="block text-sm text-gray-500 dark:text-slate-400 mb-2">{t('descriptionOptional')}</label>
                         <textarea
                             name="description"
                             value={formData.description}
                             onChange={handleChange}
                             placeholder={t('descriptionPlaceholder')}
                             rows={3}
-                            className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-white placeholder-slate-600 focus:border-emerald-500 focus:outline-none resize-none"
+                            className="w-full bg-gray-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-800 rounded-lg px-4 py-3 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-600 focus:border-emerald-500 focus:outline-none resize-none"
                         />
                     </div>
 
                     {/*Image Upload Section */}
                     <div>
-                        <label className="block text-sm text-slate-400 mb-2">{t('foodImages')}</label>
+                        <label className="block text-sm text-gray-500 dark:text-slate-400 mb-2">{t('foodImages')}</label>
                         <div className="relative">
                             <input 
                                 type="file" 
                                 multiple 
                                 accept="image/*"
                                 onChange={handleImageChange}
-                                className="block w-full text-sm text-slate-400
+                                className="block w-full text-sm text-gray-500 dark:text-slate-400
                                 file:mr-4 file:py-2 file:px-4
                                 file:rounded-full file:border-0
                                 file:text-sm file:font-semibold
                                 file:bg-emerald-500 file:text-white
                                 hover:file:bg-emerald-600
-                                cursor-pointer bg-slate-950 rounded-lg border border-slate-800"
+                                cursor-pointer bg-gray-50 dark:bg-slate-950 rounded-lg border border-gray-200 dark:border-slate-800"
                             />
                             <div className="absolute right-3 top-2 pointer-events-none">
-                                <Upload className="w-5 h-5 text-slate-500" />
+                                <Upload className="w-5 h-5 text-gray-500 dark:text-slate-500" />
                             </div>
                         </div>
                         {images.length > 0 && (
@@ -357,9 +357,9 @@ export default function AddFood() {
                 </div>
 
                 {/* Location Picker */}
-                <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
+                <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl p-5">
                     <div className="flex items-center justify-between mb-3">
-                        <label className="text-sm text-slate-400">{t('pickupLocationLabel')}</label>
+                        <label className="text-sm text-gray-500 dark:text-slate-400">{t('pickupLocationLabel')}</label>
                         {location ? (
                             <span className="text-xs font-medium px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400">
                                 {t('locationSelected')}
@@ -370,8 +370,8 @@ export default function AddFood() {
                             </span>
                         )}
                     </div>
-                    <p className="text-xs text-slate-500 mb-3">{t('clickMapToSet')}</p>
-                    <div className="rounded-lg overflow-hidden border border-slate-700" style={{ height: '250px' }}>
+                    <p className="text-xs text-gray-500 dark:text-slate-500 mb-3">{t('clickMapToSet')}</p>
+                    <div className="rounded-lg overflow-hidden border border-gray-300 dark:border-slate-700" style={{ height: '250px' }}>
                         <MapContainer
                             center={[28.6139, 77.2090]}
                             zoom={12}
@@ -385,16 +385,16 @@ export default function AddFood() {
                         </MapContainer>
                     </div>
                     {location && (
-                        <p className="text-xs text-slate-500 mt-2">
+                        <p className="text-xs text-gray-500 dark:text-slate-500 mt-2">
                             📍 {location.lat.toFixed(4)}, {location.lng.toFixed(4)}
                         </p>
                     )}
                 </div>
 
                 {/* Hygiene Checklist */}
-                <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
+                <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl p-5">
                     <div className="flex items-center justify-between mb-4">
-                        <label className="text-sm text-slate-400">{t('hygieneChecklist')}</label>
+                        <label className="text-sm text-gray-500 dark:text-slate-400">{t('hygieneChecklist')}</label>
                         <span className={`text-xs font-medium px-2 py-0.5 rounded ${
                             hygieneComplete ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400'
                         }`}>
@@ -406,36 +406,36 @@ export default function AddFood() {
                         <label className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all ${
                             formData.keptCovered 
                                 ? 'border-emerald-500 bg-emerald-500/5' 
-                                : 'border-slate-800 hover:border-slate-700'
+                                : 'border-gray-200 dark:border-slate-800 hover:border-gray-300 dark:hover:border-gray-300 dark:border-slate-700'
                         }`}>
                             <input
                                 type="checkbox"
                                 name="keptCovered"
                                 checked={formData.keptCovered}
                                 onChange={handleChange}
-                                className="w-4 h-4 rounded border-slate-600 text-emerald-500 focus:ring-emerald-500 bg-slate-900"
+                                className="w-4 h-4 rounded border-gray-400 dark:border-slate-600 text-emerald-500 focus:ring-emerald-500 bg-white dark:bg-slate-900"
                             />
-                            <span className="text-sm text-slate-300">{t('keptCoveredAlways')}</span>
+                            <span className="text-sm text-gray-700 dark:text-slate-300">{t('keptCoveredAlways')}</span>
                         </label>
 
                         <label className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all ${
                             formData.containerClean 
                                 ? 'border-emerald-500 bg-emerald-500/5' 
-                                : 'border-slate-800 hover:border-slate-700'
+                                : 'border-gray-200 dark:border-slate-800 hover:border-gray-300 dark:hover:border-gray-300 dark:border-slate-700'
                         }`}>
                             <input
                                 type="checkbox"
                                 name="containerClean"
                                 checked={formData.containerClean}
                                 onChange={handleChange}
-                                className="w-4 h-4 rounded border-slate-600 text-emerald-500 focus:ring-emerald-500 bg-slate-900"
+                                className="w-4 h-4 rounded border-gray-400 dark:border-slate-600 text-emerald-500 focus:ring-emerald-500 bg-white dark:bg-slate-900"
                             />
-                            <span className="text-sm text-slate-300">{t('cleanFoodSafe')}</span>
+                            <span className="text-sm text-gray-700 dark:text-slate-300">{t('cleanFoodSafe')}</span>
                         </label>
                     </div>
 
-                    <div className="mt-4 p-3 bg-slate-800 rounded-lg">
-                        <p className="text-xs text-slate-400">
+                    <div className="mt-4 p-3 bg-gray-100 dark:bg-slate-800 rounded-lg">
+                        <p className="text-xs text-gray-500 dark:text-slate-400">
                             ℹ️ {t('hygieneNote')}
                         </p>
                     </div>
@@ -447,7 +447,7 @@ export default function AddFood() {
                     disabled={isSubmitting || !isFormValid}
                     className={`w-full py-3 rounded-lg font-medium transition-all ${
                         isSubmitting || !isFormValid
-                            ? 'bg-slate-800 text-slate-500 cursor-not-allowed'
+                            ? 'bg-gray-100 dark:bg-slate-800 text-gray-500 dark:text-slate-500 cursor-not-allowed'
                             : 'bg-emerald-500 hover:bg-emerald-400 text-white shadow-lg shadow-emerald-500/20'
                     }`}
                 >

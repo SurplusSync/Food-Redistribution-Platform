@@ -100,7 +100,7 @@ export default function DashboardLayout() {
   }
 
   return (
-    <div className="min-h-screen flex bg-slate-950">
+    <div className="min-h-screen flex bg-gray-50 dark:bg-slate-950">
       {/* Sidebar */}
       <aside className="sidebar flex flex-col">
         {/* Logo */}
@@ -110,7 +110,7 @@ export default function DashboardLayout() {
               <span className="text-white font-bold text-xl">S</span>
             </div>
             <div>
-              <h1 className="text-xl font-bold text-white tracking-tight">
+              <h1 className="text-xl font-bold text-gray-900 dark:text-white tracking-tight">
                 Surplus<span className="text-emerald-400">Sync</span>
               </h1>
             </div>
@@ -118,16 +118,16 @@ export default function DashboardLayout() {
         </div>
 
         {/* User Info */}
-        <div className="p-4 border-b border-slate-800">
-          <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-900/50 border border-slate-800">
+        <div className="p-4 border-b border-gray-200 dark:border-slate-800">
+          <div className="flex items-center gap-3 p-3 rounded-xl bg-white/80 dark:bg-slate-900/50 border border-gray-200 dark:border-slate-800">
             <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${getRoleColor()} flex items-center justify-center text-sm font-bold text-white shadow-lg`}>
               {user.name?.[0]?.toUpperCase() || 'U'}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-white truncate">
+              <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
                 {user.organizationName || user.name || 'User'}
               </p>
-              <p className="text-xs text-slate-500">{getRoleLabel()}</p>
+              <p className="text-xs text-gray-500 dark:text-slate-500">{getRoleLabel()}</p>
             </div>
             {user.verified && (
               <div className="w-5 h-5 rounded-full bg-emerald-500 flex items-center justify-center">
@@ -153,7 +153,7 @@ export default function DashboardLayout() {
         </nav>
 
         {/* Bottom Actions */}
-        <div className="p-3 border-t border-slate-800 space-y-1">
+        <div className="p-3 border-t border-gray-200 dark:border-slate-800 space-y-1">
           <Link
             to="/dashboard/notifications"
             className={`nav-item relative ${isActive('/dashboard/notifications') ? 'nav-item-active' : 'nav-item-inactive'
@@ -203,7 +203,7 @@ export default function DashboardLayout() {
             <div className="flex items-center justify-center h-screen">
               <div className="text-center">
                 <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-600 animate-pulse mx-auto mb-4"></div>
-                <p className="text-slate-400">Loading...</p>
+                <p className="text-gray-500 dark:text-slate-400">Loading...</p>
               </div>
             </div>
           ) : (

@@ -53,7 +53,7 @@ export default function Login() {
   ]
 
   return (
-    <div className="min-h-screen bg-slate-950 flex">
+    <div className="min-h-screen bg-gray-50 dark:bg-slate-950 flex">
       {/* Left Side - Branding & Features */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
         {/* Animated blobs */}
@@ -66,25 +66,25 @@ export default function Login() {
         <div className="absolute inset-0 dot-grid pointer-events-none" />
 
         {/* Content */}
-        <div className="relative z-10 p-12 flex flex-col justify-between auth-gradient-bg w-full border-r border-slate-800/50">
+        <div className="relative z-10 p-12 flex flex-col justify-between auth-gradient-bg w-full border-r border-gray-200/80 dark:border-slate-800/50">
           <div>
             <div className="flex items-center gap-3 mb-14">
               <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center shadow-lg shadow-emerald-500/25">
-                <Utensils className="w-6 h-6 text-white" />
+                <Utensils className="w-6 h-6 text-gray-900 dark:text-white" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-white">
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
                   Surplus<span className="text-emerald-400">Sync</span>
                 </h1>
-                <p className="text-sm text-slate-500">{t('foodRedistributionPlatform')}</p>
+                <p className="text-sm text-gray-500 dark:text-slate-500">{t('foodRedistributionPlatform')}</p>
               </div>
             </div>
 
             <div className="max-w-md">
-              <h2 className="text-4xl font-extrabold text-white mb-4 leading-tight tracking-tight">
+              <h2 className="text-4xl font-extrabold text-gray-900 dark:text-white mb-4 leading-tight tracking-tight">
                 {t('transformSurplus')} <span className="shimmer-text">{t('welcome')}</span>
               </h2>
-              <p className="text-lg text-slate-400 mb-10 leading-relaxed">
+              <p className="text-lg text-gray-500 dark:text-slate-400 mb-10 leading-relaxed">
                 {t('joinThousands')}
               </p>
 
@@ -94,7 +94,7 @@ export default function Login() {
                     <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center flex-shrink-0 border border-emerald-500/20 group-hover:bg-emerald-500/20 transition-colors">
                       <feature.icon className="w-4 h-4 text-emerald-400" />
                     </div>
-                    <p className="text-slate-300 font-medium">{feature.text}</p>
+                    <p className="text-gray-700 dark:text-slate-300 font-medium">{feature.text}</p>
                   </div>
                 ))}
               </div>
@@ -102,11 +102,11 @@ export default function Login() {
           </div>
 
           {/* Stats bar */}
-          <div className="flex gap-6 pt-6 border-t border-slate-800/40">
+          <div className="flex gap-6 pt-6 border-t border-gray-200/60 dark:border-slate-800/40">
             {stats.map((stat, i) => (
               <div key={i}>
-                <p className="text-2xl font-extrabold text-white tracking-tight">{stat.value}</p>
-                <p className="text-xs text-slate-500 mt-0.5">{stat.label}</p>
+                <p className="text-2xl font-extrabold text-gray-900 dark:text-white tracking-tight">{stat.value}</p>
+                <p className="text-xs text-gray-500 dark:text-slate-500 mt-0.5">{stat.label}</p>
               </div>
             ))}
           </div>
@@ -122,17 +122,17 @@ export default function Login() {
           {/* Mobile logo */}
           <div className="lg:hidden flex items-center gap-2.5 mb-8 justify-center">
             <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center shadow-lg shadow-emerald-500/20">
-              <Utensils className="w-4 h-4 text-white" />
+              <Utensils className="w-4 h-4 text-gray-900 dark:text-white" />
             </div>
             <span className="text-lg font-bold tracking-tight">
               Surplus<span className="text-emerald-400">Sync</span>
             </span>
           </div>
 
-          <div className="bg-slate-900/60 backdrop-blur-xl rounded-2xl shadow-2xl border border-slate-800/80 p-8 glow-card">
+          <div className="bg-white/90 dark:bg-slate-900/60 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-200 dark:border-slate-800/80 p-8 glow-card">
             <div className="mb-8">
-              <h2 className="text-2xl font-extrabold text-white mb-2">{t('welcomeBack')}</h2>
-              <p className="text-slate-400">{t('signInToContinue')}</p>
+              <h2 className="text-2xl font-extrabold text-gray-900 dark:text-white mb-2">{t('welcomeBack')}</h2>
+              <p className="text-gray-500 dark:text-slate-400">{t('signInToContinue')}</p>
             </div>
 
             {error && (
@@ -144,26 +144,26 @@ export default function Login() {
 
             <form onSubmit={onSubmit} className="space-y-5">
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">{t('emailAddress')}</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">{t('emailAddress')}</label>
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder={t('emailPlaceholder')}
                   required
-                  className="w-full bg-slate-800/60 border border-slate-700/60 rounded-xl px-4 py-3.5 text-white placeholder-slate-500 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none transition-all"
+                  className="w-full bg-gray-100 dark:bg-slate-800/60 border border-gray-300 dark:border-slate-700/60 rounded-xl px-4 py-3.5 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-500 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none transition-all"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">{t('password')}</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">{t('password')}</label>
                 <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder={t('passwordPlaceholder')}
                   required
-                  className="w-full bg-slate-800/60 border border-slate-700/60 rounded-xl px-4 py-3.5 text-white placeholder-slate-500 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none transition-all"
+                  className="w-full bg-gray-100 dark:bg-slate-800/60 border border-gray-300 dark:border-slate-700/60 rounded-xl px-4 py-3.5 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-500 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none transition-all"
                 />
               </div>
 
@@ -177,7 +177,7 @@ export default function Login() {
             </form>
 
             <div className="mt-6 text-center">
-              <p className="text-sm text-slate-400">
+              <p className="text-sm text-gray-500 dark:text-slate-400">
                 {t('dontHaveAccount')}{' '}
                 <Link to="/register" className="font-semibold text-emerald-400 hover:text-emerald-300 transition-colors">{t('createAccount')}</Link>
               </p>

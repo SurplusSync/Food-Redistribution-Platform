@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { ArrowRight, Utensils, ChevronDown, Store, Building2, Car, MapPin, Shield, Zap, BarChart3, Heart, ClipboardList, Search, Truck, Package, Quote, Users, Globe, Award } from 'lucide-react'
+import { ArrowRight, Utensils, ChevronDown, Store, Building2, Car, MapPin, Shield, Zap, BarChart3, Heart, ClipboardList, Search, Truck, Package, Quote, Users, Globe, Award, Sun, Moon, Languages } from 'lucide-react'
 
 // ─── Animated Counter Hook ─────────────────────────────────────────────────────
 function useCountUp(target: number, duration = 2000) {
@@ -102,11 +102,26 @@ const testimonialConfigs = [
 
 // ─── Component ──────────────────────────────────────────────────────────────────
 export default function LandingPage() {
-    const { t } = useTranslation()
+    const { t, i18n } = useTranslation()
+    const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains('dark'))
+    const [langOpen, setLangOpen] = useState(false)
     const meals = useCountUp(10000)
     const donors = useCountUp(500)
     const ngos = useCountUp(120)
     const volunteers = useCountUp(300)
+
+    const toggleTheme = () => {
+        const next = !isDark
+        setIsDark(next)
+        document.documentElement.classList.toggle('dark', next)
+        localStorage.setItem('theme', next ? 'dark' : 'light')
+    }
+
+    const langs = [
+        { code: 'en', label: 'English' },
+        { code: 'hi', label: 'हिन्दी' },
+        { code: 'ta', label: 'தமிழ்' },
+    ]
 
     const colorMap: Record<string, { bg: string; text: string; border: string }> = {
         emerald: { bg: 'bg-emerald-500/10', text: 'text-emerald-400', border: 'border-emerald-500/20' },
@@ -116,7 +131,7 @@ export default function LandingPage() {
     }
 
     return (
-        <div className="min-h-screen bg-slate-950 text-white overflow-x-hidden">
+        <div className="min-h-screen bg-gray-50 dark:bg-slate-950 text-gray-900 dark:text-white overflow-x-hidden">
             {/* Animated background blobs */}
             <div className="fixed inset-0 pointer-events-none">
                 <div className="landing-blob landing-blob-1" />
@@ -128,7 +143,7 @@ export default function LandingPage() {
             <div className="fixed inset-0 pointer-events-none dot-grid" />
 
             {/* ════════ NAVBAR ════════ */}
-            <nav className="fixed top-0 w-full z-50 bg-slate-950/70 backdrop-blur-2xl border-b border-slate-800/40">
+            <nav className="fixed top-0 w-full z-50 bg-white/80 dark:bg-slate-950/70 backdrop-blur-2xl border-b border-gray-200/60 dark:border-slate-800/40">
                 <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
                     <div className="flex items-center gap-2.5">
                         <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center flex-shrink-0 shadow-lg shadow-emerald-500/20">
@@ -138,16 +153,53 @@ export default function LandingPage() {
                             Surplus<span className="text-emerald-400">Sync</span>
                         </span>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2">
+                        {/* Language picker */}
+                        <div className="relative">
+                            <button
+                                onClick={() => setLangOpen(!langOpen)}
+                                className="p-2 rounded-lg text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors"
+                                aria-label={t('selectLanguage')}
+                            >
+                                <Languages className="w-4.5 h-4.5" />
+                            </button>
+                            {langOpen && (
+                                <div className="absolute right-0 top-full mt-2 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl shadow-xl p-1.5 min-w-[140px] z-50">
+                                    {langs.map(l => (
+                                        <button
+                                            key={l.code}
+                                            onClick={() => { i18n.changeLanguage(l.code); setLangOpen(false) }}
+                                            className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
+                                                i18n.language === l.code
+                                                    ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-medium'
+                                                    : 'text-gray-600 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800'
+                                            }`}
+                                        >
+                                            {l.label}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Theme toggle */}
+                        <button
+                            onClick={toggleTheme}
+                            className="p-2 rounded-lg text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors"
+                            aria-label={t('darkMode')}
+                        >
+                            {isDark ? <Sun className="w-4.5 h-4.5" /> : <Moon className="w-4.5 h-4.5" />}
+                        </button>
+
                         <Link
                             to="/login"
-                            className="px-4 py-2 text-sm font-medium text-slate-400 hover:text-white transition-colors"
+                            className="px-4 py-2 text-sm font-medium text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white transition-colors"
                         >
                             {t('signIn')}
                         </Link>
                         <Link
                             to="/register"
-                            className="px-5 py-2.5 text-sm font-semibold bg-emerald-500 hover:bg-emerald-400 rounded-xl transition-all shadow-lg shadow-emerald-500/20"
+                            className="px-5 py-2.5 text-sm font-semibold bg-emerald-500 hover:bg-emerald-400 text-white rounded-xl transition-all shadow-lg shadow-emerald-500/20"
                         >
                             {t('getStarted')}
                         </Link>
@@ -163,7 +215,7 @@ export default function LandingPage() {
                         <span className="shimmer-text">{t('heroTitle2')}</span>
                     </h1>
 
-                    <p className="text-lg sm:text-xl text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed">
+                    <p className="text-lg sm:text-xl text-gray-500 dark:text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed">
                         {t('heroSubtitle')}
                     </p>
 
@@ -177,7 +229,7 @@ export default function LandingPage() {
                         </Link>
                         <Link
                             to="/login"
-                            className="w-full sm:w-auto px-10 py-4 rounded-2xl font-semibold bg-slate-900/80 border border-slate-700 hover:border-slate-500 transition-all backdrop-blur-sm text-center"
+                            className="w-full sm:w-auto px-10 py-4 rounded-2xl font-semibold bg-white dark:bg-slate-900/80 border border-gray-300 dark:border-slate-700 hover:border-gray-400 dark:hover:border-gray-400 dark:border-slate-500 transition-all backdrop-blur-sm text-center"
                         >
                             {t('signIn')}
                         </Link>
@@ -185,13 +237,13 @@ export default function LandingPage() {
                 </div>
 
                 {/* Scroll indicator */}
-                <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce text-slate-600">
+                <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce text-gray-400 dark:text-slate-600">
                     <ChevronDown className="w-6 h-6" />
                 </div>
             </section>
 
             {/* ════════ COUNTER STATS BAR ════════ */}
-            <section className="py-10 border-y border-slate-800/40 bg-slate-900/30 backdrop-blur-sm">
+            <section className="py-10 border-y border-gray-200/60 dark:border-slate-800/40 bg-gray-50/60 dark:bg-slate-900/30 backdrop-blur-sm">
                 <div className="max-w-5xl mx-auto px-4 sm:px-6 grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
                     {[
                         { ref: meals.ref, count: meals.count, suffix: '+', label: t('mealsRedistributed'), icon: Heart },
@@ -201,10 +253,10 @@ export default function LandingPage() {
                     ].map((stat, i) => (
                         <div key={i} ref={stat.ref} className="text-center reveal-section">
                             <stat.icon className="w-6 h-6 text-emerald-400 mx-auto mb-2 opacity-60" />
-                            <p className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+                            <p className="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-white tracking-tight">
                                 {stat.count.toLocaleString()}{stat.suffix}
                             </p>
-                            <p className="text-sm text-slate-500 mt-1 font-medium">{stat.label}</p>
+                            <p className="text-sm text-gray-500 dark:text-slate-500 mt-1 font-medium">{stat.label}</p>
                         </div>
                     ))}
                 </div>
@@ -227,7 +279,7 @@ export default function LandingPage() {
                                 <div key={step.titleKey} className={`reveal-section reveal-delay-${i + 1}`}>
                                     <div className="bento-card p-6 text-center h-full">
                                         {/* Step number */}
-                                        <div className="text-xs font-bold text-slate-600 uppercase tracking-widest mb-4">
+                                        <div className="text-xs font-bold text-gray-400 dark:text-slate-600 uppercase tracking-widest mb-4">
                                             Step {i + 1}
                                         </div>
 
@@ -235,7 +287,7 @@ export default function LandingPage() {
                                             <step.icon className={`w-7 h-7 ${c.text}`} />
                                         </div>
                                         <h3 className="text-lg font-bold mb-2">{t(step.titleKey)}</h3>
-                                        <p className="text-sm text-slate-400 leading-relaxed">{t(step.descKey)}</p>
+                                        <p className="text-sm text-gray-500 dark:text-slate-400 leading-relaxed">{t(step.descKey)}</p>
                                     </div>
                                 </div>
                             )
@@ -245,7 +297,7 @@ export default function LandingPage() {
             </section>
 
             {/* ════════ FLOW STRIP ════════ */}
-            <section className="py-4 border-y border-slate-800/40 overflow-hidden">
+            <section className="py-4 border-y border-gray-200/60 dark:border-slate-800/40 overflow-hidden">
                 <div className="flex whitespace-nowrap marquee-track" style={{ width: '200%' }}>
                     {[...Array(2)].map((_, setIdx) => (
                         <div key={setIdx} className="flex items-center gap-6 px-3" style={{ width: '50%' }}>
@@ -255,7 +307,7 @@ export default function LandingPage() {
                             ].map((item, i) => (
                                 <span
                                     key={i}
-                                    className={`text-sm font-medium ${item === '→' || item === '•' ? 'text-emerald-500/40' : 'text-slate-400'}`}
+                                    className={`text-sm font-medium ${item === '→' || item === '•' ? 'text-emerald-500/40' : 'text-gray-500 dark:text-slate-400'}`}
                                 >
                                     {item}
                                 </span>
@@ -287,20 +339,20 @@ export default function LandingPage() {
                                         <role.Icon className={`w-6 h-6 ${c.text}`} />
                                     </div>
                                     <h3 className="text-xl font-bold mb-1">{t(role.titleKey)}</h3>
-                                    <p className="text-xs text-slate-500 font-medium mb-4 uppercase tracking-wider">
+                                    <p className="text-xs text-gray-500 dark:text-slate-500 font-medium mb-4 uppercase tracking-wider">
                                         {t(role.subtitleKey)}
                                     </p>
-                                    <p className="text-sm text-slate-400 leading-relaxed mb-6">
+                                    <p className="text-sm text-gray-500 dark:text-slate-400 leading-relaxed mb-6">
                                         {t(role.descriptionKey)}
                                     </p>
                                     <div className="flex gap-3">
                                         {role.stats.map((stat) => (
                                             <div
                                                 key={stat.labelKey}
-                                                className="flex-1 p-3 rounded-xl bg-slate-800/40 border border-slate-700/30"
+                                                className="flex-1 p-3 rounded-xl bg-gray-100/60 dark:bg-slate-800/40 border border-gray-200/50 dark:border-slate-700/30"
                                             >
                                                 <p className={`text-sm font-bold ${c.text}`}>{t(stat.valueKey)}</p>
-                                                <p className="text-xs text-slate-500 mt-0.5">{t(stat.labelKey)}</p>
+                                                <p className="text-xs text-gray-500 dark:text-slate-500 mt-0.5">{t(stat.labelKey)}</p>
                                             </div>
                                         ))}
                                     </div>
@@ -326,20 +378,20 @@ export default function LandingPage() {
                         <div className="bento-card p-6 sm:p-8 md:col-span-4 reveal-section reveal-delay-1">
                             <div className="flex items-start justify-between mb-6">
                                 <div>
-                                    <p className="text-xs text-slate-500 uppercase tracking-widest mb-2">{t('discovery')}</p>
+                                    <p className="text-xs text-gray-500 dark:text-slate-500 uppercase tracking-widest mb-2">{t('discovery')}</p>
                                     <h3 className="text-xl font-bold">{t('geoAwareFoodMap')}</h3>
                                 </div>
                                 <div className="w-11 h-11 rounded-xl bg-emerald-500/10 flex items-center justify-center flex-shrink-0">
                                     <MapPin className="w-5 h-5 text-emerald-400" />
                                 </div>
                             </div>
-                            <p className="text-sm text-slate-400 leading-relaxed mb-6">
+                            <p className="text-sm text-gray-500 dark:text-slate-400 leading-relaxed mb-6">
                                 {t('geoMapDesc')}
                             </p>
                             <div className="grid grid-cols-3 gap-3">
                                 {[t('fiveKmRadius'), t('realTimePins'), t('routePreview')].map((f) => (
-                                    <div key={f} className="text-center p-3 rounded-xl bg-slate-800/30 border border-slate-700/20">
-                                        <p className="text-xs text-slate-400">{f}</p>
+                                    <div key={f} className="text-center p-3 rounded-xl bg-gray-100/50 dark:bg-slate-800/30 border border-gray-200/40 dark:border-slate-700/20">
+                                        <p className="text-xs text-gray-500 dark:text-slate-400">{f}</p>
                                     </div>
                                 ))}
                             </div>
@@ -351,7 +403,7 @@ export default function LandingPage() {
                                 <Shield className="w-5 h-5 text-amber-400" />
                             </div>
                             <h3 className="text-lg font-bold mb-2">{t('foodSafetyEngine')}</h3>
-                            <p className="text-sm text-slate-400 leading-relaxed">
+                            <p className="text-sm text-gray-500 dark:text-slate-400 leading-relaxed">
                                 {t('foodSafetyDesc')}
                             </p>
                         </div>
@@ -362,7 +414,7 @@ export default function LandingPage() {
                                 <Zap className="w-5 h-5 text-blue-400" />
                             </div>
                             <h3 className="text-lg font-bold mb-2">{t('liveStatusTracking')}</h3>
-                            <p className="text-sm text-slate-400 leading-relaxed">
+                            <p className="text-sm text-gray-500 dark:text-slate-400 leading-relaxed">
                                 {t('liveStatusDesc')}
                             </p>
                         </div>
@@ -371,14 +423,14 @@ export default function LandingPage() {
                         <div className="bento-card p-6 sm:p-8 md:col-span-4 reveal-section reveal-delay-4">
                             <div className="flex items-start justify-between mb-6">
                                 <div>
-                                    <p className="text-xs text-slate-500 uppercase tracking-widest mb-2">{t('analytics')}</p>
+                                    <p className="text-xs text-gray-500 dark:text-slate-500 uppercase tracking-widest mb-2">{t('analytics')}</p>
                                     <h3 className="text-xl font-bold">{t('impactDashboard')}</h3>
                                 </div>
                                 <div className="w-11 h-11 rounded-xl bg-purple-500/10 flex items-center justify-center flex-shrink-0">
                                     <BarChart3 className="w-5 h-5 text-purple-400" />
                                 </div>
                             </div>
-                            <p className="text-sm text-slate-400 leading-relaxed mb-6">
+                            <p className="text-sm text-gray-500 dark:text-slate-400 leading-relaxed mb-6">
                                 {t('impactDashboardDesc')}
                             </p>
                             <div className="flex gap-6">
@@ -389,7 +441,7 @@ export default function LandingPage() {
                                 ].map((m) => (
                                     <div key={m.label}>
                                         <p className="text-lg font-bold text-emerald-400">{m.value}</p>
-                                        <p className="text-xs text-slate-500">{m.label}</p>
+                                        <p className="text-xs text-gray-500 dark:text-slate-500">{m.label}</p>
                                     </div>
                                 ))}
                             </div>
@@ -412,16 +464,16 @@ export default function LandingPage() {
                         {testimonialConfigs.map((item, i) => (
                             <div key={i} className={`testimonial-card p-6 sm:p-7 reveal-section reveal-delay-${i + 1}`}>
                                 <Quote className="w-8 h-8 text-emerald-500/30 mb-4" />
-                                <p className="text-sm text-slate-300 leading-relaxed mb-6 italic">
+                                <p className="text-sm text-gray-700 dark:text-slate-300 leading-relaxed mb-6 italic">
                                     "{t(item.quoteKey)}"
                                 </p>
-                                <div className="flex items-center gap-3 pt-4 border-t border-slate-700/40">
-                                    <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-lg">
+                                <div className="flex items-center gap-3 pt-4 border-t border-gray-200/60 dark:border-slate-700/40">
+                                    <div className="w-10 h-10 rounded-full bg-gray-100 dark:bg-slate-800 flex items-center justify-center text-lg">
                                         {item.avatar}
                                     </div>
                                     <div>
-                                        <p className="text-sm font-semibold text-white">{t(item.nameKey)}</p>
-                                        <p className="text-xs text-slate-500">{t(item.roleKey)}</p>
+                                        <p className="text-sm font-semibold text-gray-900 dark:text-white">{t(item.nameKey)}</p>
+                                        <p className="text-xs text-gray-500 dark:text-slate-500">{t(item.roleKey)}</p>
                                     </div>
                                 </div>
                             </div>
@@ -439,7 +491,7 @@ export default function LandingPage() {
                     <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-4 tracking-tight">
                         {t('everyMealMatters')}
                     </h2>
-                    <p className="text-base sm:text-lg text-slate-400 mb-10 leading-relaxed px-2">
+                    <p className="text-base sm:text-lg text-gray-500 dark:text-slate-400 mb-10 leading-relaxed px-2">
                         {t('everyMealDesc')}
                     </p>
                     <Link
@@ -453,7 +505,7 @@ export default function LandingPage() {
             </section>
 
             {/* ════════ FOOTER ════════ */}
-            <footer className="py-12 px-4 sm:px-6 border-t border-slate-800/40 bg-slate-900/20">
+            <footer className="py-12 px-4 sm:px-6 border-t border-gray-200/60 dark:border-slate-800/40 bg-gray-50/40 dark:bg-slate-900/20">
                 <div className="max-w-6xl mx-auto">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 mb-8">
                         {/* Brand */}
@@ -466,27 +518,27 @@ export default function LandingPage() {
                                     Surplus<span className="text-emerald-400">Sync</span>
                                 </span>
                             </div>
-                            <p className="text-sm text-slate-500 leading-relaxed max-w-xs">
+                            <p className="text-sm text-gray-500 dark:text-slate-500 leading-relaxed max-w-xs">
                                 {t('footerDesc')}
                             </p>
                         </div>
 
                         {/* Quick Links */}
                         <div>
-                            <h4 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-4">{t('platform')}</h4>
+                            <h4 className="text-sm font-semibold text-gray-700 dark:text-slate-300 uppercase tracking-wider mb-4">{t('platform')}</h4>
                             <div className="space-y-2.5">
                                 {[t('howItWorks'), t('forDonors'), t('forNGOs'), t('forVolunteers')].map(link => (
-                                    <p key={link} className="text-sm text-slate-500 hover:text-emerald-400 cursor-pointer transition-colors">{link}</p>
+                                    <p key={link} className="text-sm text-gray-500 dark:text-slate-500 hover:text-emerald-400 cursor-pointer transition-colors">{link}</p>
                                 ))}
                             </div>
                         </div>
 
                         {/* Contact */}
                         <div>
-                            <h4 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-4">{t('connect')}</h4>
+                            <h4 className="text-sm font-semibold text-gray-700 dark:text-slate-300 uppercase tracking-wider mb-4">{t('connect')}</h4>
                             <div className="space-y-2.5">
-                                <p className="text-sm text-slate-500">{t('contactEmail')}</p>
-                                <p className="text-sm text-slate-500">{t('openSourceProject')}</p>
+                                <p className="text-sm text-gray-500 dark:text-slate-500">{t('contactEmail')}</p>
+                                <p className="text-sm text-gray-500 dark:text-slate-500">{t('openSourceProject')}</p>
                                 <Link to="/register" className="inline-flex items-center gap-1.5 text-sm text-emerald-400 hover:text-emerald-300 font-medium transition-colors">
                                     {t('joinSurplusSync')} <ArrowRight className="w-3.5 h-3.5" />
                                 </Link>
@@ -495,7 +547,7 @@ export default function LandingPage() {
                     </div>
 
                     {/* Bottom bar */}
-                    <div className="pt-8 border-t border-slate-800/40 flex flex-col sm:flex-row items-center justify-between gap-2 text-sm text-slate-600">
+                    <div className="pt-8 border-t border-gray-200/60 dark:border-slate-800/40 flex flex-col sm:flex-row items-center justify-between gap-2 text-sm text-gray-400 dark:text-slate-600">
                         <div className="flex items-center gap-2">
                             <Utensils className="w-3.5 h-3.5 flex-shrink-0" />
                             <span>SurplusSync © {new Date().getFullYear()}</span>

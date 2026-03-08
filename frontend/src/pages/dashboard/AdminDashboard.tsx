@@ -74,37 +74,37 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 p-6">
+    <div className="min-h-screen bg-gray-50 dark:bg-slate-950 p-6">
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Top Bar with Sign Out */}
         <div className="flex items-center justify-end">
           <button
             onClick={handleSignOut}
-            className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg transition-colors border border-slate-700"
+            className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-gray-200 dark:bg-slate-700 text-gray-900 dark:text-white rounded-lg transition-colors border border-gray-300 dark:border-slate-700"
           >
             <LogOut size={18} />
             {t('signOut')}
           </button>
         </div>
 
-        <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+        <div className="flex items-center justify-between border-b border-gray-200 dark:border-slate-800 pb-4">
           <div>
-            <h1 className="text-2xl font-bold text-white flex items-center gap-2">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
               <ShieldAlert className="text-emerald-500" />
               {t('systemAdministration')}
             </h1>
-            <p className="text-sm text-slate-400 mt-1">{t('manageUsersDesc')}</p>
+            <p className="text-sm text-gray-500 dark:text-slate-400 mt-1">{t('manageUsersDesc')}</p>
           </div>
         </div>
 
         {/* Minimalist Tabs */}
-        <div className="flex space-x-1 bg-slate-900/50 p-1 rounded-lg w-fit border border-slate-800">
+        <div className="flex space-x-1 bg-white/80 dark:bg-slate-900/50 p-1 rounded-lg w-fit border border-gray-200 dark:border-slate-800">
           {['pending', 'users', 'donations'].map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab as any)}
               className={`px-4 py-2 text-sm font-medium rounded-md capitalize transition-colors ${
-                activeTab === tab ? 'bg-emerald-500 text-white' : 'text-slate-400 hover:text-white'
+                activeTab === tab ? 'bg-emerald-500 text-white' : 'text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white'
               }`}
             >
               {tab === 'pending' ? t('pendingNGOs') : tab === 'users' ? t('allUsers') : t('platformDonations')}
@@ -113,14 +113,14 @@ export default function AdminDashboard() {
         </div>
 
         {/* Data Table */}
-        <div className="bg-slate-900 border border-slate-800 rounded-lg shadow-sm overflow-hidden">
+        <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-lg shadow-sm overflow-hidden">
           {loading ? (
-            <div className="p-8 text-center text-slate-400">{t('loadingData')}</div>
+            <div className="p-8 text-center text-gray-500 dark:text-slate-400">{t('loadingData')}</div>
           ) : data.length === 0 ? (
-            <div className="p-8 text-center text-slate-400">{t('noRecordsFound')}</div>
+            <div className="p-8 text-center text-gray-500 dark:text-slate-400">{t('noRecordsFound')}</div>
           ) : (
-            <table className="w-full text-left text-sm text-slate-300">
-              <thead className="bg-slate-800/50 border-b border-slate-700 text-white">
+            <table className="w-full text-left text-sm text-gray-700 dark:text-slate-300">
+              <thead className="bg-gray-100/80 dark:bg-slate-800/50 border-b border-gray-300 dark:border-slate-700 text-gray-900 dark:text-white">
                 <tr>
                   <th className="p-4 font-semibold">{t('nameOrg')}</th>
                   <th className="p-4 font-semibold">{t('email')}</th>
@@ -128,16 +128,16 @@ export default function AdminDashboard() {
                   <th className="p-4 font-semibold text-right">{t('actions')}</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800">
+              <tbody className="divide-y divide-gray-200 dark:divide-slate-800">
                 {data.map((item) => (
-                  <tr key={item.id} className="hover:bg-slate-800/50 transition-colors">
+                  <tr key={item.id} className="hover:bg-gray-100/80 dark:bg-slate-800/50 transition-colors">
                     <td className="p-4">
-                      <div className="font-medium text-white">{item.organizationName || item.name || item.foodType}</div>
-                      <div className="text-xs text-slate-500">{item.role || `${item.quantity} ${item.unit}`}</div>
+                      <div className="font-medium text-gray-900 dark:text-white">{item.organizationName || item.name || item.foodType}</div>
+                      <div className="text-xs text-gray-500 dark:text-slate-500">{item.role || `${item.quantity} ${item.unit}`}</div>
                     </td>
-                    <td className="p-4 text-slate-300">{item.email || item.donor?.email || 'N/A'}</td>
+                    <td className="p-4 text-gray-700 dark:text-slate-300">{item.email || item.donor?.email || 'N/A'}</td>
                     <td className="p-4">
-                      <span className="text-slate-400">{new Date(item.createdAt).toLocaleDateString()}</span>
+                      <span className="text-gray-500 dark:text-slate-400">{new Date(item.createdAt).toLocaleDateString()}</span>
                       {activeTab === 'users' && (
                         <span className={`ml-2 px-2 py-0.5 rounded-full text-xs ${item.isActive ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-red-500/20 text-red-400 border border-red-500/30'}`}>
                           {item.isActive ? t('active') : t('suspended')}
@@ -164,7 +164,7 @@ export default function AdminDashboard() {
                         </button>
                       )}
                       {activeTab === 'donations' && (
-                        <span className="text-slate-400 flex items-center justify-end gap-1">
+                        <span className="text-gray-500 dark:text-slate-400 flex items-center justify-end gap-1">
                           <Activity size={16} /> {item.status}
                         </span>
                       )}
@@ -179,18 +179,18 @@ export default function AdminDashboard() {
 
       {certificatePreviewUrl && (
         <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
-          <div className="w-full max-w-4xl bg-slate-900 border border-slate-700 rounded-xl overflow-hidden">
-            <div className="flex items-center justify-between px-4 py-3 border-b border-slate-800">
-              <h3 className="text-white font-semibold">{t('registrationCertificateLabel')}</h3>
+          <div className="w-full max-w-4xl bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-700 rounded-xl overflow-hidden">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-slate-800">
+              <h3 className="text-gray-900 dark:text-white font-semibold">{t('registrationCertificateLabel')}</h3>
               <button
                 onClick={closeCertificatePreview}
-                className="text-slate-400 hover:text-white"
+                className="text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white"
                 aria-label="Close certificate preview"
               >
                 <X size={20} />
               </button>
             </div>
-            <div className="bg-slate-950 h-[70vh]">
+            <div className="bg-gray-50 dark:bg-slate-950 h-[70vh]">
               {isPdfCertificate ? (
                 <iframe src={certificatePreviewUrl} title="Certificate Preview" className="w-full h-full" />
               ) : (
