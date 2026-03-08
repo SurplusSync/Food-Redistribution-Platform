@@ -147,4 +147,18 @@ export class UpdateProfileDto {
   @IsOptional()
   @IsString()
   capacityUnit?: string;
+
+  @ApiProperty({ required: false, description: 'Vehicle type for volunteer (bike, car, van, bicycle, walk)' })
+  @IsOptional()
+  @IsString()
+  vehicleType?: string;
+
+  @ApiProperty({ required: false, description: 'Vehicle registration number' })
+  @IsOptional()
+  @IsString()
+  vehicleNumber?: string;
+
+  @ApiProperty({ required: false, description: 'Volunteer availability toggle' })
+  @IsOptional()
+  isAvailable?: boolean;
 }
