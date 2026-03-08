@@ -68,6 +68,16 @@ export class User {
   @Column({ nullable: true })
   certificateUrl: string;
 
+  // 🚗 Volunteer fields
+  @Column({ nullable: true })
+  vehicleType: string; // 'bike' | 'car' | 'van' | 'bicycle' | 'walk'
+
+  @Column({ nullable: true })
+  vehicleNumber: string;
+
+  @Column({ default: false })
+  isAvailable: boolean; // volunteer availability toggle
+
   // 🎮 Gamification
   @Column({ default: 0 })
   karmaPoints: number;
