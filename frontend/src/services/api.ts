@@ -66,6 +66,9 @@ export interface User {
   trustScore?: number;
   karmaPoints?: number;
   badges?: string[];
+  vehicleType?: string;
+  vehicleNumber?: string;
+  isAvailable?: boolean;
   badgeCatalog?: {
     id: string;
     name: string;
@@ -359,6 +362,42 @@ export const getMonthlyStats = async (): Promise<MonthlyStatPoint[]> => {
   } catch {
     return [];
   }
+};
+
+export const getCompletedTrips = async (userId: string): Promise<Donation[]> => {
+  const response = await api.get('/donations');
+  const rawList = Array.isArray(response.data)
+    ? response.data
+    : Array.isArray(response.data?.data)
+      ? response.data.data
+      : [];
+  return rawList
+    .filter((item: any) => item.volunteerId === userId && item.status === 'DELIVERED')
+    .map((item: any) => ({
+      ...item,
+      id: String(item.id),
+      quantity: String(item.quantity),
+      status: item.status,
+      location: {
+        lat: Number(item.latitude) || 0,
+        lng: Number(item.longitude) || 0,
+        address: item.address || 'Unknown Location',
+      },
+      donorName: item.donorName || 'Community Donor',
+      donorTrustScore: Number(item.donorTrustScore) || 5.0,
+      hygiene: typeof item.hygiene === 'string' ? JSON.parse(item.hygiene) : (item.hygiene || {}),
+      foodType: item.foodType || 'cooked',
+      expiryTime: item.expiryTime ? new Date(item.expiryTime) : new Date(),
+      preparationTime: item.preparationTime ? new Date(item.preparationTime) : new Date(),
+      createdAt: item.createdAt ? new Date(item.createdAt) : new Date(),
+      deliveredAt: item.deliveredAt ? new Date(item.deliveredAt) : undefined,
+      imageUrls: Array.isArray(item.imageUrls) ? item.imageUrls : [],
+    }));
+};
+
+export const toggleAvailability = async (isAvailable: boolean): Promise<User> => {
+  const response = await api.patch('/auth/profile', { isAvailable });
+  return response.data.data || response.data;
 };
 
 // Admin API
