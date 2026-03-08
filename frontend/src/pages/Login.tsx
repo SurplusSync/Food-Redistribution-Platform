@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { loginUser } from '../services/api'
-import { Utensils, ChevronRight, Check, ArrowRight, Heart, Users, Globe } from 'lucide-react'
+import { Utensils, Check, ArrowRight, Heart, Users, Globe } from 'lucide-react'
 
 export default function Login() {
   const [email, setEmail] = useState('')
