@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { ArrowRight, Utensils, ChevronDown, Store, Building2, Car, MapPin, Shield, Zap, BarChart3, Heart, ClipboardList, Search, Truck, Package, Quote, Users, Globe, Award } from 'lucide-react'
 
 // ─── Animated Counter Hook ─────────────────────────────────────────────────────
@@ -100,6 +101,7 @@ const testimonials = [
 
 // ─── Component ──────────────────────────────────────────────────────────────────
 export default function LandingPage() {
+    const { t } = useTranslation()
     const meals = useCountUp(10000)
     const donors = useCountUp(500)
     const ngos = useCountUp(120)
@@ -140,13 +142,13 @@ export default function LandingPage() {
                             to="/login"
                             className="px-4 py-2 text-sm font-medium text-slate-400 hover:text-white transition-colors"
                         >
-                            Sign in
+                            {t('signIn')}
                         </Link>
                         <Link
                             to="/register"
                             className="px-5 py-2.5 text-sm font-semibold bg-emerald-500 hover:bg-emerald-400 rounded-xl transition-all shadow-lg shadow-emerald-500/20"
                         >
-                            Get Started
+                            {t('getStarted')}
                         </Link>
                     </div>
                 </div>
@@ -156,13 +158,12 @@ export default function LandingPage() {
             <section className="relative min-h-screen flex flex-col items-center justify-center px-4 sm:px-6">
                 <div className="max-w-4xl mx-auto text-center reveal-section">
                     <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold leading-[1.08] mb-6 tracking-tight">
-                        Food waste is a<br />
-                        <span className="shimmer-text">solvable problem</span>
+                        {t('heroTitle1')}<br />
+                        <span className="shimmer-text">{t('heroTitle2')}</span>
                     </h1>
 
                     <p className="text-lg sm:text-xl text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed">
-                        SurplusSync connects donors, NGOs, and volunteers on one platform,
-                        turning meals that would be wasted into meals that are shared.
+                        {t('heroSubtitle')}
                     </p>
 
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -170,14 +171,14 @@ export default function LandingPage() {
                             to="/register"
                             className="group pulse-cta w-full sm:w-auto px-10 py-4 bg-emerald-500 hover:bg-emerald-400 rounded-2xl font-bold text-lg transition-all flex items-center justify-center gap-2 shadow-2xl shadow-emerald-500/25"
                         >
-                            Join the movement
+                            {t('joinMovement')}
                             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                         </Link>
                         <Link
                             to="/login"
                             className="w-full sm:w-auto px-10 py-4 rounded-2xl font-semibold bg-slate-900/80 border border-slate-700 hover:border-slate-500 transition-all backdrop-blur-sm text-center"
                         >
-                            Sign in
+                            {t('signIn')}
                         </Link>
                     </div>
                 </div>
@@ -192,10 +193,10 @@ export default function LandingPage() {
             <section className="py-10 border-y border-slate-800/40 bg-slate-900/30 backdrop-blur-sm">
                 <div className="max-w-5xl mx-auto px-4 sm:px-6 grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
                     {[
-                        { ref: meals.ref, count: meals.count, suffix: '+', label: 'Meals Redistributed', icon: Heart },
-                        { ref: donors.ref, count: donors.count, suffix: '+', label: 'Active Donors', icon: Users },
-                        { ref: ngos.ref, count: ngos.count, suffix: '+', label: 'Partner NGOs', icon: Globe },
-                        { ref: volunteers.ref, count: volunteers.count, suffix: '+', label: 'Volunteers', icon: Award },
+                        { ref: meals.ref, count: meals.count, suffix: '+', label: t('mealsRedistributed'), icon: Heart },
+                        { ref: donors.ref, count: donors.count, suffix: '+', label: t('activeDonors'), icon: Users },
+                        { ref: ngos.ref, count: ngos.count, suffix: '+', label: t('partnerNGOs'), icon: Globe },
+                        { ref: volunteers.ref, count: volunteers.count, suffix: '+', label: t('volunteers'), icon: Award },
                     ].map((stat, i) => (
                         <div key={i} ref={stat.ref} className="text-center reveal-section">
                             <stat.icon className="w-6 h-6 text-emerald-400 mx-auto mb-2 opacity-60" />
@@ -212,9 +213,9 @@ export default function LandingPage() {
             <section className="py-20 sm:py-28 px-4 sm:px-6">
                 <div className="max-w-5xl mx-auto">
                     <div className="text-center mb-14 reveal-section">
-                        <p className="text-sm font-medium text-emerald-400 uppercase tracking-widest mb-3">How it works</p>
+                        <p className="text-sm font-medium text-emerald-400 uppercase tracking-widest mb-3">{t('howItWorks')}</p>
                         <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight">
-                            Four simple steps
+                            {t('fourSimpleSteps')}
                         </h2>
                     </div>
 
@@ -267,9 +268,9 @@ export default function LandingPage() {
             <section className="py-20 sm:py-28 px-4 sm:px-6 relative">
                 <div className="max-w-6xl mx-auto">
                     <div className="text-center mb-14 reveal-section">
-                        <p className="text-sm font-medium text-emerald-400 uppercase tracking-widest mb-3">Three roles, one mission</p>
+                        <p className="text-sm font-medium text-emerald-400 uppercase tracking-widest mb-3">{t('threeRolesOneMission')}</p>
                         <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight">
-                            Everyone has a part to play
+                            {t('everyoneHasAPart')}
                         </h2>
                     </div>
 
@@ -313,9 +314,9 @@ export default function LandingPage() {
             <section className="py-20 sm:py-28 px-4 sm:px-6">
                 <div className="max-w-6xl mx-auto">
                     <div className="text-center mb-14 reveal-section">
-                        <p className="text-sm font-medium text-emerald-400 uppercase tracking-widest mb-3">Platform capabilities</p>
+                        <p className="text-sm font-medium text-emerald-400 uppercase tracking-widest mb-3">{t('platformCapabilities')}</p>
                         <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight">
-                            Built different
+                            {t('builtDifferent')}
                         </h2>
                     </div>
 
@@ -325,15 +326,14 @@ export default function LandingPage() {
                             <div className="flex items-start justify-between mb-6">
                                 <div>
                                     <p className="text-xs text-slate-500 uppercase tracking-widest mb-2">Discovery</p>
-                                    <h3 className="text-xl font-bold">Geo-aware food map</h3>
+                                    <h3 className="text-xl font-bold">{t('geoAwareFoodMap')}</h3>
                                 </div>
                                 <div className="w-11 h-11 rounded-xl bg-emerald-500/10 flex items-center justify-center flex-shrink-0">
                                     <MapPin className="w-5 h-5 text-emerald-400" />
                                 </div>
                             </div>
                             <p className="text-sm text-slate-400 leading-relaxed mb-6">
-                                Interactive map powered by Leaflet showing all available donations in your radius.
-                                Filter by distance, food type, and urgency.
+                                {t('geoMapDesc')}
                             </p>
                             <div className="grid grid-cols-3 gap-3">
                                 {['5 km radius', 'Real-time pins', 'Route preview'].map((f) => (
@@ -349,9 +349,9 @@ export default function LandingPage() {
                             <div className="w-11 h-11 rounded-xl bg-amber-500/10 flex items-center justify-center mb-4">
                                 <Shield className="w-5 h-5 text-amber-400" />
                             </div>
-                            <h3 className="text-lg font-bold mb-2">Food safety engine</h3>
+                            <h3 className="text-lg font-bold mb-2">{t('foodSafetyEngine')}</h3>
                             <p className="text-sm text-slate-400 leading-relaxed">
-                                Auto-validates expiry windows. High-risk foods require 2+ hours of safe shelf life.
+                                {t('foodSafetyDesc')}
                             </p>
                         </div>
 
@@ -360,9 +360,9 @@ export default function LandingPage() {
                             <div className="w-11 h-11 rounded-xl bg-blue-500/10 flex items-center justify-center mb-4">
                                 <Zap className="w-5 h-5 text-blue-400" />
                             </div>
-                            <h3 className="text-lg font-bold mb-2">Live status tracking</h3>
+                            <h3 className="text-lg font-bold mb-2">{t('liveStatusTracking')}</h3>
                             <p className="text-sm text-slate-400 leading-relaxed">
-                                Follow every donation from listing to delivery with real-time status updates.
+                                {t('liveStatusDesc')}
                             </p>
                         </div>
 
@@ -371,15 +371,14 @@ export default function LandingPage() {
                             <div className="flex items-start justify-between mb-6">
                                 <div>
                                     <p className="text-xs text-slate-500 uppercase tracking-widest mb-2">Analytics</p>
-                                    <h3 className="text-xl font-bold">Impact dashboard</h3>
+                                    <h3 className="text-xl font-bold">{t('impactDashboard')}</h3>
                                 </div>
                                 <div className="w-11 h-11 rounded-xl bg-purple-500/10 flex items-center justify-center flex-shrink-0">
                                     <BarChart3 className="w-5 h-5 text-purple-400" />
                                 </div>
                             </div>
                             <p className="text-sm text-slate-400 leading-relaxed mb-6">
-                                Every meal saved is tracked. See your contribution to reducing CO₂ emissions,
-                                total meals redistributed, and community impact over time.
+                                {t('impactDashboardDesc')}
                             </p>
                             <div className="flex gap-6">
                                 {[
@@ -402,9 +401,9 @@ export default function LandingPage() {
             <section className="py-20 sm:py-28 px-4 sm:px-6">
                 <div className="max-w-6xl mx-auto">
                     <div className="text-center mb-14 reveal-section">
-                        <p className="text-sm font-medium text-emerald-400 uppercase tracking-widest mb-3">Community voices</p>
+                        <p className="text-sm font-medium text-emerald-400 uppercase tracking-widest mb-3">{t('communityVoices')}</p>
                         <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight">
-                            Trusted by changemakers
+                            {t('trustedByChangemakers')}
                         </h2>
                     </div>
 
@@ -437,17 +436,16 @@ export default function LandingPage() {
                         <Heart className="w-8 h-8 text-emerald-400" />
                     </div>
                     <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-4 tracking-tight">
-                        Every meal matters
+                        {t('everyMealMatters')}
                     </h2>
                     <p className="text-base sm:text-lg text-slate-400 mb-10 leading-relaxed px-2">
-                        Whether you have food to share, people to feed, or time to volunteer,
-                        your action makes a real difference. Join SurplusSync today.
+                        {t('everyMealDesc')}
                     </p>
                     <Link
                         to="/register"
                         className="group inline-flex items-center gap-2 px-10 py-4 bg-emerald-500 hover:bg-emerald-400 rounded-2xl font-bold text-lg transition-all shadow-2xl shadow-emerald-500/25 pulse-cta"
                     >
-                        Start now, it's free
+                        {t('startNowFree')}
                         <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                     </Link>
                 </div>
@@ -475,9 +473,9 @@ export default function LandingPage() {
 
                         {/* Quick Links */}
                         <div>
-                            <h4 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-4">Platform</h4>
+                            <h4 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-4">{t('platform')}</h4>
                             <div className="space-y-2.5">
-                                {['How it works', 'For Donors', 'For NGOs', 'For Volunteers'].map(link => (
+                                {[t('howItWorks'), t('forDonors'), t('forNGOs'), t('forVolunteers')].map(link => (
                                     <p key={link} className="text-sm text-slate-500 hover:text-emerald-400 cursor-pointer transition-colors">{link}</p>
                                 ))}
                             </div>
@@ -485,7 +483,7 @@ export default function LandingPage() {
 
                         {/* Contact */}
                         <div>
-                            <h4 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-4">Connect</h4>
+                            <h4 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-4">{t('connect')}</h4>
                             <div className="space-y-2.5">
                                 <p className="text-sm text-slate-500">surplussync@platform.org</p>
                                 <p className="text-sm text-slate-500">Open Source Project</p>

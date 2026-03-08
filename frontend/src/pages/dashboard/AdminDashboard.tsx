@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { adminAPI } from '../../services/api';
 import { toast } from 'sonner';
 import { ShieldAlert, CheckCircle, Ban, Activity, LogOut, X } from 'lucide-react';
 
 export default function AdminDashboard() {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<'pending' | 'users' | 'donations'>('pending');
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -81,7 +83,7 @@ export default function AdminDashboard() {
             className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg transition-colors border border-slate-700"
           >
             <LogOut size={18} />
-            Sign Out
+            {t('signOut')}
           </button>
         </div>
 
@@ -89,9 +91,9 @@ export default function AdminDashboard() {
           <div>
             <h1 className="text-2xl font-bold text-white flex items-center gap-2">
               <ShieldAlert className="text-emerald-500" />
-              System Administration
+              {t('systemAdministration')}
             </h1>
-            <p className="text-sm text-slate-400 mt-1">Manage users, approve NGOs, and monitor platform health.</p>
+            <p className="text-sm text-slate-400 mt-1">{t('manageUsersDesc')}</p>
           </div>
         </div>
 
@@ -105,7 +107,7 @@ export default function AdminDashboard() {
                 activeTab === tab ? 'bg-emerald-500 text-white' : 'text-slate-400 hover:text-white'
               }`}
             >
-              {tab === 'pending' ? 'Pending NGOs' : tab === 'users' ? 'All Users' : 'Platform Donations'}
+              {tab === 'pending' ? t('pendingNGOs') : tab === 'users' ? t('allUsers') : t('platformDonations')}
             </button>
           ))}
         </div>
@@ -113,17 +115,17 @@ export default function AdminDashboard() {
         {/* Data Table */}
         <div className="bg-slate-900 border border-slate-800 rounded-lg shadow-sm overflow-hidden">
           {loading ? (
-            <div className="p-8 text-center text-slate-400">Loading data...</div>
+            <div className="p-8 text-center text-slate-400">{t('loadingData')}</div>
           ) : data.length === 0 ? (
-            <div className="p-8 text-center text-slate-400">No records found.</div>
+            <div className="p-8 text-center text-slate-400">{t('noRecordsFound')}</div>
           ) : (
             <table className="w-full text-left text-sm text-slate-300">
               <thead className="bg-slate-800/50 border-b border-slate-700 text-white">
                 <tr>
-                  <th className="p-4 font-semibold">Name / Org</th>
-                  <th className="p-4 font-semibold">Email</th>
-                  <th className="p-4 font-semibold">Date / Status</th>
-                  <th className="p-4 font-semibold text-right">Actions</th>
+                  <th className="p-4 font-semibold">{t('nameOrg')}</th>
+                  <th className="p-4 font-semibold">{t('email')}</th>
+                  <th className="p-4 font-semibold">{t('dateStatus')}</th>
+                  <th className="p-4 font-semibold text-right">{t('actions')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800">
@@ -149,16 +151,16 @@ export default function AdminDashboard() {
                             onClick={() => handleViewCertificate(item.certificateUrl)}
                             className="text-blue-400 hover:text-blue-300"
                           >
-                            View Certificate
+                            {t('viewCertificate')}
                           </button>
                           <button onClick={() => handleVerify(item.id)} className="text-emerald-400 hover:text-emerald-300 flex items-center justify-end gap-1">
-                            <CheckCircle size={16} /> Approve
+                            <CheckCircle size={16} /> {t('approve')}
                           </button>
                         </div>
                       )}
                       {activeTab === 'users' && item.role !== 'ADMIN' && (
                         <button onClick={() => handleToggleStatus(item.id)} className={`${item.isActive ? 'text-red-400 hover:text-red-300' : 'text-emerald-400 hover:text-emerald-300'} flex items-center justify-end gap-1 ml-auto`}>
-                          {item.isActive ? <><Ban size={16} /> Suspend</> : <><CheckCircle size={16} /> Restore</>}
+                          {item.isActive ? <><Ban size={16} /> {t('suspend')}</> : <><CheckCircle size={16} /> {t('restore')}</>}
                         </button>
                       )}
                       {activeTab === 'donations' && (
@@ -179,7 +181,7 @@ export default function AdminDashboard() {
         <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
           <div className="w-full max-w-4xl bg-slate-900 border border-slate-700 rounded-xl overflow-hidden">
             <div className="flex items-center justify-between px-4 py-3 border-b border-slate-800">
-              <h3 className="text-white font-semibold">Registration Certificate</h3>
+              <h3 className="text-white font-semibold">{t('registrationCertificateLabel')}</h3>
               <button
                 onClick={closeCertificatePreview}
                 className="text-slate-400 hover:text-white"

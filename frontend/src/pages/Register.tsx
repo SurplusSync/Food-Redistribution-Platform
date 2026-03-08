@@ -1,9 +1,11 @@
 import { useState, type ChangeEvent, type FormEvent } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { registerUser, type UserRole } from '../services/api'
 import { Store, Building2, Car, ArrowRight, AlertCircle, Upload, Utensils, Shield, Zap, BarChart3 } from 'lucide-react'
 
 export default function Register() {
+    const { t } = useTranslation()
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -65,15 +67,15 @@ export default function Register() {
     }
 
     const roles = [
-        { id: 'DONOR', label: 'Donor', desc: 'Share surplus food', icon: Store },
-        { id: 'NGO', label: 'NGO', desc: 'Collect & distribute', icon: Building2 },
-        { id: 'VOLUNTEER', label: 'Volunteer', desc: 'Help with transport', icon: Car },
+        { id: 'DONOR', label: t('donor'), desc: t('shareSurplusFood'), icon: Store },
+        { id: 'NGO', label: t('ngo'), desc: t('collectDistribute'), icon: Building2 },
+        { id: 'VOLUNTEER', label: t('volunteer'), desc: t('helpWithTransport'), icon: Car },
     ]
 
     const features = [
-        { icon: Shield, text: 'Food safety engine with auto-validation' },
-        { icon: Zap, text: 'Real-time status & location tracking' },
-        { icon: BarChart3, text: 'Impact analytics & gamification' },
+        { icon: Shield, text: t('foodSafetyAutoValidation') },
+        { icon: Zap, text: t('realTimeStatusTracking') },
+        { icon: BarChart3, text: t('impactAnalytics') },
     ]
 
     const showOrganizationFields = formData.role === 'DONOR' || formData.role === 'NGO'
@@ -110,10 +112,10 @@ export default function Register() {
 
                         <div className="max-w-md">
                             <h2 className="text-4xl font-extrabold text-white mb-4 leading-tight tracking-tight">
-                                Join the fight against <span className="shimmer-text">food waste</span>
+                                {t('joinFightFoodWaste')} <span className="shimmer-text">{t('welcome')}</span>
                             </h2>
                             <p className="text-lg text-slate-400 mb-10 leading-relaxed">
-                                Create your account and start making an impact today. Every meal saved matters.
+                                {t('createAccountAndImpact')}
                             </p>
 
                             <div className="space-y-4 mb-12">
@@ -162,8 +164,8 @@ export default function Register() {
                     </div>
 
                     <div className="bg-slate-900/60 backdrop-blur-xl rounded-2xl shadow-2xl border border-slate-800/80 p-6 sm:p-8 glow-card">
-                        <h2 className="text-2xl font-extrabold text-white mb-1">Create your account</h2>
-                        <p className="text-slate-400 mb-6">Start making a <span className="text-emerald-400 font-semibold">difference</span> today</p>
+                        <h2 className="text-2xl font-extrabold text-white mb-1">{t('createYourAccount')}</h2>
+                        <p className="text-slate-400 mb-6">{t('startMakingDifference')}</p>
 
                         {error && (
                             <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-xl flex items-start gap-3">
@@ -175,7 +177,7 @@ export default function Register() {
                         <form onSubmit={onSubmit} className="space-y-5">
                             {/* Role Selection */}
                             <div>
-                                <label className="block text-sm font-medium text-slate-300 mb-3">I want to join as</label>
+                                <label className="block text-sm font-medium text-slate-300 mb-3">{t('joinAs')}</label>
                                 <div className="grid grid-cols-3 gap-3">
                                     {roles.map((role) => {
                                         const Icon = role.icon
@@ -202,33 +204,33 @@ export default function Register() {
                             {/* Form Fields */}
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-slate-300 mb-2">Your Name</label>
+                                    <label className="block text-sm font-medium text-slate-300 mb-2">{t('yourName')}</label>
                                     <input type="text" name="name" value={formData.name} onChange={handleChange} required placeholder="John Doe" className={inputClass} />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-slate-300 mb-2">Phone</label>
+                                    <label className="block text-sm font-medium text-slate-300 mb-2">{t('phone')}</label>
                                     <input type="tel" name="phone" value={formData.phone} onChange={handleChange} required placeholder="+91 98765 43210" className={inputClass} />
                                 </div>
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-slate-300 mb-2">Email</label>
+                                <label className="block text-sm font-medium text-slate-300 mb-2">{t('email')}</label>
                                 <input type="email" name="email" value={formData.email} onChange={handleChange} required placeholder="you@example.com" className={inputClass} />
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-slate-300 mb-2">Password</label>
+                                <label className="block text-sm font-medium text-slate-300 mb-2">{t('password')}</label>
                                 <input type="password" name="password" value={formData.password} onChange={handleChange} required placeholder="Min 6 characters" className={inputClass} />
                             </div>
 
                             {showOrganizationFields && (
                                 <>
                                     <div>
-                                        <label className="block text-sm font-medium text-slate-300 mb-2">{formData.role === 'DONOR' ? 'Business Name' : 'Organization Name'}</label>
+                                        <label className="block text-sm font-medium text-slate-300 mb-2">{formData.role === 'DONOR' ? t('businessName') : t('organizationName')}</label>
                                         <input type="text" name="organizationName" value={formData.organizationName} onChange={handleChange} required placeholder={formData.role === 'DONOR' ? 'Restaurant name' : 'NGO name'} className={inputClass} />
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-slate-300 mb-2">Address</label>
+                                        <label className="block text-sm font-medium text-slate-300 mb-2">{t('address')}</label>
                                         <textarea name="address" value={formData.address} onChange={handleChange} required placeholder="Full address" className={`${inputClass} resize-none`} rows={2} />
                                     </div>
                                 </>
@@ -236,11 +238,11 @@ export default function Register() {
 
                             {formData.role === 'NGO' && (
                                 <div>
-                                    <label className="block text-sm font-medium text-slate-300 mb-2">Registration Certificate <span className="text-red-400">*</span></label>
+                                    <label className="block text-sm font-medium text-slate-300 mb-2">{t('registrationCertificate')} <span className="text-red-400">*</span></label>
                                     <div className="flex items-center gap-3">
                                         <label className="flex items-center gap-2 cursor-pointer bg-slate-800/60 border border-slate-700/60 hover:border-emerald-500/50 rounded-xl px-4 py-3 text-slate-300 transition-all flex-1">
                                             <Upload className="w-5 h-5 text-emerald-400" />
-                                            <span className="text-sm">{certificateFile ? certificateFile.name : 'Upload Certificate'}</span>
+                                            <span className="text-sm">{certificateFile ? certificateFile.name : t('uploadCertificate')}</span>
                                             <input
                                                 type="file"
                                                 accept="image/*,.pdf"
@@ -250,7 +252,7 @@ export default function Register() {
                                             />
                                         </label>
                                     </div>
-                                    <p className="text-xs text-slate-500 mt-1.5">Accepted formats: Images or PDF</p>
+                                    <p className="text-xs text-slate-500 mt-1.5">{t('acceptedFormats')}</p>
                                 </div>
                             )}
 
@@ -259,12 +261,12 @@ export default function Register() {
                                 disabled={loading}
                                 className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-white font-bold py-3.5 px-6 rounded-xl shadow-lg shadow-emerald-500/20 hover:shadow-xl hover:shadow-emerald-500/30 flex items-center justify-center gap-2 transition-all text-base"
                             >
-                                {loading ? 'Creating...' : <><span>Create account</span> <ArrowRight className="w-5 h-5" /></>}
+                                {loading ? t('creating') : <><span>{t('createAccount')}</span> <ArrowRight className="w-5 h-5" /></>}
                             </button>
                         </form>
 
                         <div className="mt-6 text-center">
-                            <p className="text-sm text-slate-400">Already have an account? <Link to="/login" className="font-semibold text-emerald-400 hover:text-emerald-300 transition-colors">Sign in</Link></p>
+                            <p className="text-sm text-slate-400">{t('alreadyHaveAccount')} <Link to="/login" className="font-semibold text-emerald-400 hover:text-emerald-300 transition-colors">{t('signIn')}</Link></p>
                         </div>
                     </div>
                 </div>

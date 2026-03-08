@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react'
 import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom'
-import { LayoutDashboard, PlusCircle, Map, History, LogOut, Bell, TrendingUp, User } from 'lucide-react'
+import { LayoutDashboard, PlusCircle, Map, History, LogOut, Bell, TrendingUp, User, Languages } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { getNotifications, addNotification } from "../services/api";
 import { socketService } from "../services/socket";
 
 export default function DashboardLayout() {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const location = useLocation()
   const [unreadCount, setUnreadCount] = useState(0)
@@ -65,11 +67,11 @@ export default function DashboardLayout() {
   }
 
   const navLinks = [
-    { to: userRole === 'ngo' ? '/dashboard/ngo' : '/dashboard', icon: LayoutDashboard, label: 'Dashboard', roles: ['donor', 'ngo', 'volunteer'] },
-    { to: '/dashboard/add', icon: PlusCircle, label: 'Add Food', roles: ['donor'] },
-    { to: '/dashboard/map', icon: Map, label: 'Discover', roles: ['donor', 'ngo', 'volunteer'] },
-    { to: '/dashboard/history', icon: History, label: 'History', roles: ['donor', 'ngo', 'volunteer'] },
-    { to: '/dashboard/impact', icon: TrendingUp, label: 'Impact', roles: ['donor', 'ngo', 'volunteer'] },
+    { to: userRole === 'ngo' ? '/dashboard/ngo' : '/dashboard', icon: LayoutDashboard, label: t('dashboard'), roles: ['donor', 'ngo', 'volunteer'] },
+    { to: '/dashboard/add', icon: PlusCircle, label: t('addFood'), roles: ['donor'] },
+    { to: '/dashboard/map', icon: Map, label: t('discover'), roles: ['donor', 'ngo', 'volunteer'] },
+    { to: '/dashboard/history', icon: History, label: t('history'), roles: ['donor', 'ngo', 'volunteer'] },
+    { to: '/dashboard/impact', icon: TrendingUp, label: t('impact'), roles: ['donor', 'ngo', 'volunteer'] },
   ].filter(link => link.roles.includes(userRole))
 
   const isActive = (path: string) => {
@@ -158,7 +160,7 @@ export default function DashboardLayout() {
               }`}
           >
             <Bell className="w-5 h-5" />
-            <span>Notifications</span>
+            <span>{t('notifications')}</span>
             {unreadCount > 0 && (
               <span className="notification-badge">
                 {unreadCount > 9 ? '9+' : unreadCount}
@@ -172,7 +174,16 @@ export default function DashboardLayout() {
               }`}
           >
             <User className="w-5 h-5" />
-            <span>Profile</span>
+            <span>{t('profile')}</span>
+          </Link>
+
+          <Link
+            to="/dashboard/accessibility"
+            className={`nav-item ${isActive('/dashboard/accessibility') ? 'nav-item-active' : 'nav-item-inactive'
+              }`}
+          >
+            <Languages className="w-5 h-5" />
+            <span>{t('accessibilitySettings')}</span>
           </Link>
 
           <button
@@ -180,7 +191,7 @@ export default function DashboardLayout() {
             className="nav-item nav-item-inactive w-full text-left"
           >
             <LogOut className="w-5 h-5" />
-            <span>Sign out</span>
+            <span>{t('signOut')}</span>
           </button>
         </div>
       </aside>

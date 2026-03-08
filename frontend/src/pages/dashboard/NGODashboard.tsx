@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { getDonations, claimDonation, type Donation } from '../../services/api'
 import { socketService } from '../../services/socket'
 import { Map, TrendingUp, Clock, X, Image as ImageIcon, Shield, CheckCircle2, MapPin, ChevronLeft, ChevronRight } from 'lucide-react'
 import { toast } from 'sonner'
 
 export default function NGODashboard() {
+  const { t } = useTranslation()
   const [donations, setDonations] = useState<Donation[]>([])
   const [loading, setLoading] = useState(false)
   const [selectedDonation, setSelectedDonation] = useState<Donation | null>(null)
@@ -115,9 +117,9 @@ export default function NGODashboard() {
 
   const getGreeting = () => {
     const hour = new Date().getHours()
-    if (hour < 12) return 'Good morning'
-    if (hour < 18) return 'Good afternoon'
-    return 'Good evening'
+    if (hour < 12) return t('goodMorning')
+    if (hour < 18) return t('goodAfternoon')
+    return t('goodEvening')
   }
 
   return (
@@ -128,7 +130,7 @@ export default function NGODashboard() {
           {getGreeting()}, {user.organizationName || user.name?.split(' ')[0] || 'there'}!
         </h1>
         <p className="text-slate-500 mt-1">
-          Find and claim food donations to help your community
+          {t('findClaimDonations')}
         </p>
       </div>
 
@@ -137,7 +139,7 @@ export default function NGODashboard() {
         <div className="mb-6 p-4 bg-blue-500/10 border border-blue-500/20 rounded-xl">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-blue-400 mb-1">Daily Intake Capacity</p>
+              <p className="text-sm font-medium text-blue-400 mb-1">{t('dailyIntakeCapacity')}</p>
               <p className="text-xs text-slate-400">
                 Current load: <span className="text-blue-400 font-semibold">{user.currentIntakeLoad}</span> / <span className="text-blue-400 font-semibold">{user.dailyIntakeCapacity}</span> {user.capacityUnit || 'kg'}
               </p>
@@ -161,7 +163,7 @@ export default function NGODashboard() {
               Available
             </span>
           </div>
-          <p className="text-sm text-slate-400 mb-1">Ready to Claim</p>
+          <p className="text-sm text-slate-400 mb-1">{t('readyToClaim')}</p>
           <p className="text-3xl font-semibold text-emerald-400">{availableCount}</p>
         </div>
 
@@ -172,7 +174,7 @@ export default function NGODashboard() {
               In Progress
             </span>
           </div>
-          <p className="text-sm text-slate-400 mb-1">Claimed & Pending</p>
+          <p className="text-sm text-slate-400 mb-1">{t('claimedPending')}</p>
           <p className="text-3xl font-semibold text-amber-400">{claimedCount}</p>
         </div>
 
@@ -183,7 +185,7 @@ export default function NGODashboard() {
               Complete
             </span>
           </div>
-          <p className="text-sm text-slate-400 mb-1">Delivered</p>
+          <p className="text-sm text-slate-400 mb-1">{t('delivered')}</p>
           <p className="text-3xl font-semibold text-slate-400">{deliveredCount}</p>
         </div>
       </div>
@@ -199,8 +201,8 @@ export default function NGODashboard() {
               <Map className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="font-semibold text-white mb-1">Discovery Map</h3>
-              <p className="text-sm text-slate-400">Find food donations nearby to claim</p>
+              <h3 className="font-semibold text-white mb-1">{t('discoveryMap')}</h3>
+              <p className="text-sm text-slate-400">{t('findClaimDonations')}</p>
             </div>
           </div>
         </Link>
@@ -214,8 +216,8 @@ export default function NGODashboard() {
               <TrendingUp className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="font-semibold text-white mb-1">Your Impact</h3>
-              <p className="text-sm text-slate-400">See the difference you're making</p>
+              <h3 className="font-semibold text-white mb-1">{t('yourImpact')}</h3>
+              <p className="text-sm text-slate-400">{t('seeDifference')}</p>
             </div>
           </div>
         </Link>
@@ -225,10 +227,10 @@ export default function NGODashboard() {
       <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden mb-8">
         <div className="p-5 border-b border-slate-800 flex items-center justify-between">
           <h2 className="font-medium text-white">
-            Available Donations To Claim
+            {t('availableDonationsToClaim')}
           </h2>
           <Link to="/dashboard/history" className="text-sm text-emerald-400 hover:text-emerald-300">
-            View all
+            {t('viewAll')}
           </Link>
         </div>
 
@@ -239,7 +241,7 @@ export default function NGODashboard() {
         {!loading && donations.filter(d => d.status === 'AVAILABLE').length === 0 && (
           <div className="p-8 text-center">
             <p className="text-slate-500 mb-4">
-              No available donations right now. Try checking the map or refreshing later.
+              {t('noAvailableDonations')}
             </p>
           </div>
         )}
@@ -280,10 +282,10 @@ export default function NGODashboard() {
                       onClick={() => setSelectedDonation(donation)}
                       className="px-3 py-1 rounded-md text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition-colors border border-slate-700"
                     >
-                      View Details
+                      {t('viewDetails')}
                     </button>
                     <span className={`px-3 py-1 rounded-md text-xs font-medium whitespace-nowrap ${getStatusStyle(donation.status)}`}>
-                      Available
+                      {t('available')}
                     </span>
                   </div>
                 </div>
@@ -296,12 +298,12 @@ export default function NGODashboard() {
       {/* Claimed Donations */}
       <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
         <div className="p-5 border-b border-slate-800">
-          <h2 className="font-medium text-white">Your Claimed Donations</h2>
+          <h2 className="font-medium text-white">{t('yourClaimedDonations')}</h2>
         </div>
 
         {!loading && donations.filter(d => d.status === 'CLAIMED' || d.status === 'PICKED_UP').length === 0 && (
           <div className="p-8 text-center">
-            <p className="text-slate-500">No claimed donations yet. Start claiming from available donations!</p>
+            <p className="text-slate-500">{t('noClaimedDonations')}</p>
           </div>
         )}
 
@@ -331,10 +333,10 @@ export default function NGODashboard() {
                       onClick={() => setSelectedDonation(donation)}
                       className="px-3 py-1 rounded-md text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition-colors border border-slate-700"
                     >
-                      View Details
+                      {t('viewDetails')}
                     </button>
                     <span className={`px-3 py-1 rounded-md text-xs font-medium whitespace-nowrap ${getStatusStyle(donation.status)}`}>
-                      {donation.status === 'PICKED_UP' ? 'Picked Up' : 'Claimed'}
+                      {donation.status === 'PICKED_UP' ? t('pickedUp') : t('claimed')}}
                     </span>
                   </div>
                 </div>
@@ -383,7 +385,7 @@ export default function NGODashboard() {
               ) : (
                 <div className="w-full h-full flex flex-col items-center justify-center text-slate-600">
                   <ImageIcon className="w-12 h-12 mb-2 opacity-50" />
-                  <span className="text-sm">No image uploaded</span>
+                  <span className="text-sm">{t('noImageUploaded')}</span>
                 </div>
               )}
             </div>
@@ -402,7 +404,7 @@ export default function NGODashboard() {
 
               <div className="space-y-3 flex-1 overflow-y-auto">
                 <div className="p-3 bg-slate-800/50 rounded-lg border border-slate-800">
-                  <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Donor</p>
+                  <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">{t('donor')}</p>
                   <div className="flex justify-between items-center">
                     <span className="text-white font-medium">{selectedDonation.donorName}</span>
                     <div className="flex items-center gap-1.5 bg-emerald-500/10 px-2 py-0.5 rounded text-emerald-400 text-xs">
@@ -415,31 +417,31 @@ export default function NGODashboard() {
                 {/* Description */}
                 {selectedDonation.description && (
                   <div>
-                    <p className="text-xs text-slate-400 mb-1">Description</p>
+                    <p className="text-xs text-slate-400 mb-1">{t('description')}</p>
                     <p className="text-sm text-slate-300 leading-relaxed">{selectedDonation.description}</p>
                   </div>
                 )}
 
                 {/* Hygiene */}
                 <div>
-                  <p className="text-xs text-slate-400 mb-2">Safety Check</p>
+                  <p className="text-xs text-slate-400 mb-2">{t('safetyCheck')}</p>
                   <div className="flex gap-2 flex-wrap">
                     {selectedDonation.hygiene?.keptCovered ? (
                       <span className="flex items-center gap-1 text-xs bg-emerald-500/10 text-emerald-400 px-2 py-1 rounded border border-emerald-500/20">
-                        <CheckCircle2 className="w-3 h-3" /> Kept Covered
+                        <CheckCircle2 className="w-3 h-3" /> {t('keptCovered')}
                       </span>
                     ) : (
                       <span className="flex items-center gap-1 text-xs bg-red-500/10 text-red-400 px-2 py-1 rounded border border-red-500/20">
-                        <X className="w-3 h-3" /> Not Covered
+                        <X className="w-3 h-3" /> {t('notCovered')}
                       </span>
                     )}
                     {selectedDonation.hygiene?.containerClean ? (
                       <span className="flex items-center gap-1 text-xs bg-emerald-500/10 text-emerald-400 px-2 py-1 rounded border border-emerald-500/20">
-                        <CheckCircle2 className="w-3 h-3" /> Clean Container
+                        <CheckCircle2 className="w-3 h-3" /> {t('cleanContainer')}
                       </span>
                     ) : (
                       <span className="flex items-center gap-1 text-xs bg-red-500/10 text-red-400 px-2 py-1 rounded border border-red-500/20">
-                        <X className="w-3 h-3" /> Dirty Container
+                        <X className="w-3 h-3" /> {t('dirtyContainer')}
                       </span>
                     )}
                   </div>
@@ -447,7 +449,7 @@ export default function NGODashboard() {
 
                 {/* Location */}
                 <div>
-                  <p className="text-xs text-slate-400 mb-1">Pickup Location</p>
+                  <p className="text-xs text-slate-400 mb-1">{t('pickupLocation')}</p>
                   <p className="text-sm text-slate-300">📍 {selectedDonation.location?.address || 'Location not specified'}</p>
                 </div>
 
@@ -471,13 +473,13 @@ export default function NGODashboard() {
                     ) : (
                       <>
                         <MapPin className="w-4 h-4" />
-                        Claim This Food
+                        {t('claimThisFood')}
                       </>
                     )}
                   </button>
                 ) : (
                   <div className="text-center p-3 bg-amber-500/10 text-amber-400 rounded-lg font-medium border border-amber-500/20">
-                    {selectedDonation.status === 'CLAIMED' ? 'Already Claimed - Awaiting Pickup' : 'Already Picked Up - Pending Delivery'}
+                    {selectedDonation.status === 'CLAIMED' ? t('alreadyClaimed') : t('alreadyPickedUp')}
                   </div>
                 )}
               </div>

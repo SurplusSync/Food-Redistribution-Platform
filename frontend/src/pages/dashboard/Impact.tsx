@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
     getUserProfile, getCommunityStats, getMonthlyStats,
     type User, type CommunityStats, type MonthlyStatPoint
@@ -139,6 +140,7 @@ function SvgLineChart({
 // ─── CERTIFICATE MODAL ────────────────────────────────────────────────────────
 
 function CertificateModal({ user, role, onClose }: { user: User; role: string; onClose: () => void }) {
+    const { t } = useTranslation()
     const ref = useRef<HTMLDivElement>(null)
     const today = new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })
     const stats = user.impactStats || { totalDonations: 0, mealsProvided: 0, kgSaved: 0 }
@@ -153,12 +155,12 @@ function CertificateModal({ user, role, onClose }: { user: User; role: string; o
     const lightBg = isNGO ? '#eff6ff' : isVolunteer ? '#f5f3ff' : '#f0fdf4'
     const lightBorder = isNGO ? '#bfdbfe' : isVolunteer ? '#ddd6fe' : '#d1fae5'
 
-    const roleLabel = isNGO ? 'NGO Partner' : isVolunteer ? 'Volunteer' : 'Food Donor'
-    const actionText = isNGO ? 'food collections and community service' : isVolunteer ? 'food delivery and community service' : 'food donations and sustainability efforts'
+    const roleLabel = isNGO ? t('ngoPartner') : isVolunteer ? t('volunteer') : t('foodDonor')
+    const actionText = isNGO ? t('foodCollectionsAndCommunity') : isVolunteer ? t('foodDeliveryAndCommunity') : t('foodDonationsAndSustainability')
 
-    const stat1 = { value: stats.totalDonations, label: isNGO ? 'Collections' : isVolunteer ? 'Deliveries' : 'Donations' }
-    const stat2 = { value: stats.mealsProvided, label: 'Meals Provided' }
-    const stat3 = { value: `${stats.kgSaved} kg`, label: 'Food Rescued' }
+    const stat1 = { value: stats.totalDonations, label: isNGO ? t('collections') : isVolunteer ? t('deliveries') : t('donations') }
+    const stat2 = { value: stats.mealsProvided, label: t('mealsProvided') }
+    const stat3 = { value: `${stats.kgSaved} kg`, label: t('foodRescued') }
 
     const handlePrint = () => {
         const html = ref.current?.innerHTML
@@ -213,11 +215,11 @@ function CertificateModal({ user, role, onClose }: { user: User; role: string; o
                     <div className="flex gap-2">
                         <button onClick={handlePrint}
                             className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-                            <Download className="w-4 h-4" />Print / Save PDF
+                            <Download className="w-4 h-4" />{t('printSavePDF')}
                         </button>
                         <button onClick={onClose}
                             className="bg-slate-200 hover:bg-slate-300 text-slate-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-                            Close
+                            {t('close')}
                         </button>
                     </div>
                 </div>
@@ -236,20 +238,19 @@ function CertificateModal({ user, role, onClose }: { user: User; role: string; o
                             SurplusSync Food Redistribution Platform
                         </p>
                         <h1 className="text-4xl font-bold mb-1 text-slate-900" style={{ fontFamily: 'Georgia, serif' }}>
-                            Certificate of Appreciation
+                            {t('certificateOfAppreciation')}
                         </h1>
                         <p className="text-xs tracking-widest text-slate-400 uppercase mb-6" style={{ fontFamily: 'sans-serif', letterSpacing: 3 }}>
-                            In Recognition of Dedicated Service
+                            {t('inRecognitionService')}
                         </p>
                         <div style={{ width: 72, height: 3, background: `linear-gradient(90deg,transparent,${accentColor},transparent)`, margin: '0 auto 24px' }} />
 
-                        <p className="text-slate-600 mb-1 text-base" style={{ fontFamily: 'Georgia, serif', lineHeight: 1.9 }}>This certificate is proudly presented to</p>
+                        <p className="text-slate-600 mb-1 text-base" style={{ fontFamily: 'Georgia, serif', lineHeight: 1.9 }}>{t('certPresentedTo')}</p>
                         <p className="text-3xl font-bold italic text-slate-900 mb-2" style={{ fontFamily: 'Georgia, serif' }}>{orgName}</p>
                         <span className="inline-block text-white text-xs rounded-full px-4 py-1 mb-5" style={{ background: accentColor, fontFamily: 'sans-serif' }}>{roleLabel}</span>
 
                         <p className="text-slate-500 text-sm mb-6" style={{ fontFamily: 'sans-serif' }}>
-                            in acknowledgement of their outstanding contribution through {actionText},<br />
-                            making a meaningful difference in the lives of people in our community.
+                            {t('certAcknowledgement', { actionText })}
                         </p>
 
                         {/* Stats */}
@@ -265,7 +266,7 @@ function CertificateModal({ user, role, onClose }: { user: User; role: string; o
                         {/* Karma badge */}
                         <div className="mb-7">
                             <span className="inline-block text-white text-sm rounded-full px-5 py-2" style={{ background: `linear-gradient(135deg,${accentColor},${accentColor}bb)`, fontFamily: 'sans-serif' }}>
-                                ⭐ {karma} Karma Points · Level {level} Contributor
+                                {t('karmaPointsLevel', { karma, level })}
                             </span>
                         </div>
 
@@ -273,12 +274,12 @@ function CertificateModal({ user, role, onClose }: { user: User; role: string; o
                         <div style={{ borderTop: `1px solid ${lightBorder}`, paddingTop: 18, marginTop: 4 }} className="flex justify-between items-end">
                             <div>
                                 <div style={{ width: 150, borderBottom: '1px solid #d1d5db', marginBottom: 5 }} />
-                                <p className="text-xs text-slate-500" style={{ fontFamily: 'sans-serif' }}>Platform Director</p>
-                                <p className="text-xs font-semibold text-slate-700" style={{ fontFamily: 'sans-serif' }}>SurplusSync Network</p>
+                                <p className="text-xs text-slate-500" style={{ fontFamily: 'sans-serif' }}>{t('platformDirector')}</p>
+                                <p className="text-xs font-semibold text-slate-700" style={{ fontFamily: 'sans-serif' }}>{t('surplusSyncNetwork')}</p>
                             </div>
                             <div className="text-2xl">🏅</div>
                             <div className="text-right">
-                                <p className="text-xs text-slate-500" style={{ fontFamily: 'sans-serif' }}>Date of Issue</p>
+                                <p className="text-xs text-slate-500" style={{ fontFamily: 'sans-serif' }}>{t('dateOfIssue')}</p>
                                 <p className="text-sm font-semibold text-slate-700" style={{ fontFamily: 'sans-serif' }}>{today}</p>
                             </div>
                         </div>
@@ -292,6 +293,7 @@ function CertificateModal({ user, role, onClose }: { user: User; role: string; o
 // ─── GAMIFICATION: KARMA PROGRESS BAR ────────────────────────────────────────
 
 function KarmaProgress({ karma, badgeCatalog }: { karma: number; badgeCatalog?: { id: string; name: string; icon: string; description: string; earned: boolean; requirement: number }[] }) {
+    const { t } = useTranslation()
     const catalog = (badgeCatalog && badgeCatalog.length > 0)
         ? badgeCatalog.map(b => ({ threshold: b.requirement, name: b.name, icon: b.icon, description: b.description }))
         : BADGE_CATALOG;
@@ -309,7 +311,7 @@ function KarmaProgress({ karma, badgeCatalog }: { karma: number; badgeCatalog?: 
             <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold text-white flex items-center gap-2">
                     <Trophy className="w-5 h-5 text-amber-400" />
-                    Karma & Achievements
+                    {t('karmaAchievements')}
                 </h2>
                 <span className="text-2xl font-bold text-amber-400">{karma} pts</span>
             </div>
@@ -348,7 +350,7 @@ function KarmaProgress({ karma, badgeCatalog }: { karma: number; badgeCatalog?: 
                                 <p className="text-xs text-slate-400">{next.description}</p>
                             </div>
                         </div>
-                        <span className="text-sm font-bold text-emerald-400">{next.threshold - karma} pts to go</span>
+                        <span className="text-sm font-bold text-emerald-400">{next.threshold - karma} {t('pointsToGo', { points: '' }).replace(/\s*$/, '')}</span>
                     </div>
                     <div className="w-full bg-slate-700 rounded-full h-2.5 overflow-hidden">
                         <div className="h-full bg-gradient-to-r from-amber-400 to-amber-500 rounded-full transition-all duration-700"
@@ -363,7 +365,7 @@ function KarmaProgress({ karma, badgeCatalog }: { karma: number; badgeCatalog?: 
             {!next && earned.length === catalog.length && (
                 <div className="bg-gradient-to-r from-amber-500/20 to-yellow-500/20 border border-amber-500/30 rounded-xl p-4 text-center">
                     <p className="text-lg">🎉</p>
-                    <p className="text-sm font-bold text-amber-400 mt-1">All badges unlocked! You're a Superhero!</p>
+                    <p className="text-sm font-bold text-amber-400 mt-1">{t('allBadgesUnlocked')}</p>
                 </div>
             )}
         </div>
@@ -373,21 +375,22 @@ function KarmaProgress({ karma, badgeCatalog }: { karma: number; badgeCatalog?: 
 // ─── COMMUNITY COUNTERS ───────────────────────────────────────────────────────
 
 function CommunityCounters({ stats }: { stats: CommunityStats }) {
+    const { t } = useTranslation()
     const counters = [
-        { icon: '🍽️', value: stats.mealsProvided.toLocaleString(), label: 'Meals Provided', color: 'text-emerald-400' },
-        { icon: '♻️', value: `${stats.kgRescued.toLocaleString()} kg`, label: 'Food Rescued', color: 'text-blue-400' },
-        { icon: '🌿', value: `${stats.co2Saved.toLocaleString()} kg`, label: 'CO₂ Saved', color: 'text-purple-400' },
-        { icon: '🤝', value: stats.totalDonors.toLocaleString(), label: 'Active Donors', color: 'text-amber-400' },
-        { icon: '🏛️', value: stats.totalNGOs.toLocaleString(), label: 'Partner NGOs', color: 'text-rose-400' },
-        { icon: '🚴', value: stats.totalVolunteers.toLocaleString(), label: 'Volunteers', color: 'text-cyan-400' },
+        { icon: '🍽️', value: stats.mealsProvided.toLocaleString(), label: t('mealsProvided'), color: 'text-emerald-400' },
+        { icon: '♻️', value: `${stats.kgRescued.toLocaleString()} kg`, label: t('foodRescued'), color: 'text-blue-400' },
+        { icon: '🌿', value: `${stats.co2Saved.toLocaleString()} kg`, label: t('co2Saved'), color: 'text-purple-400' },
+        { icon: '🤝', value: stats.totalDonors.toLocaleString(), label: t('activeDonors'), color: 'text-amber-400' },
+        { icon: '🏛️', value: stats.totalNGOs.toLocaleString(), label: t('partnerNGOs'), color: 'text-rose-400' },
+        { icon: '🚴', value: stats.totalVolunteers.toLocaleString(), label: t('volunteers'), color: 'text-cyan-400' },
     ]
     return (
         <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6">
             <h2 className="text-lg font-semibold text-white mb-1 flex items-center gap-2">
                 <Globe className="w-5 h-5 text-emerald-400" />
-                Community Impact — Platform Wide
+                {t('communityImpact')}
             </h2>
-            <p className="text-xs text-slate-500 mb-5">Live totals across all donors, NGOs and volunteers on SurplusSync</p>
+            <p className="text-xs text-slate-500 mb-5">{t('communityImpactDesc')}</p>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {counters.map(c => (
                     <div key={c.label} className="bg-slate-800/50 rounded-xl p-4 text-center border border-slate-700/50">
@@ -399,9 +402,9 @@ function CommunityCounters({ stats }: { stats: CommunityStats }) {
             </div>
             <div className="mt-4 p-3 bg-emerald-500/5 border border-emerald-500/15 rounded-xl">
                 <p className="text-xs text-slate-400 text-center">
-                    <span className="text-emerald-400 font-semibold">{stats.totalDonations.toLocaleString()} total donations</span> processed ·{' '}
-                    <span className="text-blue-400 font-semibold">{stats.deliveredDonations.toLocaleString()} successfully delivered</span> ·{' '}
-                    <span className="text-amber-400 font-semibold">{stats.activeDonations.toLocaleString()} currently active</span>
+                    <span className="text-emerald-400 font-semibold">{t('totalDonationsProcessed', { count: stats.totalDonations.toLocaleString() })}</span> ·{' '}
+                    <span className="text-blue-400 font-semibold">{t('successfullyDelivered', { count: stats.deliveredDonations.toLocaleString() })}</span> ·{' '}
+                    <span className="text-amber-400 font-semibold">{t('currentlyActive', { count: stats.activeDonations.toLocaleString() })}</span>
                 </p>
             </div>
         </div>
@@ -411,6 +414,7 @@ function CommunityCounters({ stats }: { stats: CommunityStats }) {
 // ─── NGO GROWTH CHARTS ────────────────────────────────────────────────────────
 
 function NGOGrowthCharts({ monthly }: { monthly: MonthlyStatPoint[] }) {
+    const { t } = useTranslation()
     const totalAll = monthly.reduce((s, m) => s + m.total, 0)
     const totalDelivered = monthly.reduce((s, m) => s + m.delivered, 0)
     const deliveryRate = totalAll > 0 ? Math.round((totalDelivered / totalAll) * 100) : 0
@@ -420,30 +424,30 @@ function NGOGrowthCharts({ monthly }: { monthly: MonthlyStatPoint[] }) {
             <div className="flex items-center justify-between mb-1">
                 <h2 className="text-lg font-semibold text-white flex items-center gap-2">
                     <TrendingUp className="w-5 h-5 text-blue-400" />
-                    NGO Growth Reports
+                    {t('ngoGrowthReports')}
                 </h2>
                 <span className="text-xs text-slate-400 bg-blue-500/10 border border-blue-500/20 px-3 py-1 rounded-full">
-                    Last 6 months
+                    {t('lastSixMonths')}
                 </span>
             </div>
-            <p className="text-xs text-slate-500 mb-6">Monthly food intake summaries — use these for grant and funding applications</p>
+            <p className="text-xs text-slate-500 mb-6">{t('ngoGrowthSubtitle')}</p>
 
             <div className="space-y-8">
                 <SvgBarChart
-                    title="Monthly Food Intake"
-                    subtitle="Total donations received each month"
+                    title={t('monthlyFoodIntake')}
+                    subtitle={t('totalDonationsReceivedMonth')}
                     data={monthly.map(m => ({ label: m.label, value: m.total }))}
                     color="#10b981"
                 />
                 <SvgLineChart
-                    title="Delivery Trend"
-                    subtitle="Successful food deliveries per month"
+                    title={t('deliveryTrend')}
+                    subtitle={t('successfulDeliveriesPerMonth')}
                     data={monthly.map(m => ({ label: m.label, value: m.delivered }))}
                     color="#6366f1"
                 />
                 <SvgBarChart
-                    title="Claims Made"
-                    subtitle="Donations claimed each month"
+                    title={t('claimsMade')}
+                    subtitle={t('donationsClaimedMonth')}
                     data={monthly.map(m => ({ label: m.label, value: m.claimed }))}
                     color="#f59e0b"
                 />
@@ -453,19 +457,19 @@ function NGOGrowthCharts({ monthly }: { monthly: MonthlyStatPoint[] }) {
             <div className="grid grid-cols-3 gap-4 mt-6 pt-6 border-t border-slate-800">
                 <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-4 text-center">
                     <p className="text-2xl font-bold text-emerald-400">{totalAll}</p>
-                    <p className="text-xs text-slate-400 mt-1">Total Received</p>
+                    <p className="text-xs text-slate-400 mt-1">{t('totalReceived')}</p>
                 </div>
                 <div className="bg-indigo-500/10 border border-indigo-500/20 rounded-xl p-4 text-center">
                     <p className="text-2xl font-bold text-indigo-400">{totalDelivered}</p>
-                    <p className="text-xs text-slate-400 mt-1">Delivered</p>
+                    <p className="text-xs text-slate-400 mt-1">{t('delivered')}</p>
                 </div>
                 <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 text-center">
                     <p className="text-2xl font-bold text-amber-400">{deliveryRate}%</p>
-                    <p className="text-xs text-slate-400 mt-1">Delivery Rate</p>
+                    <p className="text-xs text-slate-400 mt-1">{t('deliveryRate')}</p>
                 </div>
             </div>
             <p className="text-xs text-slate-500 mt-3 text-center">
-                💡 A high delivery rate demonstrates operational efficiency — highlight this in funding applications
+                {t('highDeliveryRateTip')}
             </p>
         </div>
     )
@@ -474,6 +478,7 @@ function NGOGrowthCharts({ monthly }: { monthly: MonthlyStatPoint[] }) {
 // ─── MAIN IMPACT PAGE ─────────────────────────────────────────────────────────
 
 export default function Impact() {
+    const { t } = useTranslation()
     const [user, setUser] = useState<User | null>(null)
     const [community, setCommunity] = useState<CommunityStats | null>(null)
     const [monthly, setMonthly] = useState<MonthlyStatPoint[]>([])
@@ -510,7 +515,7 @@ export default function Impact() {
             <div className="flex items-center justify-center h-96">
                 <div className="text-center">
                     <div className="w-12 h-12 rounded-full border-2 border-emerald-500 border-t-transparent animate-spin mx-auto mb-4" />
-                    <p className="text-slate-400">Loading your impact...</p>
+                    <p className="text-slate-400">{t('loadingYourImpact')}</p>
                 </div>
             </div>
         )
@@ -522,14 +527,14 @@ export default function Impact() {
     const karma = user.karmaPoints ?? 0
 
     // Role-specific labels
-    const pageTitle = role === 'ngo' ? 'Organization Impact' : role === 'volunteer' ? 'Your Contribution' : 'Your Impact'
-    const pageSubtitle = role === 'ngo' ? 'Track your community reach' : role === 'volunteer' ? 'Every delivery makes a difference' : "See the difference you're making"
+    const pageTitle = role === 'ngo' ? t('organizationImpact') : role === 'volunteer' ? t('yourContribution') : t('yourImpact')
+    const pageSubtitle = role === 'ngo' ? t('trackCommunityReach') : role === 'volunteer' ? t('everyDeliveryMatters') : t('seeDifference')
 
-    const stat1Label = role === 'ngo' ? 'Food Collected' : role === 'volunteer' ? 'Total Deliveries' : 'Total Donations'
-    const stat2Label = role === 'ngo' ? 'People Served' : role === 'volunteer' ? 'People Helped' : 'Meals Provided'
-    const stat3Label = role === 'ngo' ? 'Food Rescued' : role === 'volunteer' ? 'Food Transported' : 'Food Saved'
+    const stat1Label = role === 'ngo' ? t('foodCollected') : role === 'volunteer' ? t('totalDeliveries') : t('totalDonations')
+    const stat2Label = role === 'ngo' ? t('peopleServed') : role === 'volunteer' ? t('peopleHelped') : t('mealsProvided')
+    const stat3Label = role === 'ngo' ? t('foodRescued') : role === 'volunteer' ? t('foodTransported') : t('foodSaved')
 
-    const certButtonLabel = role === 'ngo' ? 'Download Impact Report' : role === 'volunteer' ? 'Download Volunteer Certificate' : 'Download Impact Certificate'
+    const certButtonLabel = role === 'ngo' ? t('downloadImpactReport') : role === 'volunteer' ? t('downloadVolunteerCert') : t('downloadImpactCert')
     const certBtnColor = role === 'ngo' ? 'from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700' : role === 'volunteer' ? 'from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700' : 'from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700'
 
     // Environmental impact calculations
@@ -550,9 +555,9 @@ export default function Impact() {
             {/* US1 — Personal Impact Stats */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {[
-                    { label: stat1Label, value: stats.totalDonations, icon: <Package className="w-6 h-6 text-white" />, grad: 'from-emerald-500 to-emerald-600', accent: 'text-emerald-400', sub: role === 'donor' ? 'Food items shared' : 'Completed' },
-                    { label: stat2Label, value: stats.mealsProvided, icon: <span className="text-2xl">🍽️</span>, grad: 'from-blue-500 to-blue-600', accent: 'text-blue-400', sub: 'People impacted' },
-                    { label: stat3Label, value: `${stats.kgSaved} kg`, icon: <span className="text-2xl">♻️</span>, grad: 'from-purple-500 to-purple-600', accent: 'text-purple-400', sub: 'Kilograms' },
+                    { label: stat1Label, value: stats.totalDonations, icon: <Package className="w-6 h-6 text-white" />, grad: 'from-emerald-500 to-emerald-600', accent: 'text-emerald-400', sub: role === 'donor' ? t('foodItemsShared') : t('completed') },
+                    { label: stat2Label, value: stats.mealsProvided, icon: <span className="text-2xl">🍽️</span>, grad: 'from-blue-500 to-blue-600', accent: 'text-blue-400', sub: t('peopleImpacted') },
+                    { label: stat3Label, value: `${stats.kgSaved} kg`, icon: <span className="text-2xl">♻️</span>, grad: 'from-purple-500 to-purple-600', accent: 'text-purple-400', sub: t('kilograms') },
                 ].map(s => (
                     <div key={s.label} className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6">
                         <div className="flex items-center gap-3 mb-4">
@@ -571,14 +576,14 @@ export default function Impact() {
             <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6">
                 <h2 className="text-lg font-semibold text-white mb-5 flex items-center gap-2">
                     <Leaf className="w-5 h-5 text-emerald-400" />
-                    Environmental Impact
+                    {t('environmentalImpact')}
                 </h2>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
                     {[
-                        { icon: <Leaf className="w-4 h-4 text-emerald-400" />, value: `${co2Saved} kg`, label: 'CO₂ saved', color: 'text-emerald-400' },
-                        { icon: <Droplets className="w-4 h-4 text-blue-400" />, value: `${waterSaved} L`, label: 'Water saved', color: 'text-blue-400' },
-                        { icon: <Users className="w-4 h-4 text-purple-400" />, value: familiesHelped, label: 'Families helped', color: 'text-purple-400' },
-                        { icon: <Trophy className="w-4 h-4 text-amber-400" />, value: (user.trustScore?.toFixed(1) || '0.0'), label: 'Trust score', color: 'text-amber-400' },
+                        { icon: <Leaf className="w-4 h-4 text-emerald-400" />, value: `${co2Saved} kg`, label: t('co2SavedLabel'), color: 'text-emerald-400' },
+                        { icon: <Droplets className="w-4 h-4 text-blue-400" />, value: `${waterSaved} L`, label: t('waterSaved'), color: 'text-blue-400' },
+                        { icon: <Users className="w-4 h-4 text-purple-400" />, value: familiesHelped, label: t('familiesHelped'), color: 'text-purple-400' },
+                        { icon: <Trophy className="w-4 h-4 text-amber-400" />, value: (user.trustScore?.toFixed(1) || '0.0'), label: t('trustScoreLabel'), color: 'text-amber-400' },
                     ].map(item => (
                         <div key={item.label}>
                             <div className="flex items-center gap-1.5 mb-1">{item.icon}<p className="text-xs text-slate-500">{item.label}</p></div>
@@ -600,12 +605,12 @@ export default function Impact() {
             {/* Volunteer Performance (role-specific extra panel) */}
             {role === 'volunteer' && (
                 <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6">
-                    <h2 className="text-lg font-semibold text-white mb-5">📊 Performance Metrics</h2>
+                    <h2 className="text-lg font-semibold text-white mb-5">📊 {t('performanceMetrics')}</h2>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
-                        <div><p className="text-xs text-slate-500 mb-1">Distance Covered</p><p className="text-3xl font-bold text-blue-400">{Math.floor(stats.totalDonations * 5.2)} km</p></div>
-                        <div><p className="text-xs text-slate-500 mb-1">Avg Response</p><p className="text-3xl font-bold text-emerald-400">18 min</p></div>
-                        <div><p className="text-xs text-slate-500 mb-1">Success Rate</p><p className="text-3xl font-bold text-purple-400">98%</p></div>
-                        <div><p className="text-xs text-slate-500 mb-1">Rating</p><p className="text-3xl font-bold text-amber-400">{user.trustScore?.toFixed(1) || '5.0'} ⭐</p></div>
+                        <div><p className="text-xs text-slate-500 mb-1">{t('distanceCovered')}</p><p className="text-3xl font-bold text-blue-400">{Math.floor(stats.totalDonations * 5.2)} km</p></div>
+                        <div><p className="text-xs text-slate-500 mb-1">{t('avgResponse')}</p><p className="text-3xl font-bold text-emerald-400">18 min</p></div>
+                        <div><p className="text-xs text-slate-500 mb-1">{t('successRate')}</p><p className="text-3xl font-bold text-purple-400">98%</p></div>
+                        <div><p className="text-xs text-slate-500 mb-1">{t('rating')}</p><p className="text-3xl font-bold text-amber-400">{user.trustScore?.toFixed(1) || '5.0'} ⭐</p></div>
                     </div>
                 </div>
             )}
@@ -615,14 +620,14 @@ export default function Impact() {
                 <div className="flex items-center justify-between mb-4">
                     <div>
                         <h3 className="text-lg font-semibold text-white mb-1">
-                            {role === 'ngo' ? 'Impact Report for Funding' : 'Share Your Impact'}
+                            {role === 'ngo' ? t('impactReportFunding') : t('shareYourImpact')}
                         </h3>
                         <p className="text-sm text-slate-400">
                             {role === 'ngo'
-                                ? 'Generate a professional impact report for grants and documentation'
+                                ? t('generateProfessionalReport')
                                 : role === 'volunteer'
-                                    ? 'Download your volunteer certificate to share on LinkedIn'
-                                    : 'Download your personalised certificate and inspire others to join'}
+                                    ? t('downloadVolunteerLinkedIn')
+                                    : t('downloadPersonalisedCert')}
                         </p>
                     </div>
                     <Share2 className="w-6 h-6 text-emerald-400 hidden md:block" />

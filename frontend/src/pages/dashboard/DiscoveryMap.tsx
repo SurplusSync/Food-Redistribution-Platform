@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
@@ -28,6 +29,7 @@ const claimedIcon = createIcon('#f59e0b')
 const urgentIcon = createIcon('#ef4444')
 
 export default function DiscoveryMap() {
+    const { t } = useTranslation()
     const [filter, setFilter] = useState<'all' | 'AVAILABLE' | 'CLAIMED'>('all')
     const [donations, setDonations] = useState<Donation[]>([])
     const [loading, setLoading] = useState(true)
@@ -170,7 +172,7 @@ export default function DiscoveryMap() {
             {/* Header */}
             <div className="p-4 border-b border-slate-800 bg-slate-950">
                 <div className="flex items-center justify-between mb-3">
-                    <h1 className="text-lg font-semibold text-white">Discovery Map</h1>
+                    <h1 className="text-lg font-semibold text-white">{t('discoveryMapTitle')}</h1>
                     <div className="flex gap-2">
                         {(['all', 'AVAILABLE', 'CLAIMED'] as const).map((f) => (
                             <button
@@ -182,7 +184,7 @@ export default function DiscoveryMap() {
                                         : 'bg-slate-800 text-slate-400 hover:text-white'
                                 }`}
                             >
-                                {f === 'AVAILABLE' ? 'Available' : f.toLowerCase()}
+                                {f === 'AVAILABLE' ? t('available') : f.toLowerCase()}
                             </button>
                         ))}
                     </div>
@@ -193,7 +195,7 @@ export default function DiscoveryMap() {
             <div className="flex-1 relative z-0">
                 {loading ? (
                     <div className="absolute inset-0 flex items-center justify-center bg-slate-950">
-                        <p className="text-slate-500">Loading donations...</p>
+                        <p className="text-slate-500">{t('loadingDonations')}</p>
                     </div>
                 ) : (
                     <MapContainer
@@ -242,7 +244,7 @@ export default function DiscoveryMap() {
                                             onClick={() => setSelectedDonation(donation)}
                                             className="w-full py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs rounded font-medium transition-colors border border-slate-700"
                                         >
-                                            View Details & Image
+                                            {t('viewDetailsImage')}
                                         </button>
                                     </div>
                                 </Popup>
@@ -291,7 +293,7 @@ export default function DiscoveryMap() {
                             ) : (
                                 <div className="w-full h-full flex flex-col items-center justify-center text-slate-600">
                                     <ImageIcon className="w-12 h-12 mb-2 opacity-50" />
-                                    <span className="text-sm">No image uploaded</span>
+                                    <span className="text-sm">{t('noImageUploaded')}</span>
                                 </div>
                             )}
                             
@@ -299,7 +301,7 @@ export default function DiscoveryMap() {
                             {selectedDonation.status === 'AVAILABLE' && getTimeRemaining(selectedDonation.expiryTime).urgent && (
                                 <div className="absolute top-4 left-4 bg-red-500 text-white text-xs px-2 py-1 rounded-md font-medium flex items-center gap-1 shadow-lg">
                                     <AlertTriangle className="w-3 h-3" />
-                                    Urgent: Expiring Soon
+                                    {t('urgentExpiringSoon')}
                                 </div>
                             )}
                         </div>
@@ -319,7 +321,7 @@ export default function DiscoveryMap() {
                             <div className="space-y-4 flex-1">
                                 {/* Donor Info */}
                                 <div className="p-3 bg-slate-800/50 rounded-lg border border-slate-800">
-                                    <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Donor</p>
+                                    <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">{t('donor')}</p>
                                     <div className="flex justify-between items-center">
                                         <span className="text-white font-medium">{selectedDonation.donorName}</span>
                                         <div className="flex items-center gap-1.5 bg-emerald-500/10 px-2 py-0.5 rounded text-emerald-400 text-xs">
@@ -332,31 +334,31 @@ export default function DiscoveryMap() {
                                 {/* Description */}
                                 {selectedDonation.description && (
                                     <div>
-                                        <p className="text-xs text-slate-400 mb-1">Description</p>
+                                        <p className="text-xs text-slate-400 mb-1">{t('description')}</p>
                                         <p className="text-sm text-slate-300 leading-relaxed">{selectedDonation.description}</p>
                                     </div>
                                 )}
 
                                 {/* Hygiene */}
                                 <div>
-                                    <p className="text-xs text-slate-400 mb-2">Safety Check</p>
+                                    <p className="text-xs text-slate-400 mb-2">{t('safetyCheck')}</p>
                                     <div className="flex gap-2">
                                         {selectedDonation.hygiene.keptCovered ? (
                                             <span className="flex items-center gap-1 text-xs bg-emerald-500/10 text-emerald-400 px-2 py-1 rounded border border-emerald-500/20">
-                                                <CheckCircle2 className="w-3 h-3" /> Kept Covered
+                                                <CheckCircle2 className="w-3 h-3" /> {t('keptCovered')}
                                             </span>
                                         ) : (
                                             <span className="flex items-center gap-1 text-xs bg-red-500/10 text-red-400 px-2 py-1 rounded border border-red-500/20">
-                                                <X className="w-3 h-3" /> Not Covered
+                                                <X className="w-3 h-3" /> {t('notCovered')}
                                             </span>
                                         )}
                                         {selectedDonation.hygiene.containerClean ? (
                                             <span className="flex items-center gap-1 text-xs bg-emerald-500/10 text-emerald-400 px-2 py-1 rounded border border-emerald-500/20">
-                                                <CheckCircle2 className="w-3 h-3" /> Clean Container
+                                                <CheckCircle2 className="w-3 h-3" /> {t('cleanContainer')}
                                             </span>
                                         ) : (
                                             <span className="flex items-center gap-1 text-xs bg-red-500/10 text-red-400 px-2 py-1 rounded border border-red-500/20">
-                                                <X className="w-3 h-3" /> Dirty Container
+                                                <X className="w-3 h-3" /> {t('dirtyContainer')}
                                             </span>
                                         )}
                                     </div>
@@ -383,7 +385,7 @@ export default function DiscoveryMap() {
                                             ) : (
                                                 <>
                                                     <MapPin className="w-4 h-4" />
-                                                    Claim This Food
+                                                    {t('claimThisFood')}
                                                 </>
                                             )}
                                         </button>
@@ -401,7 +403,7 @@ export default function DiscoveryMap() {
                                                 disabled={processingId === selectedDonation.id}
                                                 className="w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-white rounded-lg font-semibold transition-all"
                                             >
-                                                {processingId === selectedDonation.id ? 'Processing...' : 'Confirm Pickup'}
+                                                {processingId === selectedDonation.id ? t('processing') : t('confirmPickup')}
                                             </button>
                                         ) : userRole === 'volunteer' && selectedDonation.status === 'PICKED_UP' ? (
                                             <button
@@ -409,10 +411,10 @@ export default function DiscoveryMap() {
                                                 disabled={processingId === selectedDonation.id}
                                                 className="w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-white rounded-lg font-semibold transition-all"
                                             >
-                                                {processingId === selectedDonation.id ? 'Processing...' : 'Confirm Delivery'}
+                                                {processingId === selectedDonation.id ? t('processing') : t('confirmDelivery')}
                                             </button>
                                         ) : (
-                                            <div className="text-center p-3 bg-amber-500/10 text-amber-400 rounded-lg font-medium border border-amber-500/20">Already Claimed</div>
+                                            <div className="text-center p-3 bg-amber-500/10 text-amber-400 rounded-lg font-medium border border-amber-500/20">{t('alreadyClaimedLabel')}</div>
                                         )}
                                     </div>
                                 )}

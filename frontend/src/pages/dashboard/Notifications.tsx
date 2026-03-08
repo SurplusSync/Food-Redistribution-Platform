@@ -1,9 +1,11 @@
 import { useEffect, useState, type ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 import { getNotifications, markNotificationRead, addNotification, type Notification } from '../../services/api'
 import { socketService } from '../../services/socket'
 import { Bell, CheckCircle, AlertTriangle, MapPin, Package } from 'lucide-react'
 
 export default function Notifications() {
+    const { t } = useTranslation()
     const [notifications, setNotifications] = useState<Notification[]>([])
     const [loading, setLoading] = useState(true)
     const [filter, setFilter] = useState<'all' | 'unread'>('all')
@@ -87,8 +89,8 @@ export default function Notifications() {
     return (
         <div>
             <div className="mb-8">
-                <h1 className="text-2xl font-semibold text-white mb-1">Notifications</h1>
-                <p className="text-slate-500">Stay updated on your donations and deliveries</p>
+                <h1 className="text-2xl font-semibold text-white mb-1">{t('notifications')}</h1>
+                <p className="text-slate-500">{t('stayUpdated')}</p>
             </div>
 
             {/* Header */}
@@ -101,7 +103,7 @@ export default function Notifications() {
                                 : 'bg-slate-900 text-slate-400 hover:text-white'
                             }`}
                     >
-                        All
+                        {t('all')}
                     </button>
                     <button
                         onClick={() => setFilter('unread')}
@@ -110,7 +112,7 @@ export default function Notifications() {
                                 : 'bg-slate-900 text-slate-400 hover:text-white'
                             }`}
                     >
-                        Unread {unreadCount > 0 && `(${unreadCount})`}
+                        {t('unread', { count: unreadCount > 0 ? `(${unreadCount})` : '' })}
                     </button>
                 </div>
 
@@ -119,7 +121,7 @@ export default function Notifications() {
                         onClick={handleMarkAllRead}
                         className="text-sm text-emerald-400 hover:text-emerald-300"
                     >
-                        Mark all as read
+                        {t('markAllRead')}
                     </button>
                 )}
             </div>
@@ -127,12 +129,12 @@ export default function Notifications() {
             {/* Notifications List */}
             <div className="space-y-2">
                 {loading ? (
-                    <div className="text-center py-12 text-slate-500">Loading notifications...</div>
+                    <div className="text-center py-12 text-slate-500">{t('loadingNotifications')}</div>
                 ) : filtered.length === 0 ? (
                     <div className="text-center py-12">
                         <Bell className="w-12 h-12 text-slate-700 mx-auto mb-3" />
                         <p className="text-slate-500">
-                            {filter === 'unread' ? 'No unread notifications' : 'No notifications yet'}
+                            {filter === 'unread' ? t('noUnreadNotifications') : t('noNotificationsYet')}
                         </p>
                     </div>
                 ) : (
@@ -170,7 +172,7 @@ export default function Notifications() {
                                             onClick={() => handleMarkRead(notification.id)}
                                             className="mt-3 text-xs text-emerald-400 hover:text-emerald-300"
                                         >
-                                            Mark as read
+                                            {t('markAsRead')}
                                         </button>
                                     )}
                                 </div>

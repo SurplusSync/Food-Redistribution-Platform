@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { getDonations, type Donation } from '../../services/api'
 import { socketService } from '../../services/socket'
 import { PlusCircle, Map, Clock, TrendingUp, AlertTriangle, X, Image as ImageIcon, Shield, CheckCircle2, ChevronLeft, ChevronRight } from 'lucide-react'
 
 export default function DonorHome() {
+  const { t } = useTranslation()
   const [donations, setDonations] = useState<Donation[]>([])
   const [loading, setLoading] = useState(false)
   const [selectedDonation, setSelectedDonation] = useState<Donation | null>(null)
@@ -74,9 +76,9 @@ export default function DonorHome() {
 
   const getGreeting = () => {
     const hour = new Date().getHours()
-    if (hour < 12) return 'Good morning'
-    if (hour < 18) return 'Good afternoon'
-    return 'Good evening'
+    if (hour < 12) return t('goodMorning')
+    if (hour < 18) return t('goodAfternoon')
+    return t('goodEvening')
   }
 
   return (
@@ -87,7 +89,7 @@ export default function DonorHome() {
           {getGreeting()}, {user.name?.split(' ')[0] || 'there'}!
         </h1>
         <p className="text-slate-500 mt-1">
-          Manage your food donations and make a difference
+          {t('manageDonations')}
         </p>
       </div>
 
@@ -97,7 +99,7 @@ export default function DonorHome() {
           <div className="flex items-start gap-3">
             <AlertTriangle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
             <div>
-              <p className="text-sm font-medium text-red-400 mb-1">Urgent: Food Expiring Soon</p>
+              <p className="text-sm font-medium text-red-400 mb-1">{t('urgentExpiring')}</p>
               <p className="text-xs text-slate-400">
                 You have {urgentDonations.length} donation{urgentDonations.length > 1 ? 's' : ''} expiring within 3 hours
               </p>
@@ -112,10 +114,10 @@ export default function DonorHome() {
           <div className="flex items-center justify-between mb-3">
             <span className="text-xl text-emerald-400">●</span>
             <span className="text-xs font-medium px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 uppercase">
-              Active
+              {t('active')}
             </span>
           </div>
-          <p className="text-sm text-slate-400 mb-1">Your Listings</p>
+          <p className="text-sm text-slate-400 mb-1">{t('yourListings')}</p>
           <p className="text-3xl font-semibold text-emerald-400">{activeCount}</p>
           {urgentDonations.length > 0 && (
             <p className="text-xs text-red-400 mt-2">
@@ -128,10 +130,10 @@ export default function DonorHome() {
           <div className="flex items-center justify-between mb-3">
             <span className="text-xl text-amber-400">◷</span>
             <span className="text-xs font-medium px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 uppercase">
-              In Transit
+              {t('inTransit')}
             </span>
           </div>
-          <p className="text-sm text-slate-400 mb-1">Pending Pickup</p>
+          <p className="text-sm text-slate-400 mb-1">{t('pendingPickup')}</p>
           <p className="text-3xl font-semibold text-amber-400">{claimedCount}</p>
         </div>
 
@@ -139,10 +141,10 @@ export default function DonorHome() {
           <div className="flex items-center justify-between mb-3">
             <span className="text-xl text-slate-400">✓</span>
             <span className="text-xs font-medium px-2 py-0.5 rounded bg-slate-500/10 text-slate-400 uppercase">
-              Complete
+              {t('complete')}
             </span>
           </div>
-          <p className="text-sm text-slate-400 mb-1">Delivered</p>
+          <p className="text-sm text-slate-400 mb-1">{t('delivered')}</p>
           <p className="text-3xl font-semibold text-slate-400">{deliveredCount}</p>
         </div>
       </div>
@@ -158,9 +160,9 @@ export default function DonorHome() {
               <Map className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="font-semibold text-white mb-1">Discovery Map</h3>
+              <h3 className="font-semibold text-white mb-1">{t('discoveryMap')}</h3>
               <p className="text-sm text-slate-400">
-                View your donations on map
+                {t('viewDonationsOnMap')}
               </p>
             </div>
           </div>
@@ -175,8 +177,8 @@ export default function DonorHome() {
               <TrendingUp className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="font-semibold text-white mb-1">Your Impact</h3>
-              <p className="text-sm text-slate-400">See the difference you're making</p>
+              <h3 className="font-semibold text-white mb-1">{t('yourImpact')}</h3>
+              <p className="text-sm text-slate-400">{t('seeDifference')}</p>
             </div>
           </div>
         </Link>
@@ -186,10 +188,10 @@ export default function DonorHome() {
       <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
         <div className="p-5 border-b border-slate-800 flex items-center justify-between">
           <h2 className="font-medium text-white">
-            Your Recent Donations
+            {t('recentDonations')}
           </h2>
           <Link to="/dashboard/history" className="text-sm text-emerald-400 hover:text-emerald-300">
-            View all
+            {t('viewAll')}
           </Link>
         </div>
 
@@ -200,14 +202,14 @@ export default function DonorHome() {
         {!loading && donations.length === 0 && (
           <div className="p-8 text-center">
             <p className="text-slate-500 mb-4">
-              No donations yet. Start making a difference!
+              {t('noDonationsYet')}
             </p>
             <Link
               to="/dashboard/add"
               className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-white rounded-lg text-sm font-medium transition-colors"
             >
               <PlusCircle className="w-4 h-4" />
-              Add Your First Donation
+              {t('addFirstDonation')}
             </Link>
           </div>
         )}
@@ -250,10 +252,10 @@ export default function DonorHome() {
                       onClick={() => setSelectedDonation(donation)}
                       className="px-3 py-1 rounded-md text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition-colors border border-slate-700"
                     >
-                      View Details
+                      {t('viewDetails')}
                     </button>
                     <span className={`px-3 py-1 rounded-md text-xs font-medium whitespace-nowrap ${getStatusStyle(donation.status)}`}>
-                      {donation.status === 'AVAILABLE' ? 'Available' : donation.status}
+                      {donation.status === 'AVAILABLE' ? t('available') : donation.status}
                     </span>
                   </div>
                 </div>
@@ -321,7 +323,7 @@ export default function DonorHome() {
 
               <div className="space-y-3">
                 <div className="p-3 bg-slate-800/50 rounded-lg border border-slate-800">
-                  <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Donor</p>
+                  <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">{t('donor')}</p>
                   <div className="flex justify-between items-center">
                     <span className="text-white font-medium">{selectedDonation.donorName}</span>
                     <div className="flex items-center gap-1.5 bg-emerald-500/10 px-2 py-0.5 rounded text-emerald-400 text-xs">
@@ -334,31 +336,31 @@ export default function DonorHome() {
                 {/* Description */}
                 {selectedDonation.description && (
                   <div>
-                    <p className="text-xs text-slate-400 mb-1">Description</p>
+                    <p className="text-xs text-slate-400 mb-1">{t('description')}</p>
                     <p className="text-sm text-slate-300 leading-relaxed">{selectedDonation.description}</p>
                   </div>
                 )}
 
                 {/* Hygiene */}
                 <div>
-                  <p className="text-xs text-slate-400 mb-2">Safety Check</p>
+                  <p className="text-xs text-slate-400 mb-2">{t('safetyCheck')}</p>
                   <div className="flex gap-2">
                     {selectedDonation.hygiene?.keptCovered ? (
                       <span className="flex items-center gap-1 text-xs bg-emerald-500/10 text-emerald-400 px-2 py-1 rounded border border-emerald-500/20">
-                        <CheckCircle2 className="w-3 h-3" /> Kept Covered
+                        <CheckCircle2 className="w-3 h-3" /> {t('keptCovered')}
                       </span>
                     ) : (
                       <span className="flex items-center gap-1 text-xs bg-red-500/10 text-red-400 px-2 py-1 rounded border border-red-500/20">
-                        <X className="w-3 h-3" /> Not Covered
+                        <X className="w-3 h-3" /> {t('notCovered')}
                       </span>
                     )}
                     {selectedDonation.hygiene?.containerClean ? (
                       <span className="flex items-center gap-1 text-xs bg-emerald-500/10 text-emerald-400 px-2 py-1 rounded border border-emerald-500/20">
-                        <CheckCircle2 className="w-3 h-3" /> Clean Container
+                        <CheckCircle2 className="w-3 h-3" /> {t('cleanContainer')}
                       </span>
                     ) : (
                       <span className="flex items-center gap-1 text-xs bg-red-500/10 text-red-400 px-2 py-1 rounded border border-red-500/20">
-                        <X className="w-3 h-3" /> Dirty Container
+                        <X className="w-3 h-3" /> {t('dirtyContainer')}
                       </span>
                     )}
                   </div>

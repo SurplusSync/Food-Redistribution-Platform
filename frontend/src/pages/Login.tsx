@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { loginUser } from '../services/api'
 import { Utensils, Check, ArrowRight, Heart, Users, Globe } from 'lucide-react'
 
 export default function Login() {
+  const { t } = useTranslation()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
@@ -38,16 +40,16 @@ export default function Login() {
   }
 
   const features = [
-    { text: 'Connect donors with NGOs', icon: Users },
-    { text: 'Real-time food tracking', icon: Globe },
-    { text: 'Reduce food waste together', icon: Heart },
-    { text: 'Make a social impact', icon: Check },
+    { text: t('connectDonorsNGOs'), icon: Users },
+    { text: t('realTimeFoodTracking'), icon: Globe },
+    { text: t('reduceFoodWaste'), icon: Heart },
+    { text: t('makeSocialImpact'), icon: Check },
   ]
 
   const stats = [
-    { value: '10,000+', label: 'Meals saved' },
-    { value: '500+', label: 'Active donors' },
-    { value: '120+', label: 'Partner NGOs' },
+    { value: '10,000+', label: t('mealsSaved') },
+    { value: '500+', label: t('activeDonors') },
+    { value: '120+', label: t('partnerNGOs') },
   ]
 
   return (
@@ -80,10 +82,10 @@ export default function Login() {
 
             <div className="max-w-md">
               <h2 className="text-4xl font-extrabold text-white mb-4 leading-tight tracking-tight">
-                Transform surplus into <span className="shimmer-text">sustenance</span>
+                {t('transformSurplus')} <span className="shimmer-text">{t('welcome')}</span>
               </h2>
               <p className="text-lg text-slate-400 mb-10 leading-relaxed">
-                Join thousands of donors, NGOs, and volunteers making a difference in the fight against food waste.
+                {t('joinThousands')}
               </p>
 
               <div className="space-y-4 mb-12">
@@ -129,8 +131,8 @@ export default function Login() {
 
           <div className="bg-slate-900/60 backdrop-blur-xl rounded-2xl shadow-2xl border border-slate-800/80 p-8 glow-card">
             <div className="mb-8">
-              <h2 className="text-2xl font-extrabold text-white mb-2">Welcome back</h2>
-              <p className="text-slate-400">Sign in to continue making a difference</p>
+              <h2 className="text-2xl font-extrabold text-white mb-2">{t('welcomeBack')}</h2>
+              <p className="text-slate-400">{t('signInToContinue')}</p>
             </div>
 
             {error && (
@@ -142,7 +144,7 @@ export default function Login() {
 
             <form onSubmit={onSubmit} className="space-y-5">
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">Email address</label>
+                <label className="block text-sm font-medium text-slate-300 mb-2">{t('emailAddress')}</label>
                 <input
                   type="email"
                   value={email}
@@ -154,7 +156,7 @@ export default function Login() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">Password</label>
+                <label className="block text-sm font-medium text-slate-300 mb-2">{t('password')}</label>
                 <input
                   type="password"
                   value={password}
@@ -170,14 +172,14 @@ export default function Login() {
                 disabled={loading}
                 className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-white font-bold py-3.5 px-6 rounded-xl transition-all shadow-lg shadow-emerald-500/20 hover:shadow-xl hover:shadow-emerald-500/30 flex items-center justify-center gap-2 text-base"
               >
-                {loading ? 'Signing in...' : <><span>Sign in</span> <ArrowRight className="w-5 h-5" /></>}
+                {loading ? t('signingIn') : <><span>{t('signIn')}</span> <ArrowRight className="w-5 h-5" /></>}
               </button>
             </form>
 
             <div className="mt-6 text-center">
               <p className="text-sm text-slate-400">
-                Don't have an account?{' '}
-                <Link to="/register" className="font-semibold text-emerald-400 hover:text-emerald-300 transition-colors">Create account</Link>
+                {t('dontHaveAccount')}{' '}
+                <Link to="/register" className="font-semibold text-emerald-400 hover:text-emerald-300 transition-colors">{t('createAccount')}</Link>
               </p>
             </div>
           </div>

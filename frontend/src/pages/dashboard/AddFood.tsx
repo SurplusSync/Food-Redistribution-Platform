@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
@@ -31,6 +32,7 @@ function LocationMarker({ position, setPosition }: { position: LatLng | null; se
 
 export default function AddFood() {
     const navigate = useNavigate()
+    const { t } = useTranslation()
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [location, setLocation] = useState<LatLng | null>(null)
     const [error, setError] = useState<string | null>(null)
@@ -183,8 +185,8 @@ export default function AddFood() {
 
     return (
         <div className="max-w-2xl mx-auto">
-            <h1 className="text-2xl font-semibold text-white mb-1">Add Food Donation</h1>
-            <p className="text-slate-500 mb-8">Share surplus food with those in need</p>
+            <h1 className="text-2xl font-semibold text-white mb-1">{t('addFoodDonation')}</h1>
+            <p className="text-slate-500 mb-8">{t('shareSurplusFoodNeed')}</p>
 
             {error && (
                 <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-lg flex items-start gap-3">
@@ -196,7 +198,7 @@ export default function AddFood() {
             <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Food Type */}
                 <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
-                    <label className="block text-sm text-slate-400 mb-3">Food Type</label>
+                    <label className="block text-sm text-slate-400 mb-3">{t('foodType')}</label>
                     <div className="grid grid-cols-3 gap-2">
                         {foodTypes.map((type) => (
                             <button
@@ -226,7 +228,7 @@ export default function AddFood() {
 
                 {/* Preparation Time */}
                 <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
-                    <label className="block text-sm text-slate-400 mb-2">When was this food prepared?</label>
+                    <label className="block text-sm text-slate-400 mb-2">{t('whenPrepared')}</label>
                     <input
                         type="datetime-local"
                         name="preparationTime"
@@ -264,7 +266,7 @@ export default function AddFood() {
                 {/* Details */}
                 <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-4">
                     <div>
-                        <label className="block text-sm text-slate-400 mb-2">Food Name</label>
+                        <label className="block text-sm text-slate-400 mb-2">{t('foodName')}</label>
                         <input
                             type="text"
                             name="foodName"
@@ -278,7 +280,7 @@ export default function AddFood() {
 
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm text-slate-400 mb-2">Quantity</label>
+                            <label className="block text-sm text-slate-400 mb-2">{t('quantity')}</label>
                             <input
                                 type="number"
                                 name="quantity"
@@ -292,7 +294,7 @@ export default function AddFood() {
                             />
                         </div>
                         <div>
-                            <label className="block text-sm text-slate-400 mb-2">Unit</label>
+                            <label className="block text-sm text-slate-400 mb-2">{t('unit')}</label>
                             <select
                                 name="unit"
                                 value={formData.unit}
@@ -307,7 +309,7 @@ export default function AddFood() {
                     </div>
 
                     <div>
-                        <label className="block text-sm text-slate-400 mb-2">Description (optional)</label>
+                        <label className="block text-sm text-slate-400 mb-2">{t('descriptionOptional')}</label>
                         <textarea
                             name="description"
                             value={formData.description}
@@ -320,7 +322,7 @@ export default function AddFood() {
 
                     {/*Image Upload Section */}
                     <div>
-                        <label className="block text-sm text-slate-400 mb-2">Food Images (Optional)</label>
+                        <label className="block text-sm text-slate-400 mb-2">{t('foodImages')}</label>
                         <div className="relative">
                             <input 
                                 type="file" 
@@ -350,18 +352,18 @@ export default function AddFood() {
                 {/* Location Picker */}
                 <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
                     <div className="flex items-center justify-between mb-3">
-                        <label className="text-sm text-slate-400">Pickup Location</label>
+                        <label className="text-sm text-slate-400">{t('pickupLocationLabel')}</label>
                         {location ? (
                             <span className="text-xs font-medium px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400">
-                                ✓ Selected
+                                {t('locationSelected')}
                             </span>
                         ) : (
                             <span className="text-xs font-medium px-2 py-0.5 rounded bg-amber-500/10 text-amber-400">
-                                Required
+                                {t('required')}
                             </span>
                         )}
                     </div>
-                    <p className="text-xs text-slate-500 mb-3">Click on the map to set pickup location</p>
+                    <p className="text-xs text-slate-500 mb-3">{t('clickMapToSet')}</p>
                     <div className="rounded-lg overflow-hidden border border-slate-700" style={{ height: '250px' }}>
                         <MapContainer
                             center={[28.6139, 77.2090]}
@@ -385,11 +387,11 @@ export default function AddFood() {
                 {/* Hygiene Checklist */}
                 <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
                     <div className="flex items-center justify-between mb-4">
-                        <label className="text-sm text-slate-400">Hygiene Checklist</label>
+                        <label className="text-sm text-slate-400">{t('hygieneChecklist')}</label>
                         <span className={`text-xs font-medium px-2 py-0.5 rounded ${
                             hygieneComplete ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400'
                         }`}>
-                            {hygieneComplete ? '✓ Complete' : 'Required'}
+                            {hygieneComplete ? t('hygieneComplete') : t('required')}
                         </span>
                     </div>
 
@@ -406,7 +408,7 @@ export default function AddFood() {
                                 onChange={handleChange}
                                 className="w-4 h-4 rounded border-slate-600 text-emerald-500 focus:ring-emerald-500 bg-slate-900"
                             />
-                            <span className="text-sm text-slate-300">Food was kept covered at all times</span>
+                            <span className="text-sm text-slate-300">{t('keptCoveredAlways')}</span>
                         </label>
 
                         <label className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all ${
@@ -421,13 +423,13 @@ export default function AddFood() {
                                 onChange={handleChange}
                                 className="w-4 h-4 rounded border-slate-600 text-emerald-500 focus:ring-emerald-500 bg-slate-900"
                             />
-                            <span className="text-sm text-slate-300">Container is clean and food-safe</span>
+                            <span className="text-sm text-slate-300">{t('cleanFoodSafe')}</span>
                         </label>
                     </div>
 
                     <div className="mt-4 p-3 bg-slate-800 rounded-lg">
                         <p className="text-xs text-slate-400">
-                            ℹ️ Both hygiene requirements must be met to ensure food safety
+                            ℹ️ {t('hygieneNote')}
                         </p>
                     </div>
                 </div>
@@ -442,7 +444,7 @@ export default function AddFood() {
                             : 'bg-emerald-500 hover:bg-emerald-400 text-white shadow-lg shadow-emerald-500/20'
                     }`}
                 >
-                    {isSubmitting ? 'Creating Donation...' : 'Add Food Donation'}
+                    {isSubmitting ? t('creatingDonation') : t('addFoodDonation')}
                 </button>
             </form>
         </div>
