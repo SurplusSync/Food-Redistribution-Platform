@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
   getDonations,
   updateDonationStatus,
@@ -45,13 +46,13 @@ function StatCard({ icon, label, value, accent }: {
   icon: React.ReactNode; label: string; value: string | number; accent: string
 }) {
   return (
-    <div className={`bg-slate-900 border border-slate-800 rounded-xl p-4 flex items-center gap-4`}>
+    <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl p-4 flex items-center gap-4">
       <div className={`w-11 h-11 rounded-lg flex items-center justify-center ${accent}`}>
         {icon}
       </div>
       <div>
-        <p className="text-2xl font-bold text-white">{value}</p>
-        <p className="text-xs text-slate-500 mt-0.5">{label}</p>
+        <p className="text-2xl font-bold text-gray-900 dark:text-white">{value}</p>
+        <p className="text-xs text-gray-500 dark:text-slate-500 mt-0.5">{label}</p>
       </div>
     </div>
   )
@@ -59,8 +60,8 @@ function StatCard({ icon, label, value, accent }: {
 
 // ─── Availability Toggle ──────────────────────────────────────────────────────
 
-function AvailabilityToggle({ isAvailable, onToggle, loading }: {
-  isAvailable: boolean; onToggle: () => void; loading: boolean
+function AvailabilityToggle({ isAvailable, onToggle, loading, t }: {
+  isAvailable: boolean; onToggle: () => void; loading: boolean; t: (key: string) => string
 }) {
   return (
     <button
@@ -68,7 +69,7 @@ function AvailabilityToggle({ isAvailable, onToggle, loading }: {
       disabled={loading}
       className={`flex items-center gap-3 px-5 py-2.5 rounded-xl border font-medium text-sm transition-all duration-200 ${isAvailable
           ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20'
-          : 'bg-slate-800 border-slate-700 text-slate-400 hover:bg-slate-700'
+          : 'bg-gray-100 dark:bg-slate-800 border-gray-300 dark:border-slate-700 text-gray-500 dark:text-slate-400 hover:bg-gray-200 dark:hover:bg-slate-700'
         }`}
     >
       {loading ? (
@@ -78,15 +79,15 @@ function AvailabilityToggle({ isAvailable, onToggle, loading }: {
       ) : (
         <ToggleLeft className="w-5 h-5" />
       )}
-      {isAvailable ? 'Available for Pickups' : 'Unavailable'}
-      <span className={`w-2 h-2 rounded-full ${isAvailable ? 'bg-emerald-400 animate-pulse' : 'bg-slate-600'}`} />
+      {isAvailable ? t('availableForPickups') : t('unavailable')}
+      <span className={`w-2 h-2 rounded-full ${isAvailable ? 'bg-emerald-400 animate-pulse' : 'bg-gray-400 dark:bg-slate-600'}`} />
     </button>
   )
 }
 
 // ─── Vehicle Profile Card ─────────────────────────────────────────────────────
 
-function VehicleProfile({ user, onSave }: { user: User; onSave: (data: any) => Promise<void> }) {
+function VehicleProfile({ user, onSave, t }: { user: User; onSave: (data: any) => Promise<void>; t: (key: string) => string }) {
   const [editing, setEditing] = useState(false)
   const [vehicleType, setVehicleType] = useState(user.vehicleType || '')
   const [vehicleNumber, setVehicleNumber] = useState(user.vehicleNumber || '')
@@ -105,27 +106,27 @@ function VehicleProfile({ user, onSave }: { user: User; onSave: (data: any) => P
     try {
       await onSave({ vehicleType, vehicleNumber })
       setEditing(false)
-      toast.success('Vehicle details updated!')
+      toast.success(t('vehicleUpdated'))
     } catch {
-      toast.error('Failed to save vehicle details')
+      toast.error(t('vehicleSaveFailed'))
     } finally {
       setSaving(false)
     }
   }
 
   return (
-    <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
+    <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl p-5">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <Car className="w-4 h-4 text-purple-400" />
-          <h3 className="font-medium text-white text-sm">Vehicle Details</h3>
+          <h3 className="font-medium text-gray-900 dark:text-white text-sm">{t('vehicleDetails')}</h3>
         </div>
         {!editing && (
           <button
             onClick={() => setEditing(true)}
-            className="text-xs text-slate-400 hover:text-white border border-slate-700 rounded-md px-2.5 py-1 hover:border-slate-600 transition-colors"
+            className="text-xs text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white border border-gray-300 dark:border-slate-700 rounded-md px-2.5 py-1 hover:border-gray-400 dark:hover:border-slate-600 transition-colors"
           >
-            Edit
+            {t('edit')}
           </button>
         )}
       </div>
@@ -133,7 +134,7 @@ function VehicleProfile({ user, onSave }: { user: User; onSave: (data: any) => P
       {editing ? (
         <div className="space-y-3">
           <div>
-            <label className="text-xs text-slate-500 mb-1.5 block">Vehicle Type</label>
+            <label className="text-xs text-gray-500 dark:text-slate-500 mb-1.5 block">{t('vehicleType')}</label>
             <div className="grid grid-cols-5 gap-1.5">
               {vehicles.map(v => (
                 <button
@@ -141,7 +142,7 @@ function VehicleProfile({ user, onSave }: { user: User; onSave: (data: any) => P
                   onClick={() => setVehicleType(v.value)}
                   className={`flex flex-col items-center gap-1 p-2 rounded-lg border text-xs transition-all ${vehicleType === v.value
                       ? 'border-purple-500 bg-purple-500/10 text-purple-300'
-                      : 'border-slate-700 bg-slate-800 text-slate-400 hover:border-slate-600'
+                      : 'border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-500 dark:text-slate-400 hover:border-gray-400 dark:hover:border-slate-600'
                     }`}
                 >
                   <span className="text-lg">{v.icon}</span>
@@ -152,14 +153,14 @@ function VehicleProfile({ user, onSave }: { user: User; onSave: (data: any) => P
           </div>
 
           <div>
-            <label className="text-xs text-slate-500 mb-1.5 block">
-              Vehicle Number <span className="text-slate-600">(optional)</span>
+            <label className="text-xs text-gray-500 dark:text-slate-500 mb-1.5 block">
+              {t('vehicleNumber')} <span className="text-gray-400 dark:text-slate-600">({t('optional')})</span>
             </label>
             <input
               value={vehicleNumber}
               onChange={e => setVehicleNumber(e.target.value)}
               placeholder="e.g. TN 09 AB 1234"
-              className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-purple-500"
+              className="w-full bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-600 focus:outline-none focus:border-purple-500"
             />
           </div>
 
@@ -169,13 +170,13 @@ function VehicleProfile({ user, onSave }: { user: User; onSave: (data: any) => P
               disabled={saving}
               className="flex-1 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-lg text-sm font-medium transition-colors"
             >
-              {saving ? 'Saving…' : 'Save'}
+              {saving ? t('saving') : t('save')}
             </button>
             <button
               onClick={() => setEditing(false)}
-              className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-sm transition-colors"
+              className="px-4 py-2 bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-700 dark:text-slate-300 rounded-lg text-sm transition-colors"
             >
-              Cancel
+              {t('cancel')}
             </button>
           </div>
         </div>
@@ -185,14 +186,14 @@ function VehicleProfile({ user, onSave }: { user: User; onSave: (data: any) => P
             <>
               <span className="text-3xl">{VEHICLE_ICONS[user.vehicleType] || '🚗'}</span>
               <div>
-                <p className="text-white font-medium capitalize">{user.vehicleType}</p>
+                <p className="text-gray-900 dark:text-white font-medium capitalize">{user.vehicleType}</p>
                 {user.vehicleNumber && (
-                  <p className="text-slate-500 text-sm mt-0.5">{user.vehicleNumber}</p>
+                  <p className="text-gray-500 dark:text-slate-500 text-sm mt-0.5">{user.vehicleNumber}</p>
                 )}
               </div>
             </>
           ) : (
-            <p className="text-slate-500 text-sm">No vehicle added. Add your vehicle to get started.</p>
+            <p className="text-gray-500 dark:text-slate-500 text-sm">{t('noVehicleAdded')}</p>
           )}
         </div>
       )}
@@ -208,18 +209,20 @@ function TaskCard({
   onPickup,
   onDelivery,
   onView,
+  t,
 }: {
   donation: Donation
   processingId: string | null
   onPickup: (id: string) => void
   onDelivery: (id: string) => void
   onView: (d: Donation) => void
+  t: (key: string) => string
 }) {
   const timeLeft = getTimeRemaining(donation.expiryTime)
   const isProcessing = processingId === donation.id
 
   return (
-    <div className="p-4 hover:bg-slate-800/30 transition-colors">
+    <div className="p-4 hover:bg-gray-50 dark:hover:bg-slate-800/30 transition-colors">
       <div className="flex items-start gap-4">
         {/* Food icon */}
         <div className={`w-11 h-11 rounded-lg flex items-center justify-center text-xl shrink-0 ${donation.status === 'PICKED_UP' ? 'bg-amber-500/10' : 'bg-emerald-500/10'
@@ -230,23 +233,23 @@ function TaskCard({
         {/* Info */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-0.5">
-            <p className="font-medium text-white truncate">{donation.name}</p>
+            <p className="font-medium text-gray-900 dark:text-white truncate">{donation.name}</p>
             <span className={`shrink-0 text-xs px-1.5 py-0.5 rounded font-medium ${donation.status === 'PICKED_UP'
                 ? 'bg-amber-500/10 text-amber-400'
                 : 'bg-blue-500/10 text-blue-400'
               }`}>
-              {donation.status === 'PICKED_UP' ? 'En Route' : 'Awaiting Pickup'}
+              {donation.status === 'PICKED_UP' ? t('enRoute') : t('awaitingPickup')}
             </span>
           </div>
 
-          <p className="text-sm text-slate-500 truncate">
+          <p className="text-sm text-gray-500 dark:text-slate-500 truncate">
             {donation.quantity} {donation.unit} • {donation.donorName}
           </p>
 
           {donation.location?.address && (
             <div className="flex items-center gap-1 mt-1">
-              <MapPin className="w-3 h-3 text-slate-600 shrink-0" />
-              <p className="text-xs text-slate-600 truncate">{donation.location.address}</p>
+              <MapPin className="w-3 h-3 text-gray-400 dark:text-slate-600 shrink-0" />
+              <p className="text-xs text-gray-400 dark:text-slate-600 truncate">{donation.location.address}</p>
             </div>
           )}
 
@@ -254,7 +257,7 @@ function TaskCard({
             <div className="flex items-center gap-1 mt-1.5">
               <AlertTriangle className="w-3 h-3 text-red-400" />
               <span className="text-xs text-red-400 font-medium">
-                Expires in {timeLeft.hours}h {timeLeft.minutes}m
+                {t('expiresIn')} {timeLeft.hours}h {timeLeft.minutes}m
               </span>
             </div>
           )}
@@ -264,16 +267,16 @@ function TaskCard({
         <div className="flex flex-col gap-1.5 shrink-0">
           <button
             onClick={() => onView(donation)}
-            className="px-3 py-1.5 rounded-md text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition-colors border border-slate-700"
+            className="px-3 py-1.5 rounded-md text-xs font-medium bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors border border-gray-300 dark:border-slate-700"
           >
-            Details
+            {t('details')}
           </button>
 
           <button
             onClick={() => openGoogleMaps(donation.location?.address || '', donation.location?.lat, donation.location?.lng)}
-            className="px-3 py-1.5 rounded-md text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition-colors border border-slate-700 flex items-center gap-1"
+            className="px-3 py-1.5 rounded-md text-xs font-medium bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors border border-gray-300 dark:border-slate-700 flex items-center gap-1"
           >
-            <Navigation className="w-3 h-3" /> Directions
+            <Navigation className="w-3 h-3" /> {t('directions')}
           </button>
 
           {donation.status === 'CLAIMED' && (
@@ -282,7 +285,7 @@ function TaskCard({
               disabled={isProcessing}
               className="px-3 py-1.5 rounded-md text-xs font-medium bg-emerald-600 hover:bg-emerald-500 text-white transition-colors"
             >
-              {isProcessing ? '…' : '✓ Picked Up'}
+              {isProcessing ? '…' : `✓ ${t('pickedUp')}`}
             </button>
           )}
 
@@ -292,7 +295,7 @@ function TaskCard({
               disabled={isProcessing}
               className="px-3 py-1.5 rounded-md text-xs font-medium bg-purple-600 hover:bg-purple-500 text-white transition-colors"
             >
-              {isProcessing ? '…' : '✓ Delivered'}
+              {isProcessing ? '…' : `✓ ${t('delivered')}`}
             </button>
           )}
         </div>
@@ -303,7 +306,7 @@ function TaskCard({
 
 // ─── Completed Trips Tab ─────────────────────────────────────────────────────
 
-function CompletedTrips({ userId }: { userId: string }) {
+function CompletedTrips({ userId, t }: { userId: string; t: (key: string) => string }) {
   const [trips, setTrips] = useState<Donation[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -314,38 +317,38 @@ function CompletedTrips({ userId }: { userId: string }) {
       .finally(() => setLoading(false))
   }, [userId])
 
-  if (loading) return <div className="p-8 text-center text-slate-500 text-sm">Loading trips…</div>
+  if (loading) return <div className="p-8 text-center text-gray-500 dark:text-slate-500 text-sm">{t('loading')}</div>
 
   if (trips.length === 0) {
     return (
       <div className="p-10 text-center">
-        <div className="w-14 h-14 rounded-full bg-slate-800 flex items-center justify-center mx-auto mb-3">
-          <Router className="w-6 h-6 text-slate-600" />
+        <div className="w-14 h-14 rounded-full bg-gray-100 dark:bg-slate-800 flex items-center justify-center mx-auto mb-3">
+          <Router className="w-6 h-6 text-gray-400 dark:text-slate-600" />
         </div>
-        <p className="text-slate-500 text-sm">No completed trips yet.</p>
-        <p className="text-slate-600 text-xs mt-1">Complete your first delivery to see it here.</p>
+        <p className="text-gray-500 dark:text-slate-500 text-sm">{t('noCompletedTrips')}</p>
+        <p className="text-gray-400 dark:text-slate-600 text-xs mt-1">{t('completeFirstDelivery')}</p>
       </div>
     )
   }
 
   return (
-    <div className="divide-y divide-slate-800">
+    <div className="divide-y divide-gray-200 dark:divide-slate-800">
       {trips.map(trip => (
-        <div key={trip.id} className="p-4 hover:bg-slate-800/20 transition-colors">
+        <div key={trip.id} className="p-4 hover:bg-gray-50 dark:hover:bg-slate-800/20 transition-colors">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-lg bg-purple-500/10 flex items-center justify-center text-lg">
               {FOOD_EMOJI[trip.foodType] || '🍱'}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-white font-medium text-sm truncate">{trip.name}</p>
-              <p className="text-slate-500 text-xs">{trip.quantity} {trip.unit} • {trip.donorName}</p>
+              <p className="text-gray-900 dark:text-white font-medium text-sm truncate">{trip.name}</p>
+              <p className="text-gray-500 dark:text-slate-500 text-xs">{trip.quantity} {trip.unit} • {trip.donorName}</p>
             </div>
             <div className="text-right shrink-0">
               <span className="text-xs px-2 py-0.5 bg-emerald-500/10 text-emerald-400 rounded-full font-medium">
-                ✓ Delivered
+                ✓ {t('delivered')}
               </span>
               {(trip as any).deliveredAt && (
-                <p className="text-xs text-slate-600 mt-1">
+                <p className="text-xs text-gray-400 dark:text-slate-600 mt-1">
                   {new Date((trip as any).deliveredAt).toLocaleDateString()}
                 </p>
               )}
@@ -365,34 +368,36 @@ function DetailModal({
   onPickup,
   onDelivery,
   onClose,
+  t,
 }: {
   donation: Donation
   processingId: string | null
   onPickup: (id: string) => void
   onDelivery: (id: string) => void
   onClose: () => void
+  t: (key: string) => string
 }) {
   const [imgIndex, setImgIndex] = useState(0)
   const isProcessing = processingId === donation.id
 
   return (
-    <div className="fixed inset-0 z-[2000] flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-sm">
-      <div className="bg-slate-900 border border-slate-800 rounded-xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl">
+    <div className="fixed inset-0 z-[2000] flex items-center justify-center p-4 bg-black/30 dark:bg-slate-950/85 backdrop-blur-sm">
+      <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl">
         {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-slate-800">
+        <div className="flex items-center justify-between p-5 border-b border-gray-200 dark:border-slate-800">
           <div>
-            <h3 className="text-lg font-semibold text-white">{donation.name}</h3>
-            <p className="text-sm text-slate-500 mt-0.5">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{donation.name}</h3>
+            <p className="text-sm text-gray-500 dark:text-slate-500 mt-0.5">
               {donation.quantity} {donation.unit} • {donation.foodType}
             </p>
           </div>
-          <button onClick={onClose} className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 transition-colors">
+          <button onClick={onClose} className="p-1.5 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg text-gray-500 dark:text-slate-400 transition-colors">
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Image */}
-        <div className="relative w-full h-48 bg-slate-950">
+        <div className="relative w-full h-48 bg-gray-50 dark:bg-slate-950">
           {donation.imageUrls?.length > 0 ? (
             <>
               <img src={donation.imageUrls[imgIndex]} alt={donation.name} className="w-full h-full object-cover" />
@@ -413,9 +418,9 @@ function DetailModal({
               )}
             </>
           ) : (
-            <div className="flex flex-col items-center justify-center h-full text-slate-700">
+            <div className="flex flex-col items-center justify-center h-full text-gray-400 dark:text-slate-700">
               <ImageIcon className="w-10 h-10 mb-2" />
-              <span className="text-sm">No image</span>
+              <span className="text-sm">{t('noImage')}</span>
             </div>
           )}
         </div>
@@ -428,35 +433,35 @@ function DetailModal({
                 ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
                 : 'bg-blue-500/10 text-blue-400 border border-blue-500/20'
               }`}>
-              {donation.status === 'PICKED_UP' ? '🚗 En Route to NGO' : '📦 Ready for Pickup'}
+              {donation.status === 'PICKED_UP' ? `🚗 ${t('enRouteToNGO')}` : `📦 ${t('readyForPickup')}`}
             </span>
           </div>
 
           {/* Pickup address */}
-          <div className="bg-slate-800/50 rounded-lg p-3.5 space-y-2">
-            <p className="text-xs font-medium text-slate-400 uppercase tracking-wide">Pickup Location</p>
+          <div className="bg-gray-50 dark:bg-slate-800/50 rounded-lg p-3.5 space-y-2">
+            <p className="text-xs font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wide">{t('pickupLocation')}</p>
             <div className="flex items-start gap-2">
               <MapPin className="w-4 h-4 text-emerald-400 mt-0.5 shrink-0" />
-              <p className="text-sm text-white">{donation.location?.address || 'Address not available'}</p>
+              <p className="text-sm text-gray-900 dark:text-white">{donation.location?.address || t('addressNotAvailable')}</p>
             </div>
             <button
               onClick={() => openGoogleMaps(donation.location?.address || '', donation.location?.lat, donation.location?.lng)}
               className="w-full mt-1 flex items-center justify-center gap-2 py-2 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 rounded-lg text-sm font-medium transition-colors"
             >
               <Navigation className="w-4 h-4" />
-              Get Directions to Donor
+              {t('getDirectionsToDonor')}
             </button>
           </div>
 
           {/* Donor */}
           <div className="grid grid-cols-2 gap-3">
-            <div className="bg-slate-800/50 rounded-lg p-3">
-              <p className="text-xs text-slate-500 mb-1">Donor</p>
-              <p className="text-sm text-white font-medium">{donation.donorName}</p>
+            <div className="bg-gray-50 dark:bg-slate-800/50 rounded-lg p-3">
+              <p className="text-xs text-gray-500 dark:text-slate-500 mb-1">{t('donor')}</p>
+              <p className="text-sm text-gray-900 dark:text-white font-medium">{donation.donorName}</p>
             </div>
-            <div className="bg-slate-800/50 rounded-lg p-3">
-              <p className="text-xs text-slate-500 mb-1">Expiry</p>
-              <p className="text-sm text-white font-medium">
+            <div className="bg-gray-50 dark:bg-slate-800/50 rounded-lg p-3">
+              <p className="text-xs text-gray-500 dark:text-slate-500 mb-1">{t('expiry')}</p>
+              <p className="text-sm text-gray-900 dark:text-white font-medium">
                 {new Date(donation.expiryTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </p>
             </div>
@@ -464,9 +469,9 @@ function DetailModal({
 
           {/* Description */}
           {donation.description && (
-            <div className="bg-slate-800/50 rounded-lg p-3">
-              <p className="text-xs text-slate-500 mb-1">Notes</p>
-              <p className="text-sm text-slate-300">{donation.description}</p>
+            <div className="bg-gray-50 dark:bg-slate-800/50 rounded-lg p-3">
+              <p className="text-xs text-gray-500 dark:text-slate-500 mb-1">{t('notes')}</p>
+              <p className="text-sm text-gray-700 dark:text-slate-300">{donation.description}</p>
             </div>
           )}
 
@@ -479,7 +484,7 @@ function DetailModal({
                 className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-medium transition-colors"
               >
                 <Package className="w-4 h-4" />
-                {isProcessing ? 'Processing…' : 'Confirm Pickup'}
+                {isProcessing ? t('processing') : t('confirmPickup')}
               </button>
             )}
             {donation.status === 'PICKED_UP' && (
@@ -489,7 +494,7 @@ function DetailModal({
                 className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-purple-600 hover:bg-purple-500 text-white rounded-lg font-medium transition-colors"
               >
                 <CheckCircle2 className="w-4 h-4" />
-                {isProcessing ? 'Processing…' : 'Confirm Delivery'}
+                {isProcessing ? t('processing') : t('confirmDelivery')}
               </button>
             )}
           </div>
@@ -502,6 +507,7 @@ function DetailModal({
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function VolunteerDashboard() {
+  const { t } = useTranslation()
   const [donations, setDonations] = useState<Donation[]>([])
   const [loading, setLoading] = useState(false)
   const [processingId, setProcessingId] = useState<string | null>(null)
@@ -516,7 +522,6 @@ export default function VolunteerDashboard() {
     setLoading(true)
     try {
       const all = await getDonations({ status: ['CLAIMED', 'PICKED_UP'] })
-      // Show tasks for this volunteer (assigned via volunteerId or all available claimed ones)
       setDonations(all.filter((d: Donation) =>
         d.status === 'CLAIMED' || d.status === 'PICKED_UP'
       ))
@@ -531,7 +536,6 @@ export default function VolunteerDashboard() {
     try {
       const p = await getUserProfile()
       setProfile(p)
-      // Sync availability into localStorage user
       localStorage.setItem('user', JSON.stringify({ ...user, isAvailable: p.isAvailable, vehicleType: p.vehicleType, vehicleNumber: p.vehicleNumber }))
     } catch { /* ignore */ }
   }, [])
@@ -543,15 +547,15 @@ export default function VolunteerDashboard() {
     socketService.connect()
 
     const unsubCreated = socketService.onDonationCreated((data) => {
-      toast.info(`🍕 New donation nearby: ${data.name}`, { duration: 4000 })
+      toast.info(`🍕 ${t('newDonationNearby')}: ${data.name}`, { duration: 4000 })
     })
 
     const unsubClaimed = socketService.onDonationClaimed(() => { load() })
 
     const unsubAssigned = socketService.onVolunteerAssigned((data) => {
       if (data.volunteerId === user.id) {
-        toast.success(`🚗 New Assignment: ${data.donationName}`, {
-          description: `Pickup from: ${data.donorAddress}`,
+        toast.success(`🚗 ${t('newAssignment')}: ${data.donationName}`, {
+          description: `${t('pickupFrom')}: ${data.donorAddress}`,
           duration: 7000,
         })
         load()
@@ -572,9 +576,9 @@ export default function VolunteerDashboard() {
       const current = profile?.isAvailable ?? false
       await toggleAvailability(!current)
       setProfile(p => p ? { ...p, isAvailable: !current } : p)
-      toast.success(current ? 'You are now unavailable' : 'You are now available for pickups!')
+      toast.success(current ? t('nowUnavailable') : t('nowAvailable'))
     } catch {
-      toast.error('Failed to update availability')
+      toast.error(t('availabilityUpdateFailed'))
     } finally {
       setAvailabilityLoading(false)
     }
@@ -589,10 +593,10 @@ export default function VolunteerDashboard() {
     setProcessingId(id)
     try {
       await updateDonationStatus(id, 'PICKED_UP')
-      toast.success('Pickup confirmed! Head to the NGO for delivery.')
+      toast.success(t('pickupConfirmed'))
       await load()
     } catch (err: any) {
-      toast.error(err.message || 'Failed to confirm pickup')
+      toast.error(err.message || t('pickupFailed'))
     } finally {
       setProcessingId(null)
     }
@@ -602,11 +606,11 @@ export default function VolunteerDashboard() {
     setProcessingId(id)
     try {
       await updateDonationStatus(id, 'DELIVERED')
-      toast.success('🎉 Delivery confirmed! +50 karma points earned!', { duration: 5000 })
+      toast.success(`🎉 ${t('deliveryConfirmed')}`, { duration: 5000 })
       await load()
       await loadProfile()
     } catch (err: any) {
-      toast.error(err.message || 'Failed to confirm delivery')
+      toast.error(err.message || t('deliveryFailed'))
     } finally {
       setProcessingId(null)
     }
@@ -620,13 +624,14 @@ export default function VolunteerDashboard() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold text-white">Volunteer Dashboard</h1>
-          <p className="text-slate-500 mt-1 text-sm">Manage your pickups, deliveries and availability.</p>
+          <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">{t('volunteerDashboard')}</h1>
+          <p className="text-gray-500 dark:text-slate-500 mt-1 text-sm">{t('managePickupsDeliveries')}</p>
         </div>
         <AvailabilityToggle
           isAvailable={profile?.isAvailable ?? false}
           onToggle={handleToggleAvailability}
           loading={availabilityLoading}
+          t={t}
         />
       </div>
 
@@ -634,25 +639,25 @@ export default function VolunteerDashboard() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <StatCard
           icon={<Zap className="w-5 h-5 text-yellow-400" />}
-          label="Karma Points"
+          label={t('karmaPoints')}
           value={profile?.karmaPoints ?? user.karmaPoints ?? 0}
           accent="bg-yellow-500/10"
         />
         <StatCard
           icon={<Truck className="w-5 h-5 text-emerald-400" />}
-          label="Active Tasks"
+          label={t('activeTasks')}
           value={activeTasks.length}
           accent="bg-emerald-500/10"
         />
         <StatCard
           icon={<Package className="w-5 h-5 text-amber-400" />}
-          label="En Route"
+          label={t('enRoute')}
           value={pickedUp}
           accent="bg-amber-500/10"
         />
         <StatCard
           icon={<Award className="w-5 h-5 text-purple-400" />}
-          label="Badges"
+          label={t('badges')}
           value={profile?.badges?.length ?? 0}
           accent="bg-purple-500/10"
         />
@@ -673,21 +678,21 @@ export default function VolunteerDashboard() {
       <div className="grid lg:grid-cols-3 gap-5">
         {/* Left: Vehicle profile */}
         <div className="lg:col-span-1 space-y-4">
-          <VehicleProfile user={profile ?? user} onSave={handleSaveVehicle} />
+          <VehicleProfile user={profile ?? user} onSave={handleSaveVehicle} t={t} />
 
           {/* Quick tip */}
-          <div className="bg-slate-900 border border-slate-800 rounded-xl p-4">
+          <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl p-4">
             <div className="flex items-center gap-2 mb-2">
               <Star className="w-4 h-4 text-yellow-400" />
-              <p className="text-sm font-medium text-white">Earning Karma</p>
+              <p className="text-sm font-medium text-gray-900 dark:text-white">{t('earningKarma')}</p>
             </div>
             <ul className="space-y-1.5">
               {[
-                { action: 'Confirm Pickup', points: '+10 pts' },
-                { action: 'Complete Delivery', points: '+50 pts' },
+                { action: t('confirmPickup'), points: '+10 pts' },
+                { action: t('completeDelivery'), points: '+50 pts' },
               ].map(item => (
                 <li key={item.action} className="flex justify-between items-center text-xs">
-                  <span className="text-slate-400">{item.action}</span>
+                  <span className="text-gray-500 dark:text-slate-400">{item.action}</span>
                   <span className="text-emerald-400 font-medium">{item.points}</span>
                 </li>
               ))}
@@ -696,19 +701,19 @@ export default function VolunteerDashboard() {
         </div>
 
         {/* Right: Tasks + trips */}
-        <div className="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+        <div className="lg:col-span-2 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl overflow-hidden">
           {/* Tabs */}
-          <div className="flex border-b border-slate-800">
+          <div className="flex border-b border-gray-200 dark:border-slate-800">
             {[
-              { key: 'tasks', label: 'Active Tasks', icon: <Truck className="w-4 h-4" /> },
-              { key: 'trips', label: 'Completed Trips', icon: <TrendingUp className="w-4 h-4" /> },
+              { key: 'tasks', label: t('activeTasks'), icon: <Truck className="w-4 h-4" /> },
+              { key: 'trips', label: t('completedTrips'), icon: <TrendingUp className="w-4 h-4" /> },
             ].map(tab => (
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key as any)}
                 className={`flex items-center gap-2 px-5 py-3.5 text-sm font-medium transition-colors border-b-2 ${activeTab === tab.key
-                    ? 'text-white border-purple-500'
-                    : 'text-slate-500 border-transparent hover:text-slate-300'
+                    ? 'text-gray-900 dark:text-white border-purple-500'
+                    : 'text-gray-500 dark:text-slate-500 border-transparent hover:text-gray-700 dark:hover:text-slate-300'
                   }`}
               >
                 {tab.icon}
@@ -725,22 +730,22 @@ export default function VolunteerDashboard() {
           {activeTab === 'tasks' && (
             <>
               {loading && (
-                <div className="p-8 text-center text-slate-500 text-sm">Loading tasks…</div>
+                <div className="p-8 text-center text-gray-500 dark:text-slate-500 text-sm">{t('loading')}</div>
               )}
               {!loading && activeTasks.length === 0 && (
                 <div className="p-10 text-center">
-                  <div className="w-14 h-14 rounded-full bg-slate-800 flex items-center justify-center mx-auto mb-3">
-                    <Bike className="w-6 h-6 text-slate-600" />
+                  <div className="w-14 h-14 rounded-full bg-gray-100 dark:bg-slate-800 flex items-center justify-center mx-auto mb-3">
+                    <Bike className="w-6 h-6 text-gray-400 dark:text-slate-600" />
                   </div>
-                  <p className="text-slate-400 text-sm font-medium">No active tasks</p>
-                  <p className="text-slate-600 text-xs mt-1">
+                  <p className="text-gray-500 dark:text-slate-400 text-sm font-medium">{t('noActiveTasks')}</p>
+                  <p className="text-gray-400 dark:text-slate-600 text-xs mt-1">
                     {profile?.isAvailable
-                      ? 'You\'re available — waiting for assignment'
-                      : 'Toggle your availability to receive assignments'}
+                      ? t('waitingForAssignment')
+                      : t('toggleAvailabilityHint')}
                   </p>
                 </div>
               )}
-              <div className="divide-y divide-slate-800">
+              <div className="divide-y divide-gray-200 dark:divide-slate-800">
                 {activeTasks.map(donation => (
                   <TaskCard
                     key={donation.id}
@@ -749,13 +754,14 @@ export default function VolunteerDashboard() {
                     onPickup={handleConfirmPickup}
                     onDelivery={handleConfirmDelivery}
                     onView={d => setSelectedDonation(d)}
+                    t={t}
                   />
                 ))}
               </div>
             </>
           )}
 
-          {activeTab === 'trips' && <CompletedTrips userId={user.id} />}
+          {activeTab === 'trips' && <CompletedTrips userId={user.id} t={t} />}
         </div>
       </div>
 
@@ -767,6 +773,7 @@ export default function VolunteerDashboard() {
           onPickup={handleConfirmPickup}
           onDelivery={handleConfirmDelivery}
           onClose={() => setSelectedDonation(null)}
+          t={t}
         />
       )}
     </div>

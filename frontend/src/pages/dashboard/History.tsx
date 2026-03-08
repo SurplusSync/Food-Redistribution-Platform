@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { getDonations } from '../../services/api'
 import type { Donation } from '../../services/api'
 import { socketService } from '../../services/socket'
@@ -25,13 +26,13 @@ function BarChart({ data, height = 180, unit = '', title, subtitle, accentColor 
     const gap = 8
 
     return (
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
+        <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl p-6">
             <div className="mb-4">
-                <h3 className="text-base font-semibold text-white flex items-center gap-2">
+                <h3 className="text-base font-semibold text-gray-900 dark:text-white flex items-center gap-2">
                     <BarChart2 className="w-4 h-4" style={{ color: accentColor }} />
                     {title}
                 </h3>
-                {subtitle && <p className="text-xs text-slate-500 mt-0.5">{subtitle}</p>}
+                {subtitle && <p className="text-xs text-gray-500 dark:text-slate-500 mt-0.5">{subtitle}</p>}
             </div>
             <div className="overflow-x-auto">
                 <svg
@@ -132,13 +133,13 @@ function LineChart({ data, title, subtitle, accentColor = '#6366f1' }: LineChart
         : ''
 
     return (
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
+        <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl p-6">
             <div className="mb-4">
-                <h3 className="text-base font-semibold text-white flex items-center gap-2">
+                <h3 className="text-base font-semibold text-gray-900 dark:text-white flex items-center gap-2">
                     <TrendingUp className="w-4 h-4" style={{ color: accentColor }} />
                     {title}
                 </h3>
-                {subtitle && <p className="text-xs text-slate-500 mt-0.5">{subtitle}</p>}
+                {subtitle && <p className="text-xs text-gray-500 dark:text-slate-500 mt-0.5">{subtitle}</p>}
             </div>
             <div className="overflow-x-auto">
                 <svg viewBox={`0 0 ${width} ${height}`} width="100%" style={{ display: 'block', minWidth: 320 }}>
@@ -211,6 +212,7 @@ const userRole = (): string => {
 }
 
 export default function History() {
+    const { t } = useTranslation()
     const [donations, setDonations] = useState<Donation[]>([])
     const [filter, setFilter] = useState<'all' | 'AVAILABLE' | 'CLAIMED' | 'DELIVERED'>('all')
     const [loading, setLoading] = useState(true)
@@ -255,7 +257,7 @@ export default function History() {
         const styles: Record<string, string> = {
             AVAILABLE: 'bg-emerald-500/10 text-emerald-400',
             CLAIMED: 'bg-amber-500/10 text-amber-400',
-            DELIVERED: 'bg-slate-500/10 text-slate-400',
+            DELIVERED: 'bg-slate-500/10 text-gray-500 dark:text-slate-400',
         }
         return styles[status] || styles.AVAILABLE
     }
@@ -274,15 +276,15 @@ export default function History() {
 
     return (
         <div>
-            <h1 className="text-2xl font-semibold text-white mb-1">History</h1>
-            <p className="text-slate-500 mb-8">Your past contributions</p>
+            <h1 className="text-2xl font-semibold text-gray-900 dark:text-white mb-1">{t('historyTitle')}</h1>
+            <p className="text-gray-500 dark:text-slate-500 mb-8">{t('yourPastContributions')}</p>
 
             {/* Stats Cards */}
             <div className="grid grid-cols-4 gap-4 mb-6">
                 {Object.entries(counts).map(([key, value]) => (
-                    <div key={key} className="bg-slate-900 border border-slate-800 rounded-xl p-4 text-center">
-                        <p className="text-2xl font-semibold text-white">{value}</p>
-                        <p className="text-sm text-slate-500 capitalize">{key === 'all' ? 'Total' : key.toLowerCase()}</p>
+                    <div key={key} className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl p-4 text-center">
+                        <p className="text-2xl font-semibold text-gray-900 dark:text-white">{value}</p>
+                        <p className="text-sm text-gray-500 dark:text-slate-500 capitalize">{key === 'all' ? t('total') : key.toLowerCase()}</p>
                     </div>
                 ))}
             </div>
@@ -292,17 +294,17 @@ export default function History() {
                 <div className="flex gap-2 mb-6">
                     <button
                         onClick={() => setTab('table')}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${tab === 'table' ? 'bg-emerald-500 text-white' : 'bg-slate-900 text-slate-400 hover:text-white'}`}
+                        className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${tab === 'table' ? 'bg-emerald-500 text-white' : 'bg-white dark:bg-slate-900 text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white'}`}
                     >
                         <Package className="w-4 h-4" />
-                        Donation List
+                        {t('donationList')}
                     </button>
                     <button
                         onClick={() => setTab('charts')}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${tab === 'charts' ? 'bg-emerald-500 text-white' : 'bg-slate-900 text-slate-400 hover:text-white'}`}
+                        className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${tab === 'charts' ? 'bg-emerald-500 text-white' : 'bg-white dark:bg-slate-900 text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white'}`}
                     >
                         <TrendingUp className="w-4 h-4" />
-                        Growth Reports
+                        {t('growthReports')}
                     </button>
                 </div>
             )}
@@ -313,15 +315,15 @@ export default function History() {
                     <div className="bg-blue-900/20 border border-blue-500/30 rounded-xl p-4 flex items-start gap-3">
                         <TrendingUp className="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0" />
                         <div>
-                            <p className="text-blue-300 font-medium text-sm">Growth Reports</p>
-                            <p className="text-slate-400 text-xs mt-0.5">Monthly food intake summaries to support funding applications. Showing the last 6 months of activity.</p>
+                            <p className="text-blue-300 font-medium text-sm">{t('growthReports')}</p>
+                            <p className="text-gray-500 dark:text-slate-400 text-xs mt-0.5">Monthly food intake summaries to support funding applications. Showing the last 6 months of activity.</p>
                         </div>
                     </div>
 
                     {/* Chart 1 – Total food intake (bar) */}
                     <BarChart
-                        title="Monthly Food Intake"
-                        subtitle="Total donations received per month"
+                        title={t('monthlyFoodIntake')}
+                        subtitle={t('totalDonationsReceived')}
                         data={monthlyAll}
                         unit=""
                         accentColor="#10b981"
@@ -329,35 +331,35 @@ export default function History() {
 
                     {/* Chart 2 – Deliveries completed (line) */}
                     <LineChart
-                        title="Deliveries Completed"
-                        subtitle="Successful food deliveries trend"
+                        title={t('deliveriesCompleted')}
+                        subtitle={t('deliveriesTrend')}
                         data={monthlyDelivered}
                         accentColor="#6366f1"
                     />
 
                     {/* Chart 3 – Claims made (bar) */}
                     <BarChart
-                        title="Claims Made"
-                        subtitle="Donations claimed by your NGO per month"
+                        title={t('claimsMade')}
+                        subtitle={t('claimsPerMonth')}
                         data={monthlyClaimed}
                         unit=""
                         accentColor="#f59e0b"
                     />
 
                     {/* Summary Card for Funding */}
-                    <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
-                        <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
+                    <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl p-6">
+                        <h3 className="text-gray-900 dark:text-white font-semibold mb-4 flex items-center gap-2">
                             <Package className="w-4 h-4 text-emerald-400" />
-                            6-Month Summary
+                            {t('sixMonthSummary')}
                         </h3>
                         <div className="grid grid-cols-3 gap-4">
                             <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-4 text-center">
                                 <p className="text-2xl font-bold text-emerald-400">{monthlyAll.reduce((s, d) => s + d.value, 0)}</p>
-                                <p className="text-xs text-slate-400 mt-1">Total Donations Received</p>
+                                <p className="text-xs text-gray-500 dark:text-slate-400 mt-1">{t('totalReceived')}</p>
                             </div>
                             <div className="bg-indigo-500/10 border border-indigo-500/20 rounded-lg p-4 text-center">
                                 <p className="text-2xl font-bold text-indigo-400">{monthlyDelivered.reduce((s, d) => s + d.value, 0)}</p>
-                                <p className="text-xs text-slate-400 mt-1">Successful Deliveries</p>
+                                <p className="text-xs text-gray-500 dark:text-slate-400 mt-1">{t('successfulDeliveries')}</p>
                             </div>
                             <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-4 text-center">
                                 <p className="text-2xl font-bold text-amber-400">
@@ -365,10 +367,10 @@ export default function History() {
                                         ? `${Math.round((monthlyDelivered.reduce((s, d) => s + d.value, 0) / monthlyAll.reduce((s, d) => s + d.value, 1)) * 100)}%`
                                         : '—'}
                                 </p>
-                                <p className="text-xs text-slate-400 mt-1">Delivery Rate</p>
+                                <p className="text-xs text-gray-500 dark:text-slate-400 mt-1">{t('deliveryRate')}</p>
                             </div>
                         </div>
-                        <p className="text-xs text-slate-500 mt-4 border-t border-slate-800 pt-4">
+                        <p className="text-xs text-gray-500 dark:text-slate-500 mt-4 border-t border-gray-200 dark:border-slate-800 pt-4">
                             💡 Use this data to demonstrate impact in your funding applications. A high delivery rate signals operational efficiency to grant committees.
                         </p>
                     </div>
@@ -382,32 +384,32 @@ export default function History() {
                             <button
                                 key={status}
                                 onClick={() => setFilter(status)}
-                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors capitalize ${filter === status ? 'bg-emerald-500 text-white' : 'bg-slate-900 text-slate-400 hover:text-white'}`}
+                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors capitalize ${filter === status ? 'bg-emerald-500 text-white' : 'bg-white dark:bg-slate-900 text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white'}`}
                             >
-                                {status === 'all' ? 'All' : status.toLowerCase()}
+                                {status === 'all' ? t('all') : status.toLowerCase()}
                             </button>
                         ))}
                     </div>
 
-                    <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+                    <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl overflow-hidden">
                         {loading ? (
-                            <div className="p-8 text-center text-slate-500">Loading...</div>
+                            <div className="p-8 text-center text-gray-500 dark:text-slate-500">{t('loading')}</div>
                         ) : filtered.length === 0 ? (
-                            <div className="p-8 text-center text-slate-500">No donations found</div>
+                            <div className="p-8 text-center text-gray-500 dark:text-slate-500">{t('noDonationsFound')}</div>
                         ) : (
                             <table className="w-full">
                                 <thead>
-                                    <tr className="border-b border-slate-800">
-                                        <th className="text-left py-3 px-4 text-sm font-medium text-slate-500">Item</th>
-                                        <th className="text-left py-3 px-4 text-sm font-medium text-slate-500">Quantity</th>
-                                        <th className="text-left py-3 px-4 text-sm font-medium text-slate-500">Status</th>
+                                    <tr className="border-b border-gray-200 dark:border-slate-800">
+                                        <th className="text-left py-3 px-4 text-sm font-medium text-gray-500 dark:text-slate-500">{t('item')}</th>
+                                        <th className="text-left py-3 px-4 text-sm font-medium text-gray-500 dark:text-slate-500">{t('quantity')}</th>
+                                        <th className="text-left py-3 px-4 text-sm font-medium text-gray-500 dark:text-slate-500">{t('status')}</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-slate-800">
+                                <tbody className="divide-y divide-gray-200 dark:divide-slate-800">
                                     {filtered.map((d) => (
-                                        <tr key={d.id} className="hover:bg-slate-800/30">
-                                            <td className="py-3 px-4 text-white">{d.name}</td>
-                                            <td className="py-3 px-4 text-slate-400">{d.quantity}</td>
+                                        <tr key={d.id} className="hover:bg-gray-100/50 dark:bg-slate-800/30">
+                                            <td className="py-3 px-4 text-gray-900 dark:text-white">{d.name}</td>
+                                            <td className="py-3 px-4 text-gray-500 dark:text-slate-400">{d.quantity}</td>
                                             <td className="py-3 px-4">
                                                 <span className={`px-2 py-1 rounded text-xs font-medium ${getStatusStyle(d.status)}`}>
                                                     {d.status}

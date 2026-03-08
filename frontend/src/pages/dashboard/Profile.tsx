@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import { getUserProfile, updateUserProfile, type User } from '../../services/api'
 import { User as UserIcon, Building, Phone, Mail, MapPin, Shield, Edit2, Check, Trophy, Star, AlertCircle, Loader2, Download, Award } from 'lucide-react'
 
@@ -10,6 +11,7 @@ interface CertificateProps {
 }
 
 function CertificateModal({ user, onClose }: CertificateProps) {
+    const { t } = useTranslation()
     const certRef = useRef<HTMLDivElement>(null)
 
     const today = new Date().toLocaleDateString('en-IN', {
@@ -29,13 +31,13 @@ function CertificateModal({ user, onClose }: CertificateProps) {
     const lightBg = isNGO ? '#eff6ff' : isVolunteer ? '#f5f3ff' : '#f0fdf4'
     const lightBorder = isNGO ? '#bfdbfe' : isVolunteer ? '#ddd6fe' : '#d1fae5'
     const seal = isNGO ? '🏛️' : isVolunteer ? '🚴' : '🌾'
-    const roleLabel = isNGO ? 'NGO Partner' : isVolunteer ? 'Volunteer' : 'Food Donor'
+    const roleLabel = isNGO ? t('ngoPartner') : isVolunteer ? t('volunteer') : t('foodDonor')
     const actionText = isNGO
-        ? 'food collections and community service'
+        ? t('foodCollectionsAndCommunity')
         : isVolunteer
-            ? 'food delivery and community service'
-            : 'food donations and sustainability efforts'
-    const stat1Label = isNGO ? 'Collections' : isVolunteer ? 'Deliveries' : 'Donations'
+            ? t('foodDeliveryAndCommunity')
+            : t('foodDonationsAndSustainability')
+    const stat1Label = isNGO ? t('collections') : isVolunteer ? t('deliveries') : t('donations')
 
     const handlePrint = () => {
         const printContents = certRef.current?.innerHTML
@@ -85,9 +87,9 @@ function CertificateModal({ user, onClose }: CertificateProps) {
 
                 {/* Toolbar */}
                 <div className="flex justify-between items-center px-6 py-4 border-b border-slate-200 bg-slate-50 rounded-t-2xl">
-                    <h3 className="text-lg font-semibold text-slate-800 flex items-center gap-2">
+                    <h3 className="text-lg font-semibold text-gray-200 dark:text-slate-800 flex items-center gap-2">
                         <Award className="w-5 h-5 text-emerald-600" />
-                        Certificate of Appreciation
+                        {t('certificateOfAppreciation')}
                     </h3>
                     <div className="flex gap-3">
                         <button
@@ -95,10 +97,10 @@ function CertificateModal({ user, onClose }: CertificateProps) {
                             className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
                         >
                             <Download className="w-4 h-4" />
-                            Print / Save PDF
+                            {t('printSavePDF')}
                         </button>
-                        <button onClick={onClose} className="bg-slate-200 hover:bg-slate-300 text-slate-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-                            Close
+                        <button onClick={onClose} className="bg-slate-200 hover:bg-slate-300 text-gray-300 dark:text-slate-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                            {t('close')}
                         </button>
                     </div>
                 </div>
@@ -117,50 +119,49 @@ function CertificateModal({ user, onClose }: CertificateProps) {
 
                         <div className="text-5xl mb-2">{seal}</div>
                         <p className="text-xs tracking-widest uppercase mb-3" style={{ color: accentColor, fontFamily: 'sans-serif', letterSpacing: '4px' }}>
-                            SurplusSync Food Redistribution Platform
+                            {t('surplusSyncPlatformName')}
                         </p>
 
                         <h1 className="text-4xl font-bold mb-1" style={{ color: '#0f172a', fontFamily: 'Georgia, serif' }}>
-                            Certificate of Appreciation
+                            {t('certificateOfAppreciation')}
                         </h1>
-                        <p className="text-xs tracking-widest text-slate-400 uppercase mb-7" style={{ fontFamily: 'sans-serif', letterSpacing: '2px' }}>
-                            In Recognition of Outstanding Service
+                        <p className="text-xs tracking-widest text-gray-500 dark:text-slate-400 uppercase mb-7" style={{ fontFamily: 'sans-serif', letterSpacing: '2px' }}>
+                            {t('inRecognitionService')}
                         </p>
 
                         <div style={{ width: 80, height: 3, background: `linear-gradient(90deg,transparent,${accentColor},transparent)`, margin: '0 auto 28px' }} />
 
-                        <p className="text-slate-600 mb-1" style={{ fontSize: 16, lineHeight: 1.9, fontFamily: 'Georgia, serif' }}>
-                            This certificate is proudly presented to
+                        <p className="text-gray-400 dark:text-slate-600 mb-1" style={{ fontSize: 16, lineHeight: 1.9, fontFamily: 'Georgia, serif' }}>
+                            {t('certPresentedTo')}
                         </p>
                         <p className="text-3xl font-bold italic mb-2" style={{ color: '#0f172a', fontFamily: 'Georgia, serif' }}>
                             {user.organizationName || user.name}
                         </p>
-                        <span className="inline-block text-white text-xs rounded-full px-4 py-1 mb-5" style={{ background: accentColor, fontFamily: 'sans-serif' }}>
+                        <span className="inline-block text-gray-900 dark:text-white text-xs rounded-full px-4 py-1 mb-5" style={{ background: accentColor, fontFamily: 'sans-serif' }}>
                             {roleLabel}
                         </span>
-                        <p className="text-slate-500 text-sm mb-8" style={{ fontFamily: 'sans-serif' }}>
-                            in acknowledgement of their outstanding contribution through {actionText},<br />
-                            making a meaningful difference in the lives of people in our community.
+                        <p className="text-gray-500 dark:text-slate-500 text-sm mb-8" style={{ fontFamily: 'sans-serif' }}>
+                            {t('certAcknowledgement', { actionText })}
                         </p>
 
                         {/* Impact Stats */}
                         <div className="flex justify-center gap-14 mb-7">
                             {[
                                 { value: donations, label: stat1Label },
-                                { value: meals, label: 'Meals Provided' },
-                                { value: `${kg} kg`, label: 'Food Rescued' },
+                                { value: meals, label: t('mealsProvided') },
+                                { value: `${kg} kg`, label: t('foodRescued') },
                             ].map(({ value, label }) => (
                                 <div key={label} className="text-center">
                                     <div className="text-3xl font-bold" style={{ color: accentColor, fontFamily: 'sans-serif' }}>{value}</div>
-                                    <div className="text-xs text-slate-400 uppercase tracking-wider mt-1" style={{ fontFamily: 'sans-serif' }}>{label}</div>
+                                    <div className="text-xs text-gray-500 dark:text-slate-400 uppercase tracking-wider mt-1" style={{ fontFamily: 'sans-serif' }}>{label}</div>
                                 </div>
                             ))}
                         </div>
 
                         {/* Karma Badge */}
                         <div className="text-center mb-8">
-                            <span className="inline-block text-white text-sm rounded-full px-5 py-2" style={{ background: `linear-gradient(135deg,${accentColor},${accentColor}bb)`, fontFamily: 'sans-serif' }}>
-                                ⭐ {user.karmaPoints ?? 0} Karma Points · Level {user.level ?? 1} Contributor
+                            <span className="inline-block text-gray-900 dark:text-white text-sm rounded-full px-5 py-2" style={{ background: `linear-gradient(135deg,${accentColor},${accentColor}bb)`, fontFamily: 'sans-serif' }}>
+                                {t('karmaPointsLevel', { karma: user.karmaPoints ?? 0, level: user.level ?? 1 })}
                             </span>
                         </div>
 
@@ -168,13 +169,13 @@ function CertificateModal({ user, onClose }: CertificateProps) {
                         <div style={{ borderTop: `1px solid ${lightBorder}`, paddingTop: 20 }} className="flex justify-between items-end">
                             <div>
                                 <div style={{ width: 160, borderBottom: '1px solid #d1d5db', marginBottom: 6 }} />
-                                <p className="text-xs text-slate-500" style={{ fontFamily: 'sans-serif' }}>Platform Director</p>
-                                <p className="text-xs font-semibold text-slate-700" style={{ fontFamily: 'sans-serif' }}>SurplusSync Network</p>
+                                <p className="text-xs text-gray-500 dark:text-slate-500" style={{ fontFamily: 'sans-serif' }}>{t('platformDirector')}</p>
+                                <p className="text-xs font-semibold text-gray-300 dark:text-slate-700" style={{ fontFamily: 'sans-serif' }}>{t('surplusSyncNetwork')}</p>
                             </div>
                             <div className="text-2xl">🏅</div>
                             <div className="text-right">
-                                <p className="text-xs text-slate-500" style={{ fontFamily: 'sans-serif' }}>Date of Issue</p>
-                                <p className="text-sm font-semibold text-slate-700" style={{ fontFamily: 'sans-serif' }}>{today}</p>
+                                <p className="text-xs text-gray-500 dark:text-slate-500" style={{ fontFamily: 'sans-serif' }}>{t('dateOfIssue')}</p>
+                                <p className="text-sm font-semibold text-gray-300 dark:text-slate-700" style={{ fontFamily: 'sans-serif' }}>{today}</p>
                             </div>
                         </div>
                     </div>
@@ -187,6 +188,7 @@ function CertificateModal({ user, onClose }: CertificateProps) {
 // ─── Main Profile Component ───────────────────────────────────────────────────
 
 export default function Profile() {
+    const { t } = useTranslation()
     const [user, setUser] = useState<User | null>(null)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
@@ -232,23 +234,23 @@ export default function Profile() {
         <div className="flex items-center justify-center min-h-screen">
             <div className="text-center">
                 <Loader2 className="w-12 h-12 animate-spin text-emerald-500 mx-auto mb-4" />
-                <p className="text-slate-400 text-xl">Loading profile...</p>
+                <p className="text-gray-500 dark:text-slate-400 text-xl">{t('loadingProfile')}</p>
             </div>
         </div>
     )
 
     if (error) return (
         <div className="flex items-center justify-center min-h-screen p-6">
-            <div className="max-w-md w-full bg-slate-900 border border-red-500/30 rounded-xl p-8 text-center">
+            <div className="max-w-md w-full bg-white dark:bg-slate-900 border border-red-500/30 rounded-xl p-8 text-center">
                 <AlertCircle className="w-16 h-16 text-red-400 mx-auto mb-4" />
-                <h2 className="text-2xl font-bold text-white mb-2">Failed to Load Profile</h2>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">{t('failedLoadProfile')}</h2>
                 <p className="text-red-400 mb-6">{error}</p>
                 <div className="space-y-3">
-                    <button onClick={loadProfile} className="w-full bg-emerald-500 hover:bg-emerald-400 text-white font-medium py-3 px-6 rounded-lg transition-colors">Try Again</button>
-                    <button onClick={() => { localStorage.clear(); window.location.href = '/login' }} className="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium py-3 px-6 rounded-lg transition-colors">Back to Login</button>
+                    <button onClick={loadProfile} className="w-full bg-emerald-500 hover:bg-emerald-400 text-white font-medium py-3 px-6 rounded-lg transition-colors">{t('tryAgain')}</button>
+                    <button onClick={() => { localStorage.clear(); window.location.href = '/login' }} className="w-full bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-gray-200 dark:bg-slate-700 text-gray-700 dark:text-slate-300 font-medium py-3 px-6 rounded-lg transition-colors">{t('backToLogin')}</button>
                 </div>
-                <div className="mt-6 p-4 bg-slate-950 rounded-lg text-left">
-                    <p className="text-xs text-slate-400 font-mono"><strong>Debug Info:</strong><br />Token: {localStorage.getItem('token') ? '✓ Present' : '✗ Missing'}<br />Error: {error}</p>
+                <div className="mt-6 p-4 bg-gray-50 dark:bg-slate-950 rounded-lg text-left">
+                    <p className="text-xs text-gray-500 dark:text-slate-400 font-mono"><strong>Debug Info:</strong><br />Token: {localStorage.getItem('token') ? '✓ Present' : '✗ Missing'}<br />Error: {error}</p>
                 </div>
             </div>
         </div>
@@ -258,8 +260,8 @@ export default function Profile() {
         <div className="flex items-center justify-center min-h-screen">
             <div className="text-center">
                 <AlertCircle className="w-16 h-16 text-yellow-400 mx-auto mb-4" />
-                <p className="text-slate-400 text-xl">No user data available</p>
-                <button onClick={loadProfile} className="mt-4 bg-emerald-500 hover:bg-emerald-400 text-white font-medium py-2 px-6 rounded-lg transition-colors">Reload</button>
+                <p className="text-gray-500 dark:text-slate-400 text-xl">{t('noUserDataAvailable')}</p>
+                <button onClick={loadProfile} className="mt-4 bg-emerald-500 hover:bg-emerald-400 text-white font-medium py-2 px-6 rounded-lg transition-colors">{t('reload')}</button>
             </div>
         </div>
     )
@@ -289,24 +291,24 @@ export default function Profile() {
             : 'My Certificate'
 
     const certDesc = roleStr === 'ngo'
-        ? 'Download your NGO impact report for grants and funding applications'
+        ? t('generateProfessionalReport')
         : roleStr === 'volunteer'
-            ? 'Download your volunteer certificate to share on LinkedIn'
-            : 'Download your personalised impact certificate to share with your network'
+            ? t('downloadVolunteerLinkedIn')
+            : t('downloadPersonalisedCert')
 
     return (
         <div className="max-w-4xl mx-auto p-6 space-y-6">
             {showCertificate && <CertificateModal user={user} onClose={() => setShowCertificate(false)} />}
 
             {/* Header */}
-            <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
+            <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl p-6">
                 <div className="flex items-start justify-between mb-2">
                     <div className="flex items-center gap-4">
                         <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center text-2xl font-bold text-white">
                             {user.name?.[0]?.toUpperCase() || 'U'}
                         </div>
                         <div>
-                            <h1 className="text-2xl font-bold text-white">{user.organizationName || user.name}</h1>
+                            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{user.organizationName || user.name}</h1>
                             <div className="flex items-center gap-2 mt-1">
                                 <span className={`px-2 py-0.5 rounded text-xs font-medium ${badge.bg} ${badge.text}`}>{badge.label}</span>
                                 {user.isVerified && (
@@ -329,17 +331,17 @@ export default function Profile() {
                         <button
                             onClick={() => editing ? handleSave() : setEditing(true)}
                             disabled={saving}
-                            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${editing ? 'bg-emerald-500 hover:bg-emerald-400 text-white' : 'bg-slate-800 hover:bg-slate-700 text-slate-300'}`}
+                            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${editing ? 'bg-emerald-500 hover:bg-emerald-400 text-white' : 'bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-gray-200 dark:bg-slate-700 text-gray-700 dark:text-slate-300'}`}
                         >
                             {editing ? (
-                                <span className="flex items-center gap-2"><Check className="w-4 h-4" />{saving ? 'Saving...' : 'Save Changes'}</span>
+                                <span className="flex items-center gap-2"><Check className="w-4 h-4" />{saving ? t('saving') : t('save')}</span>
                             ) : (
-                                <span className="flex items-center gap-2"><Edit2 className="w-4 h-4" />Edit Profile</span>
+                                <span className="flex items-center gap-2"><Edit2 className="w-4 h-4" />{t('editProfile')}</span>
                             )}
                         </button>
                     </div>
                 </div>
-                <p className="text-slate-400">Manage your account and view your impact</p>
+                <p className="text-gray-500 dark:text-slate-400">{t('manageAccount')}</p>
             </div>
 
             {/* Certificate CTA Banner (all roles) */}
@@ -347,8 +349,8 @@ export default function Profile() {
                 <div className="flex items-center gap-4">
                     <div className="w-12 h-12 bg-emerald-500/20 rounded-xl flex items-center justify-center text-2xl flex-shrink-0">🏅</div>
                     <div>
-                        <p className="text-white font-semibold">Certificate of Appreciation</p>
-                        <p className="text-slate-400 text-sm">{certDesc}</p>
+                        <p className="text-gray-900 dark:text-white font-semibold">{t('certificateOfAppreciation')}</p>
+                        <p className="text-gray-500 dark:text-slate-400 text-sm">{certDesc}</p>
                     </div>
                 </div>
                 <button
@@ -367,13 +369,13 @@ export default function Profile() {
                         <div className="text-6xl font-bold">{karmaPoints}</div>
                         <Star className="w-10 h-10 fill-white" />
                     </div>
-                    <div className="text-xl font-semibold mb-1">Karma Points</div>
+                    <div className="text-xl font-semibold mb-1">{t('karmaPoints')}</div>
                     <div className="text-sm opacity-90">Level {level} • {badge.label}</div>
                 </div>
                 {nextLevelPoints > 0 && (
                     <div className="mt-6">
                         <div className="flex justify-between text-sm mb-2">
-                            <span>Progress to Level {level + 1}</span>
+                            <span>{t('progressToLevel', { level: level + 1 })}</span>
                             <span>{nextLevelPoints} points to go</span>
                         </div>
                         <div className="w-full bg-white/30 rounded-full h-3 overflow-hidden">
@@ -384,21 +386,21 @@ export default function Profile() {
             </div>
 
             {/* Trophy Case */}
-            <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
-                <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-                    <Trophy className="w-6 h-6 text-yellow-400" />Trophy Case
+            <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl p-6">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                    <Trophy className="w-6 h-6 text-yellow-400" />{t('trophyCase')}
                 </h2>
                 {badges.length === 0 ? (
-                    <div className="text-center py-12 text-slate-400">
-                        <p className="text-lg mb-2">No badges earned yet</p>
-                        <p className="text-sm">Earn 10 karma points to get your first badge!</p>
+                    <div className="text-center py-12 text-gray-500 dark:text-slate-400">
+                        <p className="text-lg mb-2">{t('noBadgesYet')}</p>
+                        <p className="text-sm">{t('earnFirstBadge')}</p>
                     </div>
                 ) : (
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                         {badges.map((badgeText, index) => (
                             <div key={index} className="bg-gradient-to-br from-yellow-500/20 to-yellow-600/20 border border-yellow-500/30 rounded-lg p-4 text-center">
                                 <div className="text-4xl mb-2">{badgeText.split(' ')[0]}</div>
-                                <div className="font-semibold text-white text-sm">{badgeText.split(' ').slice(1).join(' ')}</div>
+                                <div className="font-semibold text-gray-900 dark:text-white text-sm">{badgeText.split(' ').slice(1).join(' ')}</div>
                             </div>
                         ))}
                     </div>
@@ -406,31 +408,31 @@ export default function Profile() {
             </div>
 
             {/* Account Information */}
-            <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
-                <h3 className="text-lg font-semibold text-white mb-4">Account Information</h3>
+            <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl p-6">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">{t('accountInfo')}</h3>
                 <div className="space-y-4">
                     <div>
-                        <label className="flex items-center gap-2 text-sm text-slate-400 mb-2"><UserIcon className="w-4 h-4" />Full Name</label>
-                        {editing ? <input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2.5 text-white focus:border-emerald-500 focus:outline-none" /> : <p className="text-white">{user.name}</p>}
+                        <label className="flex items-center gap-2 text-sm text-gray-500 dark:text-slate-400 mb-2"><UserIcon className="w-4 h-4" />{t('fullName')}</label>
+                        {editing ? <input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="w-full bg-gray-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-800 rounded-lg px-4 py-2.5 text-gray-900 dark:text-white focus:border-emerald-500 focus:outline-none" /> : <p className="text-gray-900 dark:text-white">{user.name}</p>}
                     </div>
                     <div>
-                        <label className="flex items-center gap-2 text-sm text-slate-400 mb-2"><Mail className="w-4 h-4" />Email</label>
-                        <p className="text-white">{user.email}</p>
-                        <p className="text-xs text-slate-500 mt-1">Email cannot be changed</p>
+                        <label className="flex items-center gap-2 text-sm text-gray-500 dark:text-slate-400 mb-2"><Mail className="w-4 h-4" />{t('emailAddress')}</label>
+                        <p className="text-gray-900 dark:text-white">{user.email}</p>
+                        <p className="text-xs text-gray-500 dark:text-slate-500 mt-1">{t('emailCannotChange')}</p>
                     </div>
                     <div>
-                        <label className="flex items-center gap-2 text-sm text-slate-400 mb-2"><Phone className="w-4 h-4" />Phone Number</label>
-                        {editing ? <input type="tel" value={formData.phoneNumber} onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })} className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2.5 text-white focus:border-emerald-500 focus:outline-none" /> : <p className="text-white">{user.phoneNumber || user.phone || 'Not provided'}</p>}
+                        <label className="flex items-center gap-2 text-sm text-gray-500 dark:text-slate-400 mb-2"><Phone className="w-4 h-4" />{t('phoneNumber')}</label>
+                        {editing ? <input type="tel" value={formData.phoneNumber} onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })} className="w-full bg-gray-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-800 rounded-lg px-4 py-2.5 text-gray-900 dark:text-white focus:border-emerald-500 focus:outline-none" /> : <p className="text-gray-900 dark:text-white">{user.phoneNumber || user.phone || t('notProvided')}</p>}
                     </div>
                     {(roleStr === 'donor' || roleStr === 'ngo') && (
                         <>
                             <div>
-                                <label className="flex items-center gap-2 text-sm text-slate-400 mb-2"><Building className="w-4 h-4" />Organization Name</label>
-                                {editing ? <input type="text" value={formData.organizationName} onChange={(e) => setFormData({ ...formData, organizationName: e.target.value })} className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2.5 text-white focus:border-emerald-500 focus:outline-none" /> : <p className="text-white">{user.organizationName || 'Not provided'}</p>}
+                                <label className="flex items-center gap-2 text-sm text-gray-500 dark:text-slate-400 mb-2"><Building className="w-4 h-4" />{t('organizationName')}</label>
+                                {editing ? <input type="text" value={formData.organizationName} onChange={(e) => setFormData({ ...formData, organizationName: e.target.value })} className="w-full bg-gray-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-800 rounded-lg px-4 py-2.5 text-gray-900 dark:text-white focus:border-emerald-500 focus:outline-none" /> : <p className="text-gray-900 dark:text-white">{user.organizationName || t('notProvided')}</p>}
                             </div>
                             <div>
-                                <label className="flex items-center gap-2 text-sm text-slate-400 mb-2"><MapPin className="w-4 h-4" />Address</label>
-                                {editing ? <textarea value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} rows={3} className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2.5 text-white focus:border-emerald-500 focus:outline-none resize-none" /> : <p className="text-white">{user.address || 'Not provided'}</p>}
+                                <label className="flex items-center gap-2 text-sm text-gray-500 dark:text-slate-400 mb-2"><MapPin className="w-4 h-4" />{t('address')}</label>
+                                {editing ? <textarea value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} rows={3} className="w-full bg-gray-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-800 rounded-lg px-4 py-2.5 text-gray-900 dark:text-white focus:border-emerald-500 focus:outline-none resize-none" /> : <p className="text-gray-900 dark:text-white">{user.address || t('notProvided')}</p>}
                             </div>
                         </>
                     )}
@@ -439,23 +441,23 @@ export default function Profile() {
 
             {/* Badge Guide — thresholds MUST match backend BADGE_RULES exactly */}
             <div className="bg-blue-900/20 border border-blue-500/30 rounded-xl p-6">
-                <h2 className="text-xl font-bold text-white mb-4">📚 Badge Guide</h2>
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">📚 {t('badgeGuide')}</h2>
                 <div className="space-y-3">
                     {[
-                        { e: '🌱', n: 'Newcomer', p: 10 },
-                        { e: '🦸', n: 'Local Hero', p: 50 },
-                        { e: '🏆', n: 'Champion', p: 150 },
-                        { e: '⭐', n: 'Legend', p: 300 },
-                        { e: '💫', n: 'Superhero', p: 500 },
+                        { e: '🌱', nKey: 'newcomer', p: 10 },
+                        { e: '🦸', nKey: 'localHero', p: 50 },
+                        { e: '🏆', nKey: 'champion', p: 150 },
+                        { e: '⭐', nKey: 'legend', p: 300 },
+                        { e: '💫', nKey: 'superhero', p: 500 },
                     ].map(b => (
-                        <div key={b.n} className="flex items-center space-x-3">
+                        <div key={b.nKey} className="flex items-center space-x-3">
                             <span className="text-2xl">{b.e}</span>
                             <div>
-                                <div className="font-semibold text-white">{b.n}</div>
-                                <div className="text-sm text-slate-400">Earn {b.p} karma points</div>
+                                <div className="font-semibold text-gray-900 dark:text-white">{t(b.nKey)}</div>
+                                <div className="text-sm text-gray-500 dark:text-slate-400">{t('earnKarma', { points: b.p })}</div>
                             </div>
                             {karmaPoints >= b.p && (
-                                <span className="ml-auto text-xs text-emerald-400 font-semibold">✓ Earned</span>
+                                <span className="ml-auto text-xs text-emerald-400 font-semibold">{t('earned')}</span>
                             )}
                         </div>
                     ))}
@@ -464,35 +466,35 @@ export default function Profile() {
 
             {/* How to Earn Karma */}
             <div className="bg-emerald-900/20 border border-emerald-500/30 rounded-xl p-6">
-                <h2 className="text-xl font-bold text-white mb-4">💡 How to Earn Karma</h2>
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">💡 {t('howToEarnKarma')}</h2>
                 <div className="space-y-3">
                     <div className="flex items-start space-x-3">
                         <span className="text-emerald-400 font-bold text-lg">+10</span>
-                        <div><div className="font-semibold text-white">Create a Donation</div><div className="text-sm text-slate-400">Donor lists new food for redistribution</div></div>
+                        <div><div className="font-semibold text-gray-900 dark:text-white">{t('createDonation')}</div><div className="text-sm text-gray-500 dark:text-slate-400">{t('createDonationDesc')}</div></div>
                     </div>
                     <div className="flex items-start space-x-3">
                         <span className="text-emerald-400 font-bold text-lg">+10</span>
-                        <div><div className="font-semibold text-white">Claim a Donation</div><div className="text-sm text-slate-400">NGO claims available food</div></div>
+                        <div><div className="font-semibold text-gray-900 dark:text-white">{t('claimDonation')}</div><div className="text-sm text-gray-500 dark:text-slate-400">{t('claimDonationDesc')}</div></div>
                     </div>
                     <div className="flex items-start space-x-3">
                         <span className="text-emerald-400 font-bold text-lg">+30</span>
-                        <div><div className="font-semibold text-white">Donation Delivered (Donor)</div><div className="text-sm text-slate-400">Your donated food is successfully delivered</div></div>
+                        <div><div className="font-semibold text-gray-900 dark:text-white">{t('deliverDonation')} (Donor)</div><div className="text-sm text-gray-500 dark:text-slate-400">{t('deliverDonationDesc')}</div></div>
                     </div>
                     <div className="flex items-start space-x-3">
                         <span className="text-emerald-400 font-bold text-lg">+20</span>
-                        <div><div className="font-semibold text-white">Donation Delivered (NGO)</div><div className="text-sm text-slate-400">Food you claimed is marked as delivered</div></div>
+                        <div><div className="font-semibold text-gray-900 dark:text-white">{t('deliverDonation')} (NGO)</div><div className="text-sm text-gray-500 dark:text-slate-400">{t('claimDonationDesc')}</div></div>
                     </div>
                     <div className="flex items-start space-x-3">
                         <span className="text-emerald-400 font-bold text-lg">+50</span>
-                        <div><div className="font-semibold text-white">Volunteer Delivery</div><div className="text-sm text-slate-400">Complete a food delivery as a volunteer</div></div>
+                        <div><div className="font-semibold text-gray-900 dark:text-white">{t('volunteerDelivery')}</div><div className="text-sm text-gray-500 dark:text-slate-400">{t('volunteerDeliveryDesc')}</div></div>
                     </div>
                 </div>
             </div>
 
             {!user.isVerified && roleStr === 'ngo' && (
                 <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-xl">
-                    <p className="text-sm text-amber-400 mb-2">⏳ Verification Pending</p>
-                    <p className="text-xs text-slate-400">Your NGO account is under review. You'll receive access once verified by our team.</p>
+                    <p className="text-sm text-amber-400 mb-2">⏳ {t('verificationPending')}</p>
+                    <p className="text-xs text-gray-500 dark:text-slate-400">Your NGO account is under review. You'll receive access once verified by our team.</p>
                 </div>
             )}
         </div>

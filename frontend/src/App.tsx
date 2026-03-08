@@ -14,6 +14,7 @@ import Notifications from './pages/dashboard/Notifications'
 import Profile from './pages/dashboard/Profile'
 import VolunteerDashboard from './pages/dashboard/VolunteerDashboard'
 import AdminDashboard from './pages/dashboard/AdminDashboard'
+import AccessibilitySettings from './pages/AccessibilitySettings'
 
 export default function App() {
   const user = JSON.parse(localStorage.getItem('user') || 'null');
@@ -31,6 +32,7 @@ export default function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/accessibility" element={<AccessibilitySettings />} />
         <Route path="/dashboard" element={
           isAuthenticated && user?.role === 'ADMIN'
             ? <Navigate to="/admin-dashboard" replace />
@@ -45,6 +47,7 @@ export default function App() {
           <Route path="impact" element={<Impact />} />
           <Route path="notifications" element={<Notifications />} />
           <Route path="profile" element={<Profile />} />
+          <Route path="accessibility" element={<AccessibilitySettings />} />
         </Route>
         <Route
           path="/admin-dashboard"
