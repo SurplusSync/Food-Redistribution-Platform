@@ -14,8 +14,7 @@ import { Server, Socket } from 'socket.io';
   },
 })
 export class EventsGateway
-  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
-{
+  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server: Server;
   private logger: Logger = new Logger('EventsGateway');
 
@@ -49,12 +48,28 @@ export class EventsGateway
       typeof donation === 'string'
         ? { donationId: donation, status: 'CLAIMED' }
         : {
-            donationId: donation?.id || donation?.donationId,
-            claimedBy: donation?.claimedById || donation?.claimedBy,
-            status: donation?.status || 'CLAIMED',
-          };
+          donationId: donation?.id || donation?.donationId,
+          claimedBy: donation?.claimedById || donation?.claimedBy,
+          status: donation?.status || 'CLAIMED',
+        };
 
     this.server.emit('donation.claimed', payload);
+  }
+
+  emitVolunteerAssigned(payload: {
+    volunteerId: string;
+    donationId: string;
+    donationName: string;
+    donorAddress: string;
+    ngoName: string;
+  }) {
+    this.server.emit('volunteer.assigned', {
+      ...payload,
+      id: `va-${Date.now()}`,
+      createdAt: new Date().toISOString(),
+    });
+    // Also ping the specific volunteer
+    this.server.emit(`volunteer.assigned.${payload.volunteerId}`, payload);
   }
 
   emitNotification(notification: {
