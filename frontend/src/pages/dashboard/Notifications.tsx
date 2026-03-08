@@ -112,7 +112,7 @@ export default function Notifications() {
                                 : 'bg-white dark:bg-slate-900 text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white'
                             }`}
                     >
-                        {t('unread', { count: unreadCount > 0 ? `(${unreadCount})` : '' })}
+                        {t('unread')} {unreadCount > 0 ? `(${unreadCount})` : ''}
                     </button>
                 </div>
 

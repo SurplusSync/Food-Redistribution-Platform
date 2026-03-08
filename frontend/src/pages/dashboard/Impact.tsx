@@ -403,9 +403,9 @@ function CommunityCounters({ stats }: { stats: CommunityStats }) {
             </div>
             <div className="mt-4 p-3 bg-emerald-500/5 border border-emerald-500/15 rounded-xl">
                 <p className="text-xs text-gray-500 dark:text-slate-400 text-center">
-                    <span className="text-emerald-400 font-semibold">{t('totalDonationsProcessed', { count: stats.totalDonations.toLocaleString() })}</span> ·{' '}
-                    <span className="text-blue-400 font-semibold">{t('successfullyDelivered', { count: stats.deliveredDonations.toLocaleString() })}</span> ·{' '}
-                    <span className="text-amber-400 font-semibold">{t('currentlyActive', { count: stats.activeDonations.toLocaleString() })}</span>
+                    <span className="text-emerald-400 font-semibold">{t('totalDonationsProcessed', { count: stats.totalDonations })}</span> ·{' '}
+                    <span className="text-blue-400 font-semibold">{t('successfullyDelivered', { count: stats.deliveredDonations })}</span> ·{' '}
+                    <span className="text-amber-400 font-semibold">{t('currentlyActive', { count: stats.activeDonations })}</span>
                 </p>
             </div>
         </div>

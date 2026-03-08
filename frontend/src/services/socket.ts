@@ -200,24 +200,6 @@ class SocketService {
   }
 
   /**
-   * Listen for volunteer assignment events
-   */
-  onVolunteerAssigned(callback: (data: { volunteerId: string; donationName: string; donorAddress: string }) => void): () => void {
-    if (!this.socket) {
-      console.warn('Socket not initialized');
-      return () => { };
-    }
-
-    this.socket.on('volunteer.assigned', callback);
-
-    return () => {
-      if (this.socket) {
-        this.socket.off('volunteer.assigned', callback);
-      }
-    };
-  }
-
-  /**
    * Disconnect socket
    */
   disconnect(): void {
