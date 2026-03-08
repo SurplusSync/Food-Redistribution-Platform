@@ -164,6 +164,16 @@ export const updateUserProfile = async (data: any) => {
   return response.data.data || response.data;
 };
 
+export const toggleAvailability = async (isAvailable: boolean) => {
+  const response = await api.patch('/auth/profile', { isAvailable });
+  return response.data.data || response.data;
+};
+
+export const getCompletedTrips = async (_userId: string): Promise<Donation[]> => {
+  const all = await getDonations({ status: ['DELIVERED'] });
+  return all;
+};
+
 // Donations
 
 export const getDonations = async (filters?: {
