@@ -29,6 +29,14 @@ export interface NotificationEvent {
   createdAt: string;
 }
 
+export interface VolunteerAssignedEvent {
+  volunteerId: string;
+  donationId: string;
+  donationName: string;
+  donorAddress: string;
+  ngoName: string;
+}
+
 class SocketService {
   private socket: Socket | null = null;
   private reconnectAttempts = 0;
@@ -185,6 +193,12 @@ class SocketService {
     };
   }
 
+  onVolunteerAssigned(callback: (data: VolunteerAssignedEvent) => void): () => void {
+    if (!this.socket) return () => { };
+    this.socket.on('volunteer.assigned', callback);
+    return () => { if (this.socket) this.socket.off('volunteer.assigned', callback); };
+  }
+
   /**
    * Disconnect socket
    */
@@ -220,4 +234,3 @@ class SocketService {
 
 // Export singleton instance
 export const socketService = new SocketService();
-
