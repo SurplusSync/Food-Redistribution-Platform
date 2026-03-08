@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { Toaster } from 'sonner'
 import LandingPage from './pages/LandingPage'
 import Login from './pages/Login'
@@ -16,10 +16,29 @@ import VolunteerDashboard from './pages/dashboard/VolunteerDashboard'
 import AdminDashboard from './pages/dashboard/AdminDashboard'
 import AccessibilitySettings from './pages/AccessibilitySettings'
 
-export default function App() {
-  const user = JSON.parse(localStorage.getItem('user') || 'null');
-  const isAuthenticated = !!localStorage.getItem('token');
+function useAuth() {
+  const token = localStorage.getItem('token')
+  const user = JSON.parse(localStorage.getItem('user') || 'null')
+  return { isAuthenticated: !!token, user }
+}
 
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated } = useAuth()
+  const location = useLocation()
+  if (!isAuthenticated) return <Navigate to="/login" replace state={{ from: location }} />
+  return <>{children}</>
+}
+
+function PublicOnly({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated, user } = useAuth()
+  if (isAuthenticated) {
+    const dest = user?.role === 'ADMIN' ? '/admin-dashboard' : '/dashboard'
+    return <Navigate to={dest} replace />
+  }
+  return <>{children}</>
+}
+
+export default function App() {
   return (
     <BrowserRouter>
       <Toaster
@@ -30,13 +49,11 @@ export default function App() {
       />
       <Routes>
         <Route path="/" element={<LandingPage />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        <Route path="/login" element={<PublicOnly><Login /></PublicOnly>} />
+        <Route path="/register" element={<PublicOnly><Register /></PublicOnly>} />
         <Route path="/accessibility" element={<AccessibilitySettings />} />
         <Route path="/dashboard" element={
-          isAuthenticated && user?.role === 'ADMIN'
-            ? <Navigate to="/admin-dashboard" replace />
-            : <DashboardLayout />
+          <ProtectedRoute><DashboardLayout /></ProtectedRoute>
         }>
           <Route index element={<DonorHome />} />
           <Route path="ngo" element={<NGODashboard />} />
@@ -52,11 +69,7 @@ export default function App() {
         <Route
           path="/admin-dashboard"
           element={
-            isAuthenticated && user?.role === 'ADMIN' ? (
-              <AdminDashboard />
-            ) : (
-              <Navigate to="/login" replace />
-            )
+            <ProtectedRoute><AdminDashboard /></ProtectedRoute>
           }
         />
       </Routes>
