@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { ArrowRight, Utensils, ChevronDown, Store, Building2, Car, MapPin, Shield, Zap, BarChart3, Heart, ClipboardList, Search, Truck, Package, Quote, Users, Globe, Award, Sun, Moon, Languages } from 'lucide-react'
 
-// ─── Animated Counter Hook ─────────────────────────────────────────────────────
+// Animated Counter Hook
 function useCountUp(target: number, duration = 2000) {
     const [count, setCount] = useState(0)
     const ref = useRef<HTMLDivElement>(null)
@@ -34,8 +34,8 @@ function useCountUp(target: number, duration = 2000) {
     return { count, ref }
 }
 
-// ─── Data ───────────────────────────────────────────────────────────────────────
-// ─── Data (keys only — translated inside component via t()) ──────────────────
+// Dat
+// Data (keys only — translated inside component via t())
 const roleConfigs = [
     {
         titleKey: 'donor',
@@ -100,7 +100,7 @@ const testimonialConfigs = [
     },
 ]
 
-// ─── Component ──────────────────────────────────────────────────────────────────
+// Componen─
 export default function LandingPage() {
     const { t, i18n } = useTranslation()
     const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains('dark'))
