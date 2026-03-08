@@ -46,13 +46,13 @@ function StatCard({ icon, label, value, accent }: {
   icon: React.ReactNode; label: string; value: string | number; accent: string
 }) {
   return (
-    <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl p-4 flex items-center gap-4">
-      <div className={`w-11 h-11 rounded-lg flex items-center justify-center ${accent}`}>
+    <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl p-3 sm:p-4 flex items-center gap-3 sm:gap-4 overflow-hidden">
+      <div className={`w-9 h-9 sm:w-11 sm:h-11 rounded-lg flex items-center justify-center shrink-0 ${accent}`}>
         {icon}
       </div>
-      <div>
-        <p className="text-2xl font-bold text-gray-900 dark:text-white">{value}</p>
-        <p className="text-xs text-gray-500 dark:text-slate-500 mt-0.5">{label}</p>
+      <div className="min-w-0">
+        <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white truncate">{value}</p>
+        <p className="text-xs text-gray-500 dark:text-slate-500 mt-0.5 truncate">{label}</p>
       </div>
     </div>
   )
@@ -87,18 +87,18 @@ function AvailabilityToggle({ isAvailable, onToggle, loading, t }: {
 
 // ─── Vehicle Profile Card ─────────────────────────────────────────────────────
 
-function VehicleProfile({ user, onSave, t }: { user: User; onSave: (data: any) => Promise<void>; t: (key: string) => string }) {
+function VehicleProfile({ user, onSave, t }: { user: User; onSave: (data: { vehicleType?: string; vehicleNumber?: string }) => Promise<void>; t: (key: string) => string }) {
   const [editing, setEditing] = useState(false)
   const [vehicleType, setVehicleType] = useState(user.vehicleType || '')
   const [vehicleNumber, setVehicleNumber] = useState(user.vehicleNumber || '')
   const [saving, setSaving] = useState(false)
 
   const vehicles = [
-    { value: 'bike', label: 'Motorbike', icon: '🏍️' },
-    { value: 'car', label: 'Car', icon: '🚗' },
-    { value: 'van', label: 'Van', icon: '🚐' },
-    { value: 'bicycle', label: 'Bicycle', icon: '🚲' },
-    { value: 'walk', label: 'On Foot', icon: '🚶' },
+    { value: 'bike', label: t('bike'), icon: '🏍️' },
+    { value: 'car', label: t('car'), icon: '🚗' },
+    { value: 'van', label: t('van'), icon: '🚐' },
+    { value: 'bicycle', label: t('bicycle'), icon: '🚲' },
+    { value: 'walk', label: t('onFoot'), icon: '🚶' },
   ]
 
   const handleSave = async () => {
@@ -115,11 +115,11 @@ function VehicleProfile({ user, onSave, t }: { user: User; onSave: (data: any) =
   }
 
   return (
-    <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl p-5">
+    <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl p-4 sm:p-5">
       <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <Car className="w-4 h-4 text-purple-400" />
-          <h3 className="font-medium text-gray-900 dark:text-white text-sm">{t('vehicleDetails')}</h3>
+        <div className="flex items-center gap-2 min-w-0">
+          <Car className="w-4 h-4 text-purple-400 shrink-0" />
+          <h3 className="font-medium text-gray-900 dark:text-white text-sm truncate">{t('vehicleDetails')}</h3>
         </div>
         {!editing && (
           <button
@@ -135,7 +135,7 @@ function VehicleProfile({ user, onSave, t }: { user: User; onSave: (data: any) =
         <div className="space-y-3">
           <div>
             <label className="text-xs text-gray-500 dark:text-slate-500 mb-1.5 block">{t('vehicleType')}</label>
-            <div className="grid grid-cols-5 gap-1.5">
+            <div className="grid grid-cols-3 sm:grid-cols-5 gap-1.5">
               {vehicles.map(v => (
                 <button
                   key={v.value}
@@ -146,7 +146,7 @@ function VehicleProfile({ user, onSave, t }: { user: User; onSave: (data: any) =
                     }`}
                 >
                   <span className="text-lg">{v.icon}</span>
-                  <span>{v.label}</span>
+                  <span className="truncate w-full text-center">{v.label}</span>
                 </button>
               ))}
             </div>
@@ -223,48 +223,51 @@ function TaskCard({
 
   return (
     <div className="p-4 hover:bg-gray-50 dark:hover:bg-slate-800/30 transition-colors">
-      <div className="flex items-start gap-4">
-        {/* Food icon */}
-        <div className={`w-11 h-11 rounded-lg flex items-center justify-center text-xl shrink-0 ${donation.status === 'PICKED_UP' ? 'bg-amber-500/10' : 'bg-emerald-500/10'
-          }`}>
-          {FOOD_EMOJI[donation.foodType] || '🍱'}
-        </div>
-
-        {/* Info */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-0.5">
-            <p className="font-medium text-gray-900 dark:text-white truncate">{donation.name}</p>
-            <span className={`shrink-0 text-xs px-1.5 py-0.5 rounded font-medium ${donation.status === 'PICKED_UP'
-                ? 'bg-amber-500/10 text-amber-400'
-                : 'bg-blue-500/10 text-blue-400'
-              }`}>
-              {donation.status === 'PICKED_UP' ? t('enRoute') : t('awaitingPickup')}
-            </span>
+      <div className="flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-4">
+        {/* Top row: icon + info */}
+        <div className="flex items-start gap-3 sm:gap-4 flex-1 min-w-0">
+          {/* Food icon */}
+          <div className={`w-10 h-10 sm:w-11 sm:h-11 rounded-lg flex items-center justify-center text-lg sm:text-xl shrink-0 ${donation.status === 'PICKED_UP' ? 'bg-amber-500/10' : 'bg-emerald-500/10'
+            }`}>
+            {FOOD_EMOJI[donation.foodType] || '🍱'}
           </div>
 
-          <p className="text-sm text-gray-500 dark:text-slate-500 truncate">
-            {donation.quantity} {donation.unit} • {donation.donorName}
-          </p>
-
-          {donation.location?.address && (
-            <div className="flex items-center gap-1 mt-1">
-              <MapPin className="w-3 h-3 text-gray-400 dark:text-slate-600 shrink-0" />
-              <p className="text-xs text-gray-400 dark:text-slate-600 truncate">{donation.location.address}</p>
-            </div>
-          )}
-
-          {timeLeft.urgent && !timeLeft.expired && (
-            <div className="flex items-center gap-1 mt-1.5">
-              <AlertTriangle className="w-3 h-3 text-red-400" />
-              <span className="text-xs text-red-400 font-medium">
-                {t('expiresIn')} {timeLeft.hours}h {timeLeft.minutes}m
+          {/* Info */}
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-0.5 flex-wrap">
+              <p className="font-medium text-gray-900 dark:text-white truncate max-w-[180px] sm:max-w-none">{donation.name}</p>
+              <span className={`shrink-0 text-xs px-1.5 py-0.5 rounded font-medium ${donation.status === 'PICKED_UP'
+                  ? 'bg-amber-500/10 text-amber-400'
+                  : 'bg-blue-500/10 text-blue-400'
+                }`}>
+                {donation.status === 'PICKED_UP' ? t('enRoute') : t('awaitingPickup')}
               </span>
             </div>
-          )}
+
+            <p className="text-sm text-gray-500 dark:text-slate-500 truncate">
+              {donation.quantity} {donation.unit} • {donation.donorName}
+            </p>
+
+            {donation.location?.address && (
+              <div className="flex items-center gap-1 mt-1">
+                <MapPin className="w-3 h-3 text-gray-400 dark:text-slate-600 shrink-0" />
+                <p className="text-xs text-gray-400 dark:text-slate-600 truncate">{donation.location.address}</p>
+              </div>
+            )}
+
+            {timeLeft.urgent && !timeLeft.expired && (
+              <div className="flex items-center gap-1 mt-1.5">
+                <AlertTriangle className="w-3 h-3 text-red-400" />
+                <span className="text-xs text-red-400 font-medium">
+                  {t('expiresIn')} {timeLeft.hours}h {timeLeft.minutes}m
+                </span>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Actions */}
-        <div className="flex flex-col gap-1.5 shrink-0">
+        <div className="flex flex-row sm:flex-col gap-1.5 shrink-0 flex-wrap">
           <button
             onClick={() => onView(donation)}
             className="px-3 py-1.5 rounded-md text-xs font-medium bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors border border-gray-300 dark:border-slate-700"
@@ -584,8 +587,11 @@ export default function VolunteerDashboard() {
     }
   }
 
-  const handleSaveVehicle = async (data: any) => {
-    await updateUserProfile(data)
+  const handleSaveVehicle = async (data: { vehicleType?: string; vehicleNumber?: string }) => {
+    const payload: Record<string, string> = {}
+    if (data.vehicleType) payload.vehicleType = data.vehicleType
+    if (data.vehicleNumber) payload.vehicleNumber = data.vehicleNumber
+    await updateUserProfile(payload)
     setProfile(p => p ? { ...p, ...data } : p)
   }
 
@@ -623,8 +629,8 @@ export default function VolunteerDashboard() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">{t('volunteerDashboard')}</h1>
+        <div className="min-w-0">
+          <h1 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white truncate">{t('volunteerDashboard')}</h1>
           <p className="text-gray-500 dark:text-slate-500 mt-1 text-sm">{t('managePickupsDeliveries')}</p>
         </div>
         <AvailabilityToggle
@@ -675,7 +681,7 @@ export default function VolunteerDashboard() {
       )}
 
       {/* Vehicle + Tasks layout */}
-      <div className="grid lg:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5">
         {/* Left: Vehicle profile */}
         <div className="lg:col-span-1 space-y-4">
           <VehicleProfile user={profile ?? user} onSave={handleSaveVehicle} t={t} />
