@@ -45,7 +45,7 @@ export default function NearExpiryAlerts() {
           return remaining > 0 && remaining <= twoHoursMs
         })
         .map(toAlertRow)
-        .filter((r): r is AlertRow => r !== null)
+        .filter((r: AlertRow | null): r is AlertRow => r !== null)
       setItems(nearExpiry)
     } catch (err) {
       console.error('Failed to load near-expiry alerts:', err)
