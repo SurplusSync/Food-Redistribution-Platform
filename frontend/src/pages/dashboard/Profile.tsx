@@ -46,7 +46,7 @@ function CertificateModal({ user, onClose }: CertificateProps) {
         const pw = window.open('', '_blank', 'width=900,height=680')
         if (!pw) return
         pw.document.write(`<!DOCTYPE html><html><head>
-      <title>Certificate – ${user.organizationName || user.name}</title>
+      <title>Certificate - ${user.name}${user.organizationName ? ` from ${user.organizationName}` : ''}</title>
       <style>
         *{margin:0;padding:0;box-sizing:border-box}
         body{font-family:Georgia,serif;background:${lightBg};display:flex;align-items:center;justify-content:center;min-height:100vh;padding:40px}
@@ -136,8 +136,13 @@ function CertificateModal({ user, onClose }: CertificateProps) {
                             {t('certPresentedTo')}
                         </p>
                         <p className="text-3xl font-bold italic mb-2" style={{ color: '#0f172a', fontFamily: 'Georgia, serif' }}>
-                            {user.organizationName || user.name}
+                            {user.name}
                         </p>
+                        {user.organizationName && (
+                            <p className="text-sm text-gray-500 italic mb-2" style={{ fontFamily: 'Georgia, serif' }}>
+                                from {user.organizationName}
+                            </p>
+                        )}
                         <span className="inline-block text-gray-900 dark:text-white text-xs rounded-full px-4 py-1 mb-5" style={{ background: accentColor, fontFamily: 'sans-serif' }}>
                             {roleLabel}
                         </span>
