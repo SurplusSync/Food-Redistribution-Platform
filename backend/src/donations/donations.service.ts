@@ -28,7 +28,7 @@ export class DonationsService {
     private cacheManager: Record<string, any>,
     private eventsGateway: EventsGateway,
     private redisService: RedisService,
-  ) { }
+  ) {}
 
   private async invalidateCache(): Promise<void> {
     try {
@@ -163,7 +163,6 @@ export class DonationsService {
     }
   }
 
-
   async findAll(latitude?: number, longitude?: number, radius: number = 5) {
     if (!latitude || !longitude) {
       try {
@@ -296,8 +295,8 @@ export class DonationsService {
                 const a =
                   Math.sin(dLat / 2) ** 2 +
                   Math.cos((saved.latitude * Math.PI) / 180) *
-                  Math.cos(((v.latitude || 0) * Math.PI) / 180) *
-                  Math.sin(dLon / 2) ** 2;
+                    Math.cos(((v.latitude || 0) * Math.PI) / 180) *
+                    Math.sin(dLon / 2) ** 2;
                 return {
                   volunteer: v,
                   dist: 6371 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)),
