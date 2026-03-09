@@ -79,6 +79,9 @@ export class User {
   isAvailable: boolean; // volunteer availability toggle
 
   // 🎮 Gamification
+  @Column('float', { default: 0 })
+  trustScore: number;
+
   @Column({ default: 0 })
   karmaPoints: number;
 
