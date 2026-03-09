@@ -411,4 +411,31 @@ export const adminAPI = {
   getAllDonations: () => api.get('/admin/donations'),
 };
 
+// Feedback API
+
+export interface FeedbackItem {
+  id: string;
+  rating: number;
+  comment: string | null;
+  donationId: string;
+  ngoId: string;
+  createdAt: string;
+  ngo?: { id: string; name: string };
+}
+
+export const createFeedback = async (data: { donationId: string; rating: number; comment?: string }): Promise<FeedbackItem> => {
+  const response = await api.post('/feedback', data);
+  return response.data;
+};
+
+export const getFeedbackForDonation = async (donationId: string): Promise<FeedbackItem[]> => {
+  const response = await api.get(`/feedback/donation/${donationId}`);
+  return response.data;
+};
+
+export const getDonorAverageRating = async (donorId: string): Promise<{ averageScore: number; totalReviews: number }> => {
+  const response = await api.get(`/feedback/donor/${donorId}/average`);
+  return response.data;
+};
+
 export default api;
