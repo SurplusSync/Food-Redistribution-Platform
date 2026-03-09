@@ -248,8 +248,16 @@ describe('DonationsService Unit Tests', () => {
   describe('handleExpiredDonations (Cron Job)', () => {
     it('should expire AVAILABLE/CLAIMED donations past their expiryTime', async () => {
       const expiredDonations = [
-        { id: 'd1', status: DonationStatus.AVAILABLE, expiryTime: new Date(Date.now() - 3600000) },
-        { id: 'd2', status: DonationStatus.CLAIMED, expiryTime: new Date(Date.now() - 7200000) },
+        {
+          id: 'd1',
+          status: DonationStatus.AVAILABLE,
+          expiryTime: new Date(Date.now() - 3600000),
+        },
+        {
+          id: 'd2',
+          status: DonationStatus.CLAIMED,
+          expiryTime: new Date(Date.now() - 7200000),
+        },
       ];
 
       mockDonationRepo.find.mockResolvedValueOnce(expiredDonations);

@@ -4,7 +4,7 @@ import { Cache } from 'cache-manager';
 
 @Injectable()
 export class RedisService {
-  constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache) { }
+  constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache) {}
   async deleteKeysByPattern(pattern: string): Promise<void> {
     const cache: any = this.cacheManager;
     const store = cache.store || (cache.stores && cache.stores[0]);
