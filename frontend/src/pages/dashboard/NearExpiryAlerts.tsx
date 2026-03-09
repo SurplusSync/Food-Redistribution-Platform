@@ -1,5 +1,7 @@
-import { useMemo, useState } from 'react'
-import { AlertTriangle, Clock4, Filter } from 'lucide-react'
+import { useEffect, useMemo, useState, useCallback } from 'react'
+import { AlertTriangle, Clock4, Filter, Loader2, RefreshCw } from 'lucide-react'
+import { getDonations, claimDonation, type Donation } from '../../services/api'
+import { socketService } from '../../services/socket'
 
 type AlertRow = {
   id: string
@@ -7,17 +9,86 @@ type AlertRow = {
   donor: string
   expiresInMinutes: number
   quantity: string
+  status: string
 }
 
-const seedAlerts: AlertRow[] = [
-  { id: 'AL-11', food: 'Cooked Rice Meal', donor: 'Community Kitchen A', expiresInMinutes: 85, quantity: '20 boxes' },
-  { id: 'AL-12', food: 'Bread Packets', donor: 'BakeHub', expiresInMinutes: 45, quantity: '15 packs' },
-  { id: 'AL-13', food: 'Fruit Mix', donor: 'Green Basket', expiresInMinutes: 130, quantity: '10 kg' },
-]
-
 export default function NearExpiryAlerts() {
-  const [items, setItems] = useState(seedAlerts)
+  const [items, setItems] = useState<AlertRow[]>([])
   const [urgency, setUrgency] = useState<'all' | 'critical' | 'warning'>('all')
+  const [loading, setLoading] = useState(true)
+  const [claiming, setClaiming] = useState<string | null>(null)
+
+  const toAlertRow = (d: Donation): AlertRow | null => {
+    const expiryDate = new Date(d.expiryTime)
+    const minutesLeft = Math.round((expiryDate.getTime() - Date.now()) / 60000)
+    if (minutesLeft <= 0) return null // already expired
+    return {
+      id: d.id,
+      food: d.name,
+      donor: d.donorName || 'Unknown Donor',
+      expiresInMinutes: minutesLeft,
+      quantity: `${d.quantity} ${d.unit || ''}`.trim(),
+      status: d.status,
+    }
+  }
+
+  const loadAlerts = useCallback(async () => {
+    setLoading(true)
+    try {
+      const allDonations = await getDonations({ status: ['AVAILABLE', 'CLAIMED'] })
+      const twoHoursMs = 2 * 60 * 60 * 1000
+      const now = Date.now()
+      const nearExpiry = allDonations
+        .filter((d: Donation) => {
+          const expiryMs = new Date(d.expiryTime).getTime()
+          const remaining = expiryMs - now
+          return remaining > 0 && remaining <= twoHoursMs
+        })
+        .map(toAlertRow)
+        .filter((r): r is AlertRow => r !== null)
+      setItems(nearExpiry)
+    } catch (err) {
+      console.error('Failed to load near-expiry alerts:', err)
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    loadAlerts()
+
+    // Listen for real-time near-expiry alerts from backend cron
+    const unsubExpiry = socketService.onNearExpiryAlert((data) => {
+      // When backend flags a donation as near-expiry, refresh the list
+      loadAlerts()
+      console.log('Near-expiry alert received:', data)
+    })
+
+    // Refresh countdown every minute
+    const timer = setInterval(() => {
+      setItems(prev => prev
+        .map(item => ({ ...item, expiresInMinutes: item.expiresInMinutes - 1 }))
+        .filter(item => item.expiresInMinutes > 0)
+      )
+    }, 60000)
+
+    return () => {
+      unsubExpiry()
+      clearInterval(timer)
+    }
+  }, [loadAlerts])
+
+  const handleClaim = async (id: string) => {
+    setClaiming(id)
+    try {
+      await claimDonation(id)
+      setItems(prev => prev.filter(item => item.id !== id))
+    } catch (err: any) {
+      alert(err?.response?.data?.message || err?.message || 'Failed to claim donation')
+    } finally {
+      setClaiming(null)
+    }
+  }
 
   const filtered = useMemo(() => {
     return items
@@ -29,15 +100,24 @@ export default function NearExpiryAlerts() {
       .sort((a, b) => a.expiresInMinutes - b.expiresInMinutes)
   }, [items, urgency])
 
-  const markHandled = (id: string) => {
-    setItems((prev) => prev.filter((item) => item.id !== id))
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="w-8 h-8 animate-spin text-emerald-500" />
+      </div>
+    )
   }
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold text-white">Near-Expiry Alerts</h1>
-        <p className="text-slate-400 mt-1">Prioritize food at risk of expiry with urgency-first triage actions.</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold text-white">Near-Expiry Alerts</h1>
+          <p className="text-slate-400 mt-1">Donations expiring within 2 hours — act fast to prevent waste.</p>
+        </div>
+        <button onClick={loadAlerts} className="btn-secondary py-2 px-3 text-sm flex items-center gap-2">
+          <RefreshCw className="w-4 h-4" /> Refresh
+        </button>
       </div>
 
       <div className="card p-4 flex flex-wrap items-center justify-between gap-3">
@@ -78,13 +158,24 @@ export default function NearExpiryAlerts() {
                 </span>
               </div>
               <div className="mt-3 flex gap-2">
-                <button type="button" className="btn-primary py-2 px-3 text-sm">Donate Now</button>
-                <button type="button" onClick={() => markHandled(alert.id)} className="btn-secondary py-2 px-3 text-sm">Mark Handled</button>
+                {alert.status === 'AVAILABLE' && (
+                  <button
+                    type="button"
+                    className="btn-primary py-2 px-3 text-sm"
+                    disabled={claiming === alert.id}
+                    onClick={() => handleClaim(alert.id)}
+                  >
+                    {claiming === alert.id ? 'Claiming...' : 'Claim Now'}
+                  </button>
+                )}
+                {alert.status === 'CLAIMED' && (
+                  <span className="text-xs text-blue-400 bg-blue-500/10 px-3 py-2 rounded-md">Already Claimed</span>
+                )}
               </div>
             </div>
           )
         })}
-        {filtered.length === 0 && <div className="card p-8 text-center text-slate-500">No near-expiry alerts in this filter.</div>}
+        {filtered.length === 0 && <div className="card p-8 text-center text-slate-500">No donations expiring soon. All clear!</div>}
       </div>
     </div>
   )
