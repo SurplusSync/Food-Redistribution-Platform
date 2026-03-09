@@ -37,6 +37,11 @@ export interface VolunteerAssignedEvent {
   ngoName: string;
 }
 
+export interface NearExpiryAlertEvent {
+  donationId: string;
+  expiryTime: string;
+}
+
 class SocketService {
   private socket: Socket | null = null;
   private reconnectAttempts = 0;
@@ -197,6 +202,12 @@ class SocketService {
     if (!this.socket) return () => { };
     this.socket.on('volunteer.assigned', callback);
     return () => { if (this.socket) this.socket.off('volunteer.assigned', callback); };
+  }
+
+  onNearExpiryAlert(callback: (data: NearExpiryAlertEvent) => void): () => void {
+    if (!this.socket) return () => { };
+    this.socket.on('donation.near_expiry', callback);
+    return () => { if (this.socket) this.socket.off('donation.near_expiry', callback); };
   }
 
   /**
