@@ -46,7 +46,7 @@ function CertificateModal({ user, onClose }: CertificateProps) {
         const pw = window.open('', '_blank', 'width=900,height=680')
         if (!pw) return
         pw.document.write(`<!DOCTYPE html><html><head>
-      <title>Certificate – ${user.organizationName || user.name}</title>
+      <title>Certificate - ${user.name}${user.organizationName ? ` from ${user.organizationName}` : ''}</title>
       <style>
         *{margin:0;padding:0;box-sizing:border-box}
         body{font-family:Georgia,serif;background:${lightBg};display:flex;align-items:center;justify-content:center;min-height:100vh;padding:40px}
@@ -136,8 +136,13 @@ function CertificateModal({ user, onClose }: CertificateProps) {
                             {t('certPresentedTo')}
                         </p>
                         <p className="text-3xl font-bold italic mb-2" style={{ color: '#0f172a', fontFamily: 'Georgia, serif' }}>
-                            {user.organizationName || user.name}
+                            {user.name}
                         </p>
+                        {user.organizationName && (
+                            <p className="text-sm text-gray-500 italic mb-2" style={{ fontFamily: 'Georgia, serif' }}>
+                                from {user.organizationName}
+                            </p>
+                        )}
                         <span className="inline-block text-gray-900 dark:text-white text-xs rounded-full px-4 py-1 mb-5" style={{ background: accentColor, fontFamily: 'sans-serif' }}>
                             {roleLabel}
                         </span>
@@ -196,7 +201,7 @@ export default function Profile() {
     const [editing, setEditing] = useState(false)
     const [saving, setSaving] = useState(false)
     const [showCertificate, setShowCertificate] = useState(false)
-    const [formData, setFormData] = useState({ name: '', phoneNumber: '', address: '', organizationName: '' })
+    const [formData, setFormData] = useState({ name: '', phone: '', address: '', organizationName: '' })
 
     useEffect(() => { loadProfile() }, [])
 
@@ -209,7 +214,7 @@ export default function Profile() {
             if (!data) throw new Error('getUserProfile returned null or undefined')
             if (!data.id) throw new Error('User data is missing id field')
             setUser(data)
-            setFormData({ name: data.name || '', phoneNumber: data.phoneNumber || data.phone || '', address: data.address || '', organizationName: data.organizationName || '' })
+            setFormData({ name: data.name || '', phone: data.phone || data.phoneNumber || '', address: data.address || '', organizationName: data.organizationName || '' })
 
             const currentBadges = (data.badges || []).map((badge) => String(badge).trim())
             const seenBadges = JSON.parse(localStorage.getItem('seen-badges') || '[]') as string[]
@@ -321,7 +326,7 @@ export default function Profile() {
                             {user.name?.[0]?.toUpperCase() || 'U'}
                         </div>
                         <div>
-                            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{user.organizationName || user.name}</h1>
+                            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{user.name}</h1>
                             <div className="flex items-center gap-2 mt-1">
                                 <span className={`px-2 py-0.5 rounded text-xs font-medium ${badge.bg} ${badge.text}`}>{badge.label}</span>
                                 {user.isVerified && (
@@ -435,7 +440,7 @@ export default function Profile() {
                     </div>
                     <div>
                         <label className="flex items-center gap-2 text-sm text-gray-500 dark:text-slate-400 mb-2"><Phone className="w-4 h-4" />{t('phoneNumber')}</label>
-                        {editing ? <input type="tel" value={formData.phoneNumber} onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })} className="w-full bg-gray-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-800 rounded-lg px-4 py-2.5 text-gray-900 dark:text-white focus:border-emerald-500 focus:outline-none" /> : <p className="text-gray-900 dark:text-white">{user.phoneNumber || user.phone || t('notProvided')}</p>}
+                        {editing ? <input type="tel" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} className="w-full bg-gray-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-800 rounded-lg px-4 py-2.5 text-gray-900 dark:text-white focus:border-emerald-500 focus:outline-none" /> : <p className="text-gray-900 dark:text-white">{user.phone || user.phoneNumber || t('notProvided')}</p>}
                     </div>
                     {(roleStr === 'donor' || roleStr === 'ngo') && (
                         <>
