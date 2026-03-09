@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { getUserProfile, updateUserProfile, type User } from '../../services/api'
 import { User as UserIcon, Building, Phone, Mail, MapPin, Shield, Edit2, Check, Trophy, Star, AlertCircle, Loader2, Download, Award } from 'lucide-react'
+import { toast } from 'sonner'
 
 // ─── Certificate Modal (All Roles) ───────────────────────────────────────────
 
@@ -209,6 +210,18 @@ export default function Profile() {
             if (!data.id) throw new Error('User data is missing id field')
             setUser(data)
             setFormData({ name: data.name || '', phoneNumber: data.phoneNumber || data.phone || '', address: data.address || '', organizationName: data.organizationName || '' })
+
+            const currentBadges = (data.badges || []).map((badge) => String(badge).trim())
+            const seenBadges = JSON.parse(localStorage.getItem('seen-badges') || '[]') as string[]
+            const newlyEarned = currentBadges.filter((badge) => !seenBadges.includes(badge))
+
+            newlyEarned.forEach((badgeText) => {
+                toast.success('New badge earned!', {
+                    description: badgeText,
+                })
+            })
+
+            localStorage.setItem('seen-badges', JSON.stringify(currentBadges))
         } catch (err: any) {
             const msg = err?.message || err?.response?.data?.message || 'Failed to load profile'
             setError(msg)

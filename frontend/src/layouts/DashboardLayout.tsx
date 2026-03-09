@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom'
-import { LayoutDashboard, PlusCircle, Map, History, LogOut, Bell, TrendingUp, User, Languages } from 'lucide-react'
+import { LayoutDashboard, PlusCircle, Map, History, LogOut, Bell, TrendingUp, User, Navigation2, Trophy, LifeBuoy, AlertTriangle, MapPin, Star, Languages } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { getNotifications, addNotification } from "../services/api";
 import { socketService } from "../services/socket";
@@ -71,8 +71,14 @@ export default function DashboardLayout() {
     { to: userRole === 'ngo' ? '/dashboard/ngo' : '/dashboard', icon: LayoutDashboard, label: t('dashboard'), roles: ['donor', 'ngo', 'volunteer'] },
     { to: '/dashboard/add', icon: PlusCircle, label: t('addFood'), roles: ['donor'] },
     { to: '/dashboard/map', icon: Map, label: t('discover'), roles: ['donor', 'ngo', 'volunteer'] },
+    { to: '/dashboard/location', icon: Navigation2, label: 'Live Tracking', roles: ['volunteer'] },
+    { to: '/dashboard/navigation', icon: MapPin, label: 'Navigation', roles: ['ngo', 'volunteer'] },
     { to: '/dashboard/history', icon: History, label: t('history'), roles: ['donor', 'ngo', 'volunteer'] },
+    { to: '/dashboard/alerts', icon: AlertTriangle, label: 'Near-Expiry', roles: ['donor', 'ngo', 'volunteer'] },
     { to: '/dashboard/impact', icon: TrendingUp, label: t('impact'), roles: ['donor', 'ngo', 'volunteer'] },
+    { to: '/dashboard/leaderboard', icon: Trophy, label: 'Leaderboards', roles: ['donor', 'ngo', 'volunteer'] },
+    { to: '/dashboard/feedback', icon: Star, label: 'Ratings', roles: ['donor', 'ngo'] },
+    { to: '/dashboard/support', icon: LifeBuoy, label: 'Support', roles: ['donor', 'ngo', 'volunteer'] },
   ].filter(link => link.roles.includes(userRole))
 
   const isActive = (path: string) => {

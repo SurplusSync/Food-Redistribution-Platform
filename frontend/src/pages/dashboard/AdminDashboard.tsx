@@ -5,9 +5,28 @@ import { adminAPI } from '../../services/api';
 import { toast } from 'sonner';
 import { ShieldAlert, CheckCircle, Ban, Activity, LogOut, X } from 'lucide-react';
 
+const flaggedFoodSeed = [
+  {
+    id: 'FG-201',
+    organizationName: 'Community Donor',
+    email: 'donor@example.com',
+    createdAt: new Date().toISOString(),
+    status: 'FLAGGED',
+    reason: 'Possible quality issue (temperature mismatch)',
+  },
+  {
+    id: 'FG-202',
+    organizationName: 'Neighborhood Bakery',
+    email: 'bakery@example.com',
+    createdAt: new Date().toISOString(),
+    status: 'FLAGGED',
+    reason: 'Reported stale packaging by volunteer',
+  },
+];
+
 export default function AdminDashboard() {
   const { t } = useTranslation();
-  const [activeTab, setActiveTab] = useState<'pending' | 'users' | 'donations'>('pending');
+  const [activeTab, setActiveTab] = useState<'pending' | 'users' | 'donations' | 'flagged'>('pending');
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [certificatePreviewUrl, setCertificatePreviewUrl] = useState<string | null>(null);
@@ -24,7 +43,11 @@ export default function AdminDashboard() {
       if (activeTab === 'pending') res = await adminAPI.getPendingNGOs();
       if (activeTab === 'users') res = await adminAPI.getAllUsers();
       if (activeTab === 'donations') res = await adminAPI.getAllDonations();
-      setData(res?.data || []);
+      if (activeTab === 'flagged') {
+        setData(flaggedFoodSeed);
+      } else {
+        setData(res?.data || []);
+      }
     } catch (error) {
       toast.error('Failed to fetch admin data');
     } finally {
@@ -64,6 +87,11 @@ export default function AdminDashboard() {
     setCertificatePreviewUrl(null);
   };
 
+  const handleFlaggedDecision = (id: string, decision: 'approved' | 'rejected' | 'escalated') => {
+    setData((prev) => prev.map((item) => (item.id === id ? { ...item, status: decision.toUpperCase() } : item)));
+    toast.success(`Flagged donation ${decision}`);
+  };
+
   const isPdfCertificate = certificatePreviewUrl?.toLowerCase().includes('.pdf');
 
   const handleSignOut = () => {
@@ -99,7 +127,7 @@ export default function AdminDashboard() {
 
         {/* Minimalist Tabs */}
         <div className="flex space-x-1 bg-white/80 dark:bg-slate-900/50 p-1 rounded-lg w-fit border border-gray-200 dark:border-slate-800">
-          {['pending', 'users', 'donations'].map((tab) => (
+          {['pending', 'users', 'donations', 'flagged'].map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab as any)}
@@ -107,7 +135,7 @@ export default function AdminDashboard() {
                 activeTab === tab ? 'bg-emerald-500 text-white' : 'text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white'
               }`}
             >
-              {tab === 'pending' ? t('pendingNGOs') : tab === 'users' ? t('allUsers') : t('platformDonations')}
+              {tab === 'pending' ? t('pendingNGOs') : tab === 'users' ? t('allUsers') : tab === 'donations' ? t('platformDonations') : 'Flagged Food Review'}
             </button>
           ))}
         </div>
@@ -167,6 +195,19 @@ export default function AdminDashboard() {
                         <span className="text-gray-500 dark:text-slate-400 flex items-center justify-end gap-1">
                           <Activity size={16} /> {item.status}
                         </span>
+                      )}
+                      {activeTab === 'flagged' && (
+                        <div className="flex items-center justify-end gap-3 ml-auto">
+                          <button onClick={() => handleFlaggedDecision(item.id, 'approved')} className="text-emerald-400 hover:text-emerald-300">
+                            Approve
+                          </button>
+                          <button onClick={() => handleFlaggedDecision(item.id, 'rejected')} className="text-red-400 hover:text-red-300">
+                            Reject
+                          </button>
+                          <button onClick={() => handleFlaggedDecision(item.id, 'escalated')} className="text-amber-400 hover:text-amber-300">
+                            Escalate
+                          </button>
+                        </div>
                       )}
                     </td>
                   </tr>
