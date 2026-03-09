@@ -324,6 +324,20 @@
   @apply absolute -top-1 -right-1 bg-emerald-500 text-white text-xs font-bold rounded-full min-w-[20px] h-5 flex items-center justify-center px-1 shadow-lg;
 }
 
+/* Accessibility toggles from preferences */
+.a11y-large-text body {
+  font-size: 1.05rem;
+}
+
+.a11y-contrast body {
+  filter: contrast(1.2);
+}
+
+.a11y-contrast .card,
+.a11y-contrast .card-elevated {
+  border-color: rgba(148, 163, 184, 0.75);
+}
+
 /* Progress bar */
 .progress-bar {
   @apply w-full h-2 bg-gray-200 dark:bg-slate-800 rounded-full overflow-hidden;

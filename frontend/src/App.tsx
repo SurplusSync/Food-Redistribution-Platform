@@ -15,6 +15,13 @@ import Profile from './pages/dashboard/Profile'
 import VolunteerDashboard from './pages/dashboard/VolunteerDashboard'
 import AdminDashboard from './pages/dashboard/AdminDashboard'
 import AccessibilitySettings from './pages/AccessibilitySettings'
+import VolunteerTracking from './pages/dashboard/VolunteerTracking'
+import Leaderboards from './pages/dashboard/Leaderboards'
+import SupportTickets from './pages/dashboard/SupportTickets'
+import NearExpiryAlerts from './pages/dashboard/NearExpiryAlerts'
+import FeedbackRatings from './pages/dashboard/FeedbackRatings'
+import NavigationAssist from './pages/dashboard/NavigationAssist'
+import Preferences from './pages/dashboard/Preferences'
 
 function useAuth() {
   const token = localStorage.getItem('token')
@@ -62,6 +69,13 @@ export default function App() {
           <Route path="volunteer" element={<VolunteerDashboard />} />
           <Route path="history" element={<History />} />
           <Route path="impact" element={<Impact />} />
+          <Route path="location" element={<VolunteerTracking />} />
+          <Route path="leaderboard" element={<Leaderboards />} />
+          <Route path="support" element={<SupportTickets />} />
+          <Route path="alerts" element={<NearExpiryAlerts />} />
+          <Route path="feedback" element={<FeedbackRatings />} />
+          <Route path="navigation" element={<NavigationAssist />} />
+          <Route path="preferences" element={<Preferences />} />
           <Route path="notifications" element={<Notifications />} />
           <Route path="profile" element={<Profile />} />
           <Route path="accessibility" element={<AccessibilitySettings />} />
