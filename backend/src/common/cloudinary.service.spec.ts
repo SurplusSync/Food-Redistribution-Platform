@@ -65,6 +65,8 @@ describe('CloudinaryService', () => {
     // The result will look like: https://placehold.co/...?text=mocked-image.jpg
     expect(result).toContain('https://placehold.co');
     expect(result).toContain('mocked-image');
-    expect(warnSpy).toHaveBeenCalledWith('⚠️ Cloudinary keys missing. Falling back to Mock mode.');
+    expect(warnSpy).toHaveBeenCalledWith(
+      '⚠️ Cloudinary keys missing. Falling back to Mock mode.',
+    );
   });
 });

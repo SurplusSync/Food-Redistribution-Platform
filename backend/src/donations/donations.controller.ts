@@ -44,9 +44,24 @@ export class DonationsController {
   @UseInterceptors(CacheInterceptor)
   @CacheTTL(60_000)
   @ApiOperation({ summary: 'Get all available food donations' })
-  @ApiQuery({ name: 'latitude', required: false, type: Number, description: 'NGO latitude for distance filtering' })
-  @ApiQuery({ name: 'longitude', required: false, type: Number, description: 'NGO longitude for distance filtering' })
-  @ApiQuery({ name: 'radius', required: false, type: Number, description: 'Search radius in km (default: 5)' })
+  @ApiQuery({
+    name: 'latitude',
+    required: false,
+    type: Number,
+    description: 'NGO latitude for distance filtering',
+  })
+  @ApiQuery({
+    name: 'longitude',
+    required: false,
+    type: Number,
+    description: 'NGO longitude for distance filtering',
+  })
+  @ApiQuery({
+    name: 'radius',
+    required: false,
+    type: Number,
+    description: 'Search radius in km (default: 5)',
+  })
   @ApiResponse({ status: 200, description: 'List of available donations' })
   findAll(
     @Query('latitude') latitude?: number,
@@ -59,16 +74,27 @@ export class DonationsController {
   @Get('stats/monthly')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Get monthly donation stats for the authenticated user (NGO growth reports)' })
-  @ApiResponse({ status: 200, description: 'Monthly stats retrieved successfully' })
+  @ApiOperation({
+    summary:
+      'Get monthly donation stats for the authenticated user (NGO growth reports)',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Monthly stats retrieved successfully',
+  })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async getMonthlyStats(@Req() req: any) {
     return this.donationsService.getMonthlyStats(req.user.userId);
   }
 
   @Get('stats/community')
-  @ApiOperation({ summary: 'Get platform-wide community impact stats (public)' })
-  @ApiResponse({ status: 200, description: 'Community stats retrieved successfully' })
+  @ApiOperation({
+    summary: 'Get platform-wide community impact stats (public)',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Community stats retrieved successfully',
+  })
   async getCommunityStats() {
     return this.donationsService.getCommunityStats();
   }
@@ -114,7 +140,10 @@ export class DonationsController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update food donation status' })
-  @ApiResponse({ status: 200, description: 'Donation status updated successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Donation status updated successfully',
+  })
   @ApiResponse({ status: 400, description: 'Invalid status or unauthorized' })
   @ApiResponse({ status: 404, description: 'Donation not found' })
   updateStatus(
@@ -133,13 +162,20 @@ export class DonationsController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Mark a food donation as delivered' })
-  @ApiResponse({ status: 200, description: 'Donation marked as delivered successfully' })
-  @ApiResponse({ status: 400, description: 'Donation already delivered or mismatch' })
+  @ApiResponse({
+    status: 200,
+    description: 'Donation marked as delivered successfully',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Donation already delivered or mismatch',
+  })
   @ApiResponse({ status: 404, description: 'Donation not found' })
-  markAsDelivered(
-    @Param('id') id: string,
-    @Req() req: any,
-  ) {
-    return this.donationsService.updateStatus(id, 'DELIVERED' as any, req.user.userId);
+  markAsDelivered(@Param('id') id: string, @Req() req: any) {
+    return this.donationsService.updateStatus(
+      id,
+      'DELIVERED' as any,
+      req.user.userId,
+    );
   }
 }

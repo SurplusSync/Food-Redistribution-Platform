@@ -28,7 +28,7 @@ export class DonationsService {
     private cacheManager: Record<string, any>,
     private eventsGateway: EventsGateway,
     private redisService: RedisService,
-  ) { }
+  ) {}
 
   private async invalidateCache(): Promise<void> {
     try {
@@ -217,7 +217,10 @@ export class DonationsService {
           throw new NotFoundException('User not found');
         }
 
-        if (donation.expiryTime && new Date(donation.expiryTime) <= new Date()) {
+        if (
+          donation.expiryTime &&
+          new Date(donation.expiryTime) <= new Date()
+        ) {
           donation.status = DonationStatus.EXPIRED;
           await transactionalEntityManager.save(donation);
           throw new BadRequestException(
@@ -285,15 +288,26 @@ export class DonationsService {
             let assigned = availableVolunteers[0];
             if (saved.latitude && saved.longitude) {
               const withDistance = availableVolunteers.map((v: any) => {
-                const dLat = ((v.latitude || 0) - saved.latitude) * (Math.PI / 180);
-                const dLon = ((v.longitude || 0) - saved.longitude) * (Math.PI / 180);
-                const a = Math.sin(dLat / 2) ** 2 + Math.cos(saved.latitude * Math.PI / 180) * Math.cos((v.latitude || 0) * Math.PI / 180) * Math.sin(dLon / 2) ** 2;
-                return { volunteer: v, dist: 6371 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)) };
+                const dLat =
+                  ((v.latitude || 0) - saved.latitude) * (Math.PI / 180);
+                const dLon =
+                  ((v.longitude || 0) - saved.longitude) * (Math.PI / 180);
+                const a =
+                  Math.sin(dLat / 2) ** 2 +
+                  Math.cos((saved.latitude * Math.PI) / 180) *
+                    Math.cos(((v.latitude || 0) * Math.PI) / 180) *
+                    Math.sin(dLon / 2) ** 2;
+                return {
+                  volunteer: v,
+                  dist: 6371 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)),
+                };
               });
               withDistance.sort((a, b) => a.dist - b.dist);
               assigned = withDistance[0].volunteer;
             }
-            const ngo = await this.usersRepository.findOne({ where: { id: userId } });
+            const ngo = await this.usersRepository.findOne({
+              where: { id: userId },
+            });
             this.eventsGateway.emitVolunteerAssigned({
               volunteerId: assigned.id,
               donationId: saved.id,
@@ -486,7 +500,9 @@ export class DonationsService {
 
   async getMonthlyStats(userId: string) {
     try {
-      const user = await this.usersRepository.findOne({ where: { id: userId } });
+      const user = await this.usersRepository.findOne({
+        where: { id: userId },
+      });
       const role = user?.role || 'DONOR';
 
       const months: { year: number; month: number; label: string }[] = [];
@@ -494,29 +510,50 @@ export class DonationsService {
         const d = new Date();
         d.setDate(1);
         d.setMonth(d.getMonth() - i);
-        const labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-        months.push({ year: d.getFullYear(), month: d.getMonth(), label: labels[d.getMonth()] });
+        const labels = [
+          'Jan',
+          'Feb',
+          'Mar',
+          'Apr',
+          'May',
+          'Jun',
+          'Jul',
+          'Aug',
+          'Sep',
+          'Oct',
+          'Nov',
+          'Dec',
+        ];
+        months.push({
+          year: d.getFullYear(),
+          month: d.getMonth(),
+          label: labels[d.getMonth()],
+        });
       }
 
       const allDonations = await this.donationsRepository.find({
-        where: role === 'NGO'
-          ? { claimedById: userId }
-          : role === 'VOLUNTEER'
-            ? { volunteerId: userId }
-            : { donorId: userId },
+        where:
+          role === 'NGO'
+            ? { claimedById: userId }
+            : role === 'VOLUNTEER'
+              ? { volunteerId: userId }
+              : { donorId: userId },
         order: { createdAt: 'ASC' },
       });
 
       const monthlyData = months.map(({ year, month, label }) => {
-        const inMonth = allDonations.filter(d => {
+        const inMonth = allDonations.filter((d) => {
           const dt = new Date(d.createdAt);
           return dt.getFullYear() === year && dt.getMonth() === month;
         });
-        const delivered = inMonth.filter(d => d.status === DonationStatus.DELIVERED).length;
-        const claimed = inMonth.filter(d =>
-          d.status === DonationStatus.CLAIMED ||
-          d.status === DonationStatus.PICKED_UP ||
-          d.status === DonationStatus.DELIVERED
+        const delivered = inMonth.filter(
+          (d) => d.status === DonationStatus.DELIVERED,
+        ).length;
+        const claimed = inMonth.filter(
+          (d) =>
+            d.status === DonationStatus.CLAIMED ||
+            d.status === DonationStatus.PICKED_UP ||
+            d.status === DonationStatus.DELIVERED,
         ).length;
         return {
           label,
@@ -566,7 +603,7 @@ export class DonationsService {
           totalVolunteers,
         },
       };
-    } catch (error) {
+    } catch {
       return {
         success: true,
         data: {

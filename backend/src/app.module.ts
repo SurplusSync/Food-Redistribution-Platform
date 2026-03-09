@@ -11,6 +11,7 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { ScheduleModule } from '@nestjs/schedule';
 import { createKeyv } from '@keyv/redis';
 import { EventsModule } from './events/events.module';
+import { ExpiryModule } from './expiry/expiry.module';
 
 @Module({
   imports: [
@@ -86,8 +87,9 @@ import { EventsModule } from './events/events.module';
     AuthModule,
     DonationsModule,
     EventsModule,
+    ExpiryModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}
