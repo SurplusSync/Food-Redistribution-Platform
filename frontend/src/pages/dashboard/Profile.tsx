@@ -196,7 +196,7 @@ export default function Profile() {
     const [editing, setEditing] = useState(false)
     const [saving, setSaving] = useState(false)
     const [showCertificate, setShowCertificate] = useState(false)
-    const [formData, setFormData] = useState({ name: '', phoneNumber: '', address: '', organizationName: '' })
+    const [formData, setFormData] = useState({ name: '', phone: '', address: '', organizationName: '' })
 
     useEffect(() => { loadProfile() }, [])
 
@@ -209,7 +209,7 @@ export default function Profile() {
             if (!data) throw new Error('getUserProfile returned null or undefined')
             if (!data.id) throw new Error('User data is missing id field')
             setUser(data)
-            setFormData({ name: data.name || '', phoneNumber: data.phoneNumber || data.phone || '', address: data.address || '', organizationName: data.organizationName || '' })
+            setFormData({ name: data.name || '', phone: data.phone || data.phoneNumber || '', address: data.address || '', organizationName: data.organizationName || '' })
 
             const currentBadges = (data.badges || []).map((badge) => String(badge).trim())
             const seenBadges = JSON.parse(localStorage.getItem('seen-badges') || '[]') as string[]
@@ -435,7 +435,7 @@ export default function Profile() {
                     </div>
                     <div>
                         <label className="flex items-center gap-2 text-sm text-gray-500 dark:text-slate-400 mb-2"><Phone className="w-4 h-4" />{t('phoneNumber')}</label>
-                        {editing ? <input type="tel" value={formData.phoneNumber} onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })} className="w-full bg-gray-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-800 rounded-lg px-4 py-2.5 text-gray-900 dark:text-white focus:border-emerald-500 focus:outline-none" /> : <p className="text-gray-900 dark:text-white">{user.phoneNumber || user.phone || t('notProvided')}</p>}
+                        {editing ? <input type="tel" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} className="w-full bg-gray-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-800 rounded-lg px-4 py-2.5 text-gray-900 dark:text-white focus:border-emerald-500 focus:outline-none" /> : <p className="text-gray-900 dark:text-white">{user.phone || user.phoneNumber || t('notProvided')}</p>}
                     </div>
                     {(roleStr === 'donor' || roleStr === 'ngo') && (
                         <>
