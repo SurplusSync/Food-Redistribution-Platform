@@ -12,6 +12,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { createKeyv } from '@keyv/redis';
 import { EventsModule } from './events/events.module';
 import { ExpiryModule } from './expiry/expiry.module';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
@@ -88,6 +89,7 @@ import { ExpiryModule } from './expiry/expiry.module';
     DonationsModule,
     EventsModule,
     ExpiryModule,
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [AppService],

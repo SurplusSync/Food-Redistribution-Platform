@@ -269,6 +269,12 @@ export class DonationsService {
           throw new BadRequestException('Only NGOs can claim donations');
         }
 
+        if (!user.isVerified) {
+          throw new BadRequestException(
+            'Your NGO account is not yet verified. Please wait for admin approval before claiming donations.',
+          );
+        }
+
         if (
           user.dailyIntakeCapacity !== null &&
           user.dailyIntakeCapacity !== undefined
