@@ -134,19 +134,29 @@ describe('AdminController', () => {
       };
 
       mockUserRepository.findOne.mockResolvedValue(mockNGO);
-      mockUserRepository.save.mockResolvedValue({ ...mockNGO, isVerified: true });
+      mockUserRepository.save.mockResolvedValue({
+        ...mockNGO,
+        isVerified: true,
+      });
 
       const result = await controller.verifyNgo(ngoId);
 
-      expect(mockUserRepository.findOne).toHaveBeenCalledWith({ where: { id: ngoId } });
-      expect(mockUserRepository.save).toHaveBeenCalledWith({ ...mockNGO, isVerified: true });
+      expect(mockUserRepository.findOne).toHaveBeenCalledWith({
+        where: { id: ngoId },
+      });
+      expect(mockUserRepository.save).toHaveBeenCalledWith({
+        ...mockNGO,
+        isVerified: true,
+      });
       expect(result.message).toContain('verified');
     });
 
     it('should throw NotFoundException if NGO does not exist', async () => {
       mockUserRepository.findOne.mockResolvedValue(null);
 
-      await expect(controller.verifyNgo('invalid-id')).rejects.toThrow(NotFoundException);
+      await expect(controller.verifyNgo('invalid-id')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
@@ -198,34 +208,61 @@ describe('AdminController', () => {
   describe('toggleUserStatus', () => {
     it('should suspend an active user', async () => {
       const userId = '123';
-      const mockUser = { id: userId, name: 'John Doe', role: UserRole.DONOR, isActive: true };
+      const mockUser = {
+        id: userId,
+        name: 'John Doe',
+        role: UserRole.DONOR,
+        isActive: true,
+      };
 
       mockUserRepository.findOne.mockResolvedValue(mockUser);
-      mockUserRepository.save.mockResolvedValue({ ...mockUser, isActive: false });
+      mockUserRepository.save.mockResolvedValue({
+        ...mockUser,
+        isActive: false,
+      });
 
       const result = await controller.toggleUserStatus(userId);
 
-      expect(mockUserRepository.save).toHaveBeenCalledWith({ ...mockUser, isActive: false });
+      expect(mockUserRepository.save).toHaveBeenCalledWith({
+        ...mockUser,
+        isActive: false,
+      });
       expect(result.message).toContain('suspended');
       expect(result.isActive).toBe(false);
     });
 
     it('should restore a suspended user', async () => {
       const userId = '123';
-      const mockUser = { id: userId, name: 'John Doe', role: UserRole.DONOR, isActive: false };
+      const mockUser = {
+        id: userId,
+        name: 'John Doe',
+        role: UserRole.DONOR,
+        isActive: false,
+      };
 
       mockUserRepository.findOne.mockResolvedValue(mockUser);
-      mockUserRepository.save.mockResolvedValue({ ...mockUser, isActive: true });
+      mockUserRepository.save.mockResolvedValue({
+        ...mockUser,
+        isActive: true,
+      });
 
       const result = await controller.toggleUserStatus(userId);
 
-      expect(mockUserRepository.save).toHaveBeenCalledWith({ ...mockUser, isActive: true });
+      expect(mockUserRepository.save).toHaveBeenCalledWith({
+        ...mockUser,
+        isActive: true,
+      });
       expect(result.message).toContain('unbanned');
       expect(result.isActive).toBe(true);
     });
 
     it('should prevent suspending an admin account', async () => {
-      const adminUser = { id: 'admin-123', name: 'System Admin', role: UserRole.ADMIN, isActive: true };
+      const adminUser = {
+        id: 'admin-123',
+        name: 'System Admin',
+        role: UserRole.ADMIN,
+        isActive: true,
+      };
 
       mockUserRepository.findOne.mockResolvedValue(adminUser);
 
@@ -237,7 +274,9 @@ describe('AdminController', () => {
     it('should throw NotFoundException if user does not exist', async () => {
       mockUserRepository.findOne.mockResolvedValue(null);
 
-      await expect(controller.toggleUserStatus('invalid-id')).rejects.toThrow(NotFoundException);
+      await expect(controller.toggleUserStatus('invalid-id')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 

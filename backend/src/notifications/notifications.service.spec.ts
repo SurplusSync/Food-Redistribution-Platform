@@ -17,7 +17,10 @@ describe('NotificationsService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         NotificationsService,
-        { provide: getRepositoryToken(UserNotification), useValue: mockNotifRepo },
+        {
+          provide: getRepositoryToken(UserNotification),
+          useValue: mockNotifRepo,
+        },
       ],
     }).compile();
 
@@ -33,7 +36,12 @@ describe('NotificationsService', () => {
   // ── create ────────────────────────────────────
   describe('create', () => {
     it('should create and save a notification', async () => {
-      const data = { userId: 'u1', title: 'New Food', message: 'A donation nearby', type: 'new_food_nearby' };
+      const data = {
+        userId: 'u1',
+        title: 'New Food',
+        message: 'A donation nearby',
+        type: 'new_food_nearby',
+      };
       const entity = { id: 'n1', ...data, read: false, createdAt: new Date() };
       mockNotifRepo.create.mockReturnValue(entity);
       mockNotifRepo.save.mockResolvedValue(entity);
@@ -51,8 +59,16 @@ describe('NotificationsService', () => {
   describe('createForAllUsers', () => {
     it('should create notifications for multiple users', async () => {
       const userIds = ['u1', 'u2', 'u3'];
-      const data = { title: 'Alert', message: 'Broadcast', type: 'near_expiry' };
-      const entities = userIds.map((userId) => ({ id: `n-${userId}`, userId, ...data }));
+      const data = {
+        title: 'Alert',
+        message: 'Broadcast',
+        type: 'near_expiry',
+      };
+      const entities = userIds.map((userId) => ({
+        id: `n-${userId}`,
+        userId,
+        ...data,
+      }));
 
       mockNotifRepo.create.mockImplementation((d) => d);
       mockNotifRepo.save.mockResolvedValue(entities);
@@ -73,7 +89,11 @@ describe('NotificationsService', () => {
     it('should handle empty user list', async () => {
       mockNotifRepo.save.mockResolvedValue([]);
 
-      const result = await service.createForAllUsers([], { title: 'X', message: 'Y', type: 'z' });
+      const result = await service.createForAllUsers([], {
+        title: 'X',
+        message: 'Y',
+        type: 'z',
+      });
 
       expect(mockNotifRepo.create).not.toHaveBeenCalled();
       expect(result).toEqual([]);

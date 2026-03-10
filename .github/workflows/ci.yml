@@ -2,65 +2,136 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches:
-      - main
+    branches: ['**']
   pull_request:
     branches:
       - main
 
 jobs:
-  build-and-test:
+  # ── Backend: type-check · unit+integration tests · e2e · build ───────────
+  backend:
+    name: Backend
     runs-on: ubuntu-latest
 
-    # Step 4: Start Docker environment for PostgreSQL
     services:
       postgres:
         image: postgres:15
         env:
-          POSTGRES_USER: surplus_admin
-          POSTGRES_PASSWORD: password123
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
           POSTGRES_DB: surplus_db
         ports:
           - 5432:5432
         options: >-
-          --health-cmd pg_isready
+          --health-cmd "pg_isready -U postgres"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
 
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_HOST: localhost
+      DATABASE_PORT: 5432
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: surplus_db
+      REDIS_HOST: localhost
+      REDIS_PORT: 6379
+      JWT_SECRET: test_jwt_secret
+      CLOUDINARY_CLOUD_NAME: test_cloud_name
+      CLOUDINARY_API_KEY: test_api_key
+      CLOUDINARY_API_SECRET: test_api_secret
+
     steps:
-      - name: Step 1: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Step 2: Setup Node.js (use Node 18)
+      - name: Setup Node.js 20
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
 
-      - name: Step 3: Install backend dependencies
-        run: |
-          cd backend
-          npm install
+      - name: Install dependencies
+        run: npm install
+        working-directory: backend
 
-      - name: Step 5: Run backend tests
+      - name: Wait for Postgres
         run: |
-          cd backend
-          npm run test
-        env:
-          DATABASE_HOST: localhost
-          DATABASE_PORT: 5432
-          POSTGRES_USER: surplus_admin
-          POSTGRES_PASSWORD: password123
-          POSTGRES_DB: surplus_db
-          JWT_SECRET: test_jwt_secret
-          CLOUDINARY_CLOUD_NAME: test_cloud_name
-          CLOUDINARY_API_KEY: test_api_key
-          CLOUDINARY_API_SECRET: test_api_secret
+          for i in $(seq 1 30); do
+            pg_isready -h localhost -p 5432 -U postgres && break
+            echo "Waiting for Postgres... ($i/30)"
+            sleep 2
+          done
+          pg_isready -h localhost -p 5432 -U postgres || (echo 'Postgres never became ready' && exit 1)
 
-      - name: Step 6: Run frontend tests (if frontend exists)
+      - name: Wait for Redis
         run: |
-          if [ -d "frontend" ]; then
-            cd frontend
-            npm install
-            npm run test:run
-          fi
+          for i in $(seq 1 10); do
+            (echo PING | nc -w 2 localhost 6379 | grep -q PONG) && echo "Redis is ready" && break
+            echo "Waiting for Redis... ($i/10)"
+            sleep 2
+          done
+
+      - name: TypeScript type check
+        run: npx tsc --noEmit
+        working-directory: backend
+
+      - name: Lint
+        run: npx eslint "src/**/*.ts"
+        working-directory: backend
+
+      - name: Unit & integration tests
+        run: npm run test -- --forceExit
+        working-directory: backend
+
+      - name: E2E tests
+        run: npm run test:e2e -- --forceExit
+        working-directory: backend
+
+      - name: Build
+        run: npm run build
+        working-directory: backend
+
+  # ── Frontend: type-check · unit tests · build ────────────────────────────
+  frontend:
+    name: Frontend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install
+        working-directory: frontend
+
+      - name: TypeScript type check
+        run: npx tsc -b --noEmit
+        working-directory: frontend
+
+      - name: Lint
+        run: npm run lint
+        working-directory: frontend
+        continue-on-error: true
+
+      - name: Unit tests
+        run: npm run test:run
+        working-directory: frontend
+
+      - name: Build
+        run: npm run build
+        working-directory: frontend

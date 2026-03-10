@@ -25,7 +25,9 @@ export class NotificationsService {
     userIds: string[],
     data: { title: string; message: string; type: string },
   ) {
-    const entities = userIds.map((userId) => this.notifRepo.create({ userId, ...data }));
+    const entities = userIds.map((userId) =>
+      this.notifRepo.create({ userId, ...data }),
+    );
     return this.notifRepo.save(entities);
   }
 

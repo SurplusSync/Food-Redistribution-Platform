@@ -1,3 +1,5 @@
+import '@testing-library/jest-dom';
+
 // ── Global Module Mocks ─────────────────────────────────
 
 vi.mock('../services/api');

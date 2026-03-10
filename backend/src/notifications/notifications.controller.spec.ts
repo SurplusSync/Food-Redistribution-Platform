@@ -39,7 +39,9 @@ describe('NotificationsController', () => {
       const req = { user: { sub: 'user-123' } };
       const result = await controller.getMyNotifications(req);
 
-      expect(mockNotificationsService.findByUser).toHaveBeenCalledWith('user-123');
+      expect(mockNotificationsService.findByUser).toHaveBeenCalledWith(
+        'user-123',
+      );
       expect(result).toEqual(notifications);
     });
   });
@@ -51,7 +53,10 @@ describe('NotificationsController', () => {
       const req = { user: { sub: 'user-123' } };
       const result = await controller.markRead('n1', req);
 
-      expect(mockNotificationsService.markRead).toHaveBeenCalledWith('n1', 'user-123');
+      expect(mockNotificationsService.markRead).toHaveBeenCalledWith(
+        'n1',
+        'user-123',
+      );
       expect(result).toEqual({ success: true });
     });
   });
@@ -63,7 +68,9 @@ describe('NotificationsController', () => {
       const req = { user: { sub: 'user-123' } };
       const result = await controller.markAllRead(req);
 
-      expect(mockNotificationsService.markAllRead).toHaveBeenCalledWith('user-123');
+      expect(mockNotificationsService.markAllRead).toHaveBeenCalledWith(
+        'user-123',
+      );
       expect(result).toEqual({ success: true });
     });
   });

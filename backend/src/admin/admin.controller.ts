@@ -13,17 +13,19 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User, UserRole } from '../auth/entities/user.entity';
 import { Donation } from '../donations/entities/donation.entity';
-import { SupportTicket, TicketStatus, TicketPriority } from './entities/support-ticket.entity';
-import { FlaggedDonation, FlagStatus } from './entities/flagged-donation.entity';
+import {
+  SupportTicket,
+  TicketStatus,
+  TicketPriority,
+} from './entities/support-ticket.entity';
+import {
+  FlaggedDonation,
+  FlagStatus,
+} from './entities/flagged-donation.entity';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { EmailService } from '../common/email.service';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiBearerAuth,
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 
 @ApiTags('Admin')
 @ApiBearerAuth()
@@ -40,7 +42,7 @@ export class AdminController {
     @InjectRepository(FlaggedDonation)
     private flagRepository: Repository<FlaggedDonation>,
     private emailService: EmailService,
-  ) { }
+  ) {}
 
   // ─── NGO Verification ───────────────────────────────────────────────────────
 
@@ -49,7 +51,16 @@ export class AdminController {
   async getPendingNgos() {
     return await this.userRepository.find({
       where: { role: UserRole.NGO, isVerified: false },
-      select: ['id', 'name', 'email', 'organizationName', 'phone', 'address', 'certificateUrl', 'createdAt'],
+      select: [
+        'id',
+        'name',
+        'email',
+        'organizationName',
+        'phone',
+        'address',
+        'certificateUrl',
+        'createdAt',
+      ],
     });
   }
 
@@ -63,7 +74,10 @@ export class AdminController {
     await this.userRepository.save(user);
 
     // Send verification email (non-blocking)
-    this.emailService.sendNgoVerificationEmail(user.email, user.organizationName || user.name);
+    this.emailService.sendNgoVerificationEmail(
+      user.email,
+      user.organizationName || user.name,
+    );
 
     return {
       message: `${user.organizationName || user.name} has been successfully verified!`,
@@ -77,7 +91,16 @@ export class AdminController {
   @ApiOperation({ summary: 'Get all platform users' })
   async getAllUsers() {
     return await this.userRepository.find({
-      select: ['id', 'name', 'email', 'role', 'organizationName', 'isVerified', 'isActive', 'createdAt'],
+      select: [
+        'id',
+        'name',
+        'email',
+        'role',
+        'organizationName',
+        'isVerified',
+        'isActive',
+        'createdAt',
+      ],
       order: { createdAt: 'DESC' },
     });
   }
@@ -87,7 +110,8 @@ export class AdminController {
   async toggleUserStatus(@Param('id') id: string) {
     const user = await this.userRepository.findOne({ where: { id } });
     if (!user) throw new NotFoundException('User not found');
-    if (user.role === UserRole.ADMIN) throw new Error('Cannot suspend an administrator account');
+    if (user.role === UserRole.ADMIN)
+      throw new Error('Cannot suspend an administrator account');
 
     user.isActive = !user.isActive;
     await this.userRepository.save(user);
@@ -121,9 +145,12 @@ export class AdminController {
   @ApiOperation({ summary: 'Create a support ticket (any authenticated user)' })
   async createTicket(
     @Req() req: any,
-    @Body() body: { subject: string; description: string; priority?: TicketPriority },
+    @Body()
+    body: { subject: string; description: string; priority?: TicketPriority },
   ) {
-    const user = await this.userRepository.findOne({ where: { id: req.user.userId } });
+    const user = await this.userRepository.findOne({
+      where: { id: req.user.userId },
+    });
     if (!user) throw new NotFoundException('User not found');
 
     const ticket = this.ticketRepository.create({
@@ -138,7 +165,12 @@ export class AdminController {
     const saved = await this.ticketRepository.save(ticket);
 
     // Send acknowledgement email
-    this.emailService.sendSupportTicketAck(user.email, user.name, body.subject, saved.id);
+    this.emailService.sendSupportTicketAck(
+      user.email,
+      user.name,
+      body.subject,
+      saved.id,
+    );
 
     return saved;
   }
@@ -184,8 +216,12 @@ export class AdminController {
     @Req() req: any,
     @Body() body: { donationId: string; reason: string },
   ) {
-    const user = await this.userRepository.findOne({ where: { id: req.user.userId } });
-    const donation = await this.donationRepository.findOne({ where: { id: body.donationId } });
+    const user = await this.userRepository.findOne({
+      where: { id: req.user.userId },
+    });
+    const donation = await this.donationRepository.findOne({
+      where: { id: body.donationId },
+    });
 
     if (!donation) throw new NotFoundException('Donation not found');
 
@@ -201,7 +237,9 @@ export class AdminController {
   }
 
   @Patch('flagged/:id')
-  @ApiOperation({ summary: 'Admin decision on flagged donation: approve / reject / escalate' })
+  @ApiOperation({
+    summary: 'Admin decision on flagged donation: approve / reject / escalate',
+  })
   async updateFlaggedDonation(
     @Param('id') id: string,
     @Body() body: { status: FlagStatus; adminNote?: string },
@@ -218,14 +256,19 @@ export class AdminController {
   // ─── Admin Notifications ─────────────────────────────────────────────────────
 
   @Get('notifications')
-  @ApiOperation({ summary: 'Get admin notifications (recent activity summary)' })
+  @ApiOperation({
+    summary: 'Get admin notifications (recent activity summary)',
+  })
   async getAdminNotifications() {
-    const [pendingNgos, openTickets, flaggedCount, recentDonations] = await Promise.all([
-      this.userRepository.count({ where: { role: UserRole.NGO, isVerified: false } }),
-      this.ticketRepository.count({ where: { status: TicketStatus.OPEN } }),
-      this.flagRepository.count({ where: { status: FlagStatus.FLAGGED } }),
-      this.donationRepository.find({ order: { createdAt: 'DESC' }, take: 5 }),
-    ]);
+    const [pendingNgos, openTickets, flaggedCount, recentDonations] =
+      await Promise.all([
+        this.userRepository.count({
+          where: { role: UserRole.NGO, isVerified: false },
+        }),
+        this.ticketRepository.count({ where: { status: TicketStatus.OPEN } }),
+        this.flagRepository.count({ where: { status: FlagStatus.FLAGGED } }),
+        this.donationRepository.find({ order: { createdAt: 'DESC' }, take: 5 }),
+      ]);
 
     const notifications = [];
 

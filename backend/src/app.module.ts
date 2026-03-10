@@ -81,11 +81,21 @@ import { UserNotification } from './notifications/entities/user-notification.ent
             configService.get<string>('DATABASE_PORT') || '5432',
             10,
           ),
-          username: configService.get<string>('POSTGRES_USER') || 'student',
-          password: configService.get<string>('POSTGRES_PASSWORD') || 'student',
+          username: configService.get<string>('POSTGRES_USER') || 'postgres',
+          password:
+            configService.get<string>('POSTGRES_PASSWORD') || 'postgres',
           database: configService.get<string>('POSTGRES_DB') || 'surplus_db',
-          entities: [User, Donation, SupportTicket, FlaggedDonation, DonationFeedback, UserNotification],
+          entities: [
+            User,
+            Donation,
+            SupportTicket,
+            FlaggedDonation,
+            DonationFeedback,
+            UserNotification,
+          ],
           synchronize: true,
+          retryAttempts: 3,
+          retryDelay: 3000,
           ssl: dbSslEnabled ? { rejectUnauthorized: false } : false,
         };
       },
@@ -102,4 +112,4 @@ import { UserNotification } from './notifications/entities/user-notification.ent
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

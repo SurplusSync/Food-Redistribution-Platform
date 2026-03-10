@@ -1,7 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ExpiryAlertService } from './expiry-alert.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Donation, DonationStatus } from '../donations/entities/donation.entity';
+import {
+  Donation,
+  DonationStatus,
+} from '../donations/entities/donation.entity';
 import { User } from '../auth/entities/user.entity';
 import { EventsGateway } from '../events/events.gateway';
 import { EmailService } from '../common/email.service';
@@ -67,21 +70,28 @@ describe('ExpiryAlertService', () => {
 
     const isDateWithinBounds = (targetDate: Date) => {
       const [start, end] = getFindBounds();
-      return targetDate.getTime() >= start.getTime() && targetDate.getTime() <= end.getTime();
+      return (
+        targetDate.getTime() >= start.getTime() &&
+        targetDate.getTime() <= end.getTime()
+      );
     };
 
     describe('1. Expiry Window Calculation', () => {
       it('Verify donation expiring in 90 minutes triggers near-expiry detection', async () => {
         mockDonationRepo.find.mockResolvedValue([]);
         await service.findNearExpiryDonations();
-        const ninetyMinsFromNow = new Date(SYSTEM_TIME.getTime() + 90 * 60 * 1000);
+        const ninetyMinsFromNow = new Date(
+          SYSTEM_TIME.getTime() + 90 * 60 * 1000,
+        );
         expect(isDateWithinBounds(ninetyMinsFromNow)).toBe(true);
       });
 
       it('Verify donation expiring in 3 hours does NOT trigger alert', async () => {
         mockDonationRepo.find.mockResolvedValue([]);
         await service.findNearExpiryDonations();
-        const threeHoursFromNow = new Date(SYSTEM_TIME.getTime() + 3 * 60 * 60 * 1000);
+        const threeHoursFromNow = new Date(
+          SYSTEM_TIME.getTime() + 3 * 60 * 60 * 1000,
+        );
         expect(isDateWithinBounds(threeHoursFromNow)).toBe(false);
       });
     });
@@ -97,14 +107,18 @@ describe('ExpiryAlertService', () => {
       it('Exactly 2 hours remaining should trigger alert', async () => {
         mockDonationRepo.find.mockResolvedValue([]);
         await service.findNearExpiryDonations();
-        const twoHoursFromNow = new Date(SYSTEM_TIME.getTime() + 2 * 60 * 60 * 1000);
+        const twoHoursFromNow = new Date(
+          SYSTEM_TIME.getTime() + 2 * 60 * 60 * 1000,
+        );
         expect(isDateWithinBounds(twoHoursFromNow)).toBe(true);
       });
 
       it('Less than 1 hour should not trigger near-expiry alert', async () => {
         mockDonationRepo.find.mockResolvedValue([]);
         await service.findNearExpiryDonations();
-        const fiftyNineMinsFromNow = new Date(SYSTEM_TIME.getTime() + 59 * 60 * 1000);
+        const fiftyNineMinsFromNow = new Date(
+          SYSTEM_TIME.getTime() + 59 * 60 * 1000,
+        );
         expect(isDateWithinBounds(fiftyNineMinsFromNow)).toBe(false);
       });
     });
@@ -112,7 +126,12 @@ describe('ExpiryAlertService', () => {
     describe('3. Service Reliability', () => {
       it('Ensure function returns correct list of near-expiry donations', async () => {
         const mockResult = [
-          { id: '1', name: 'Bread', expiryTime: new Date(SYSTEM_TIME.getTime() + 90 * 60 * 1000), status: DonationStatus.AVAILABLE },
+          {
+            id: '1',
+            name: 'Bread',
+            expiryTime: new Date(SYSTEM_TIME.getTime() + 90 * 60 * 1000),
+            status: DonationStatus.AVAILABLE,
+          },
         ] as Donation[];
         mockDonationRepo.find.mockResolvedValue(mockResult);
 
@@ -176,7 +195,10 @@ describe('ExpiryAlertService', () => {
         },
       ];
       mockDonationRepo.find.mockResolvedValue(donations);
-      mockUserRepo.findOne.mockResolvedValue({ id: 'ngo1', email: 'ngo@test.com' });
+      mockUserRepo.findOne.mockResolvedValue({
+        id: 'ngo1',
+        email: 'ngo@test.com',
+      });
 
       await service.processNearExpiryDonations();
 
@@ -217,7 +239,9 @@ describe('ExpiryAlertService', () => {
       mockDonationRepo.find.mockRejectedValue(new Error('DB error'));
 
       // Should not throw
-      await expect(service.processNearExpiryDonations()).resolves.toBeUndefined();
+      await expect(
+        service.processNearExpiryDonations(),
+      ).resolves.toBeUndefined();
     });
   });
 });

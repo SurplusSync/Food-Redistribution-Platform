@@ -1,24 +1,13 @@
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
-import '@testing-library/jest-dom';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import NGODashboard from '../../pages/dashboard/NGODashboard';
 import { getDonations, claimDonation } from '../../services/api';
 
 vi.mock('react-router-dom', () => ({
     Link: ({ to, children }: any) => <a href={to}>{children}</a>,
     useNavigate: () => vi.fn(),
-}));
-
-vi.mock('react-i18next', () => ({
-    useTranslation: () => ({ t: (key: string) => key }),
-}));
-
-vi.mock('../../services/socket', () => ({
-    socketService: {
-        onDonationCreated: vi.fn().mockReturnValue(() => { }),
-        onDonationClaimed: vi.fn().mockReturnValue(() => { }),
-        onVolunteerLocation: vi.fn().mockReturnValue(() => { }),
-    },
+    BrowserRouter: ({ children }: any) => children,
+    Routes: ({ children }: any) => children,
+    Route: ({ element }: any) => element,
 }));
 
 vi.mock('../../services/api', () => ({

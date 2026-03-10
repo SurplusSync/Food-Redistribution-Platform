@@ -10,7 +10,10 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../auth/entities/user.entity';
-import { SupportTicket, TicketPriority } from './entities/support-ticket.entity';
+import {
+  SupportTicket,
+  TicketPriority,
+} from './entities/support-ticket.entity';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { EmailService } from '../common/email.service';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
@@ -41,9 +44,12 @@ export class SupportTicketsController {
   @ApiOperation({ summary: 'Create a support ticket' })
   async createTicket(
     @Req() req: any,
-    @Body() body: { subject: string; description: string; priority?: TicketPriority },
+    @Body()
+    body: { subject: string; description: string; priority?: TicketPriority },
   ) {
-    const user = await this.userRepository.findOne({ where: { id: req.user.userId } });
+    const user = await this.userRepository.findOne({
+      where: { id: req.user.userId },
+    });
     if (!user) throw new NotFoundException('User not found');
 
     const ticket = this.ticketRepository.create({
@@ -57,7 +63,12 @@ export class SupportTicketsController {
 
     const saved = await this.ticketRepository.save(ticket);
 
-    this.emailService.sendSupportTicketAck(user.email, user.name, body.subject, saved.id);
+    this.emailService.sendSupportTicketAck(
+      user.email,
+      user.name,
+      body.subject,
+      saved.id,
+    );
 
     return saved;
   }

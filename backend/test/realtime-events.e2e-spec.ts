@@ -21,6 +21,13 @@ import { AppModule } from '../src/app.module';
 
 const API_URL = process.env.TEST_API_URL || 'http://localhost:3000';
 
+/**
+ * Section 1 tests require a pre-running server with seeded users.
+ * Skip them in CI where only DB/Redis services are available (no app server).
+ */
+const HAS_RUNNING_SERVER = !!process.env.TEST_API_URL;
+const describeIfServer = HAS_RUNNING_SERVER ? describe : describe.skip;
+
 /* ─────────────────────────────────────────
  * Helper: create an authenticated socket
  * ───────────────────────────────────────── */
@@ -76,7 +83,7 @@ async function getAuthToken(email: string, password: string): Promise<string> {
  *     1 · Stand-alone Socket.IO tests
  *         (against a running server)
  * ═══════════════════════════════════════════ */
-describe('Real-Time Events – Socket.IO Client Tests', () => {
+describeIfServer('Real-Time Events – Socket.IO Client Tests', () => {
   const DONOR = {
     email: process.env.E2E_DONOR_EMAIL || 'donor@test.com',
     password: process.env.E2E_DONOR_PASSWORD || 'password123',
