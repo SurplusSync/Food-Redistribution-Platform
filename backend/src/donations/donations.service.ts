@@ -675,8 +675,14 @@ export class DonationsService {
   async getVolunteerDeliveries(userId: string) {
     return await this.donationsRepository.find({
       where: [
-        { volunteerId: userId, status: In([DonationStatus.CLAIMED, DonationStatus.PICKED_UP]) },
-        { claimedById: userId, status: In([DonationStatus.CLAIMED, DonationStatus.PICKED_UP]) },
+        {
+          volunteerId: userId,
+          status: In([DonationStatus.CLAIMED, DonationStatus.PICKED_UP]),
+        },
+        {
+          claimedById: userId,
+          status: In([DonationStatus.CLAIMED, DonationStatus.PICKED_UP]),
+        },
       ],
       relations: ['donor'],
       order: { createdAt: 'DESC' },
@@ -699,13 +705,7 @@ export class DonationsService {
           where,
           order: { karmaPoints: 'DESC' },
           take: 20,
-          select: [
-            'id',
-            'name',
-            'organizationName',
-            'role',
-            'karmaPoints',
-          ],
+          select: ['id', 'name', 'organizationName', 'role', 'karmaPoints'],
         });
 
         return {
@@ -824,8 +824,6 @@ export class DonationsService {
       return { success: true, data: [] };
     }
   }
-
-
 
   private checkAndAwardBadges(user: User): string[] {
     const newBadges: string[] = [];

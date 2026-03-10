@@ -16,9 +16,7 @@ describe('FeedbackController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [FeedbackController],
-      providers: [
-        { provide: FeedbackService, useValue: mockFeedbackService },
-      ],
+      providers: [{ provide: FeedbackService, useValue: mockFeedbackService }],
     }).compile();
 
     controller = module.get<FeedbackController>(FeedbackController);
@@ -48,7 +46,10 @@ describe('FeedbackController', () => {
 
       const result = await controller.createFeedback(req, dto);
 
-      expect(mockFeedbackService.createFeedback).toHaveBeenCalledWith('ngo1', dto);
+      expect(mockFeedbackService.createFeedback).toHaveBeenCalledWith(
+        'ngo1',
+        dto,
+      );
       expect(result.id).toBe('fb1');
     });
 
@@ -58,7 +59,10 @@ describe('FeedbackController', () => {
 
       await controller.createFeedback(req, dto);
 
-      expect(mockFeedbackService.createFeedback).toHaveBeenCalledWith('ngo-fallback', dto);
+      expect(mockFeedbackService.createFeedback).toHaveBeenCalledWith(
+        'ngo-fallback',
+        dto,
+      );
     });
   });
 
@@ -69,7 +73,9 @@ describe('FeedbackController', () => {
 
       const result = await controller.getFeedbackForDonation('d1');
 
-      expect(mockFeedbackService.getFeedbackForDonation).toHaveBeenCalledWith('d1');
+      expect(mockFeedbackService.getFeedbackForDonation).toHaveBeenCalledWith(
+        'd1',
+      );
       expect(result).toEqual(feedbacks);
     });
   });
@@ -81,7 +87,9 @@ describe('FeedbackController', () => {
 
       const result = await controller.getAverageRatingForDonor('donor1');
 
-      expect(mockFeedbackService.getAverageRatingForDonor).toHaveBeenCalledWith('donor1');
+      expect(mockFeedbackService.getAverageRatingForDonor).toHaveBeenCalledWith(
+        'donor1',
+      );
       expect(result).toEqual(avg);
     });
   });

@@ -84,7 +84,14 @@ import { UserNotification } from './notifications/entities/user-notification.ent
           username: configService.get<string>('POSTGRES_USER') || 'student',
           password: configService.get<string>('POSTGRES_PASSWORD') || 'student',
           database: configService.get<string>('POSTGRES_DB') || 'surplus_db',
-          entities: [User, Donation, SupportTicket, FlaggedDonation, DonationFeedback, UserNotification],
+          entities: [
+            User,
+            Donation,
+            SupportTicket,
+            FlaggedDonation,
+            DonationFeedback,
+            UserNotification,
+          ],
           synchronize: true,
           ssl: dbSslEnabled ? { rejectUnauthorized: false } : false,
         };
@@ -102,4 +109,4 @@ import { UserNotification } from './notifications/entities/user-notification.ent
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

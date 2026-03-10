@@ -43,7 +43,7 @@ describe('RolesGuard', () => {
   describe('2. Role Spoofing Prevention', () => {
     it('If a user attempts to modify role in request payload, access should be denied', () => {
       // Simulate an attacker injecting a spoofed struct into the JWT
-      // While JWTs are structurally tamper-proof when signature-verified, testing guards 
+      // While JWTs are structurally tamper-proof when signature-verified, testing guards
       // ensuring that they strongly evaluate the exact enum type prevents logical routing errors.
       const context = mockExecutionContext({
         userId: 'attacker-123',
@@ -76,7 +76,7 @@ describe('RolesGuard', () => {
 
       // Validates the specific error message
       expect(() => guard.canActivate(context)).toThrow(
-        'Access Denied: Only Administrators can perform this action.'
+        'Access Denied: Only Administrators can perform this action.',
       );
     });
 
@@ -121,5 +121,4 @@ describe('RolesGuard', () => {
       expect(() => guard.canActivate(context)).toThrow(ForbiddenException);
     });
   });
-
 });

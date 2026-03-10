@@ -2,9 +2,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { FeedbackService } from './feedback.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { DonationFeedback } from './entities/donation-feedback.entity';
-import { Donation, DonationStatus } from '../donations/entities/donation.entity';
+import {
+  Donation,
+  DonationStatus,
+} from '../donations/entities/donation.entity';
 import { User } from '../auth/entities/user.entity';
-import { NotFoundException, BadRequestException } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
 
 const mockFeedbackRepo = {
   create: jest.fn(),
@@ -30,7 +33,10 @@ describe('FeedbackService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         FeedbackService,
-        { provide: getRepositoryToken(DonationFeedback), useValue: mockFeedbackRepo },
+        {
+          provide: getRepositoryToken(DonationFeedback),
+          useValue: mockFeedbackRepo,
+        },
         { provide: getRepositoryToken(Donation), useValue: mockDonationRepo },
         { provide: getRepositoryToken(User), useValue: mockUserRepo },
       ],
@@ -104,7 +110,13 @@ describe('FeedbackService', () => {
       });
       mockFeedbackRepo.findOne.mockResolvedValue(null);
 
-      const savedFeedback = { id: 'fb1', donationId: 'd1', ngoId: 'ngo1', rating: 5, comment: 'Great quality!' };
+      const savedFeedback = {
+        id: 'fb1',
+        donationId: 'd1',
+        ngoId: 'ngo1',
+        rating: 5,
+        comment: 'Great quality!',
+      };
       mockFeedbackRepo.create.mockReturnValue(savedFeedback);
       mockFeedbackRepo.save.mockResolvedValue(savedFeedback);
 
@@ -114,7 +126,9 @@ describe('FeedbackService', () => {
         where: jest.fn().mockReturnThis(),
         select: jest.fn().mockReturnThis(),
         addSelect: jest.fn().mockReturnThis(),
-        getRawOne: jest.fn().mockResolvedValue({ averageScore: '4.5', totalReviews: '2' }),
+        getRawOne: jest
+          .fn()
+          .mockResolvedValue({ averageScore: '4.5', totalReviews: '2' }),
       };
       mockFeedbackRepo.createQueryBuilder.mockReturnValue(mockQb);
       mockUserRepo.update.mockResolvedValue({ affected: 1 });
@@ -128,7 +142,9 @@ describe('FeedbackService', () => {
         rating: 5,
         comment: 'Great quality!',
       });
-      expect(mockUserRepo.update).toHaveBeenCalledWith('donor1', { trustScore: 4.5 });
+      expect(mockUserRepo.update).toHaveBeenCalledWith('donor1', {
+        trustScore: 4.5,
+      });
     });
   });
 
@@ -165,7 +181,9 @@ describe('FeedbackService', () => {
         where: jest.fn().mockReturnThis(),
         select: jest.fn().mockReturnThis(),
         addSelect: jest.fn().mockReturnThis(),
-        getRawOne: jest.fn().mockResolvedValue({ averageScore: '3.7', totalReviews: '5' }),
+        getRawOne: jest
+          .fn()
+          .mockResolvedValue({ averageScore: '3.7', totalReviews: '5' }),
       };
       mockFeedbackRepo.createQueryBuilder.mockReturnValue(mockQb);
 
@@ -186,7 +204,9 @@ describe('FeedbackService', () => {
         where: jest.fn().mockReturnThis(),
         select: jest.fn().mockReturnThis(),
         addSelect: jest.fn().mockReturnThis(),
-        getRawOne: jest.fn().mockResolvedValue({ averageScore: null, totalReviews: '0' }),
+        getRawOne: jest
+          .fn()
+          .mockResolvedValue({ averageScore: null, totalReviews: '0' }),
       };
       mockFeedbackRepo.createQueryBuilder.mockReturnValue(mockQb);
 

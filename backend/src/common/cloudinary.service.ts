@@ -15,7 +15,11 @@ export class CloudinaryService {
     const apiSecret = this.configService.get<string>('CLOUDINARY_API_SECRET');
 
     if (cloudName && apiKey && apiSecret) {
-      cloudinary.config({ cloud_name: cloudName, api_key: apiKey, api_secret: apiSecret });
+      cloudinary.config({
+        cloud_name: cloudName,
+        api_key: apiKey,
+        api_secret: apiSecret,
+      });
       this.isMockMode = false;
       this.logger.log('✅ Cloudinary Configured');
     } else {
@@ -30,7 +34,9 @@ export class CloudinaryService {
 
   async uploadImage(file: Express.Multer.File): Promise<string> {
     if (this.isMockMode) {
-      this.logger.warn(`Mock upload for "${file.originalname}" — Cloudinary not configured`);
+      this.logger.warn(
+        `Mock upload for "${file.originalname}" — Cloudinary not configured`,
+      );
       return this.getMockUrl(file.originalname);
     }
 

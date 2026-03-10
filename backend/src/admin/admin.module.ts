@@ -9,9 +9,11 @@ import { FlaggedDonation } from './entities/flagged-donation.entity';
 import { EmailService } from '../common/email.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Donation, SupportTicket, FlaggedDonation])],
+  imports: [
+    TypeOrmModule.forFeature([User, Donation, SupportTicket, FlaggedDonation]),
+  ],
   controllers: [AdminController, SupportTicketsController],
   providers: [EmailService],
   exports: [EmailService],
 })
-export class AdminModule { }
+export class AdminModule {}

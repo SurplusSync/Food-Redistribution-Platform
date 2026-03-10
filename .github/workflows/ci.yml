@@ -2,17 +2,17 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches:
-      - main
+    branches: ['**']
   pull_request:
     branches:
       - main
 
 jobs:
-  build-and-test:
+  # ── Backend: type-check · unit+integration tests · e2e · build ───────────
+  backend:
+    name: Backend
     runs-on: ubuntu-latest
 
-    # Step 4: Start Docker environment for PostgreSQL
     services:
       postgres:
         image: postgres:15
@@ -28,39 +28,93 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_HOST: localhost
+      DATABASE_PORT: 5432
+      POSTGRES_USER: surplus_admin
+      POSTGRES_PASSWORD: password123
+      POSTGRES_DB: surplus_db
+      REDIS_HOST: localhost
+      REDIS_PORT: 6379
+      JWT_SECRET: test_jwt_secret
+      CLOUDINARY_CLOUD_NAME: test_cloud_name
+      CLOUDINARY_API_KEY: test_api_key
+      CLOUDINARY_API_SECRET: test_api_secret
+
     steps:
-      - name: Step 1: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Step 2: Setup Node.js (use Node 18)
+      - name: Setup Node.js 18
         uses: actions/setup-node@v4
         with:
           node-version: 18
 
-      - name: Step 3: Install backend dependencies
-        run: |
-          cd backend
-          npm install
+      - name: Install dependencies
+        run: npm install
+        working-directory: backend
 
-      - name: Step 5: Run backend tests
-        run: |
-          cd backend
-          npm run test
-        env:
-          DATABASE_HOST: localhost
-          DATABASE_PORT: 5432
-          POSTGRES_USER: surplus_admin
-          POSTGRES_PASSWORD: password123
-          POSTGRES_DB: surplus_db
-          JWT_SECRET: test_jwt_secret
-          CLOUDINARY_CLOUD_NAME: test_cloud_name
-          CLOUDINARY_API_KEY: test_api_key
-          CLOUDINARY_API_SECRET: test_api_secret
+      - name: TypeScript type check
+        run: npx tsc --noEmit
+        working-directory: backend
 
-      - name: Step 6: Run frontend tests (if frontend exists)
-        run: |
-          if [ -d "frontend" ]; then
-            cd frontend
-            npm install
-            npm run test:run
-          fi
+      - name: Lint
+        run: npx eslint "src/**/*.ts"
+        working-directory: backend
+
+      - name: Unit & integration tests
+        run: npm run test -- --forceExit
+        working-directory: backend
+
+      - name: E2E tests
+        run: npm run test:e2e
+        working-directory: backend
+
+      - name: Build
+        run: npm run build
+        working-directory: backend
+
+  # ── Frontend: type-check · unit tests · build ────────────────────────────
+  frontend:
+    name: Frontend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm install
+        working-directory: frontend
+
+      - name: TypeScript type check
+        run: npx tsc -b --noEmit
+        working-directory: frontend
+
+      - name: Lint
+        run: npm run lint
+        working-directory: frontend
+        continue-on-error: true
+
+      - name: Unit tests
+        run: npm run test:run
+        working-directory: frontend
+
+      - name: Build
+        run: npm run build
+        working-directory: frontend
