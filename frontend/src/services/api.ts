@@ -371,6 +371,24 @@ export const getMonthlyStats = async (): Promise<MonthlyStatPoint[]> => {
   }
 };
 
+export interface LeaderboardEntry {
+  id: string;
+  name: string;
+  role: 'Donor' | 'NGO' | 'Volunteer';
+  score: number;
+}
+
+export const getLeaderboard = async (scope: string = 'all', role?: string): Promise<LeaderboardEntry[]> => {
+  try {
+    const params: Record<string, string> = { scope };
+    if (role) params.role = role;
+    const response = await api.get('/donations/leaderboard', { params });
+    return response.data?.data || [];
+  } catch {
+    return [];
+  }
+};
+
 export const getCompletedTrips = async (userId: string): Promise<Donation[]> => {
   const response = await api.get('/donations');
   const rawList = Array.isArray(response.data)
