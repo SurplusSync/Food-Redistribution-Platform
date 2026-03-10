@@ -93,7 +93,7 @@ export class AdminController {
     await this.userRepository.save(user);
 
     return {
-      message: `User ${user.name} has been ${user.isActive ? 'restored' : 'suspended'}.`,
+      message: `User ${user.name} has been ${user.isActive ? 'unbanned' : 'suspended'}.`,
       isActive: user.isActive,
     };
   }
