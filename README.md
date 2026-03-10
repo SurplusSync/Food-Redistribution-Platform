@@ -80,8 +80,7 @@ Volunteer delivers it to the NGO
 Everyone's impact dashboard updates
 ```
 
-<img width="8192" height="3532" alt="Architecture_diagram" src="https://github.com/user-attachments/assets/2a170e13-8b32-468c-a2a1-e311e6de9019" />
-<!-- TODO: Replace the `src` above with the GitHub attachment URL of the new architecture diagram you just uploaded. -->
+<img width="1600" height="701" alt="image" src="https://github.com/user-attachments/assets/3245344a-6925-4c5d-bd69-8d07bc20176f" />
 
 ---
 
