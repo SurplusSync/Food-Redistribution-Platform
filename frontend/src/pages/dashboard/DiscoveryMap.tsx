@@ -143,19 +143,26 @@ export default function DiscoveryMap() {
         }
     }
 
+    // Filter out expired donations from the map
+    const nonExpired = donations.filter(d => {
+        if (d.status === 'EXPIRED') return false
+        if (d.expiryTime && new Date(d.expiryTime).getTime() < Date.now()) return false
+        return true
+    })
     const filtered = filter === 'all' 
-        ? donations 
-        : donations.filter(d => d.status === filter)
+        ? nonExpired 
+        : nonExpired.filter(d => d.status === filter)
 
     const getTimeRemaining = (expiryTime: Date) => {
         const now = new Date()
         const remaining = new Date(expiryTime).getTime() - now.getTime()
+        if (remaining <= 0) return { text: 'Expired', urgent: true, expired: true }
         const hours = Math.floor(remaining / (1000 * 60 * 60))
         const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60))
         
-        if (hours < 1) return { text: `${minutes}m`, urgent: true }
-        if (hours < 3) return { text: `${hours}h ${minutes}m`, urgent: true }
-        return { text: `${hours}h`, urgent: false }
+        if (hours < 1) return { text: `${minutes}m`, urgent: true, expired: false }
+        if (hours < 3) return { text: `${hours}h ${minutes}m`, urgent: true, expired: false }
+        return { text: `${hours}h`, urgent: false, expired: false }
     }
 
     const getMarkerIcon = (donation: Donation) => {
