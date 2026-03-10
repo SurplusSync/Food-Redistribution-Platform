@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import { Medal, Trophy, Users, Loader2, RefreshCw } from 'lucide-react'
 import { getLeaderboard, type LeaderboardEntry } from '../../services/api'
+import { useTranslation } from 'react-i18next'
 
 type Scope = 'weekly' | 'monthly' | 'all'
 
@@ -9,6 +10,7 @@ export default function Leaderboards() {
   const [roleFilter, setRoleFilter] = useState('all')
   const [leaders, setLeaders] = useState<LeaderboardEntry[]>([])
   const [loading, setLoading] = useState(true)
+  const { t } = useTranslation()
 
   const currentUserName = (JSON.parse(localStorage.getItem('user') || '{}').name as string) || 'You'
 
@@ -33,8 +35,8 @@ export default function Leaderboards() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">Leaderboards</h1>
-          <p className="text-gray-500 dark:text-slate-400 mt-1">Top contributors ranked by karma points and activity.</p>
+          <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">{t('leaderboardsTitle')}</h1>
+          <p className="text-gray-500 dark:text-slate-400 mt-1">{t('leaderboardsDesc')}</p>
         </div>
         <button
           onClick={load}
@@ -56,7 +58,7 @@ export default function Leaderboards() {
               : 'bg-white dark:bg-slate-900 text-gray-600 dark:text-slate-300 border border-gray-200 dark:border-slate-800 hover:border-emerald-500/50'
               }`}
           >
-            {tab === 'all' ? 'All Time' : tab}
+            {tab === 'all' ? t('allTime') : tab === 'weekly' ? t('weekly') : t('monthly')}
           </button>
         ))}
       </div>
@@ -67,28 +69,28 @@ export default function Leaderboards() {
           value={roleFilter}
           onChange={(e) => setRoleFilter(e.target.value)}
         >
-          <option value="all">All roles</option>
-          <option value="donor">Donor</option>
-          <option value="ngo">NGO</option>
-          <option value="volunteer">Volunteer</option>
+          <option value="all">{t('allRoles')}</option>
+          <option value="donor">{t('donor')}</option>
+          <option value="ngo">{t('ngo')}</option>
+          <option value="volunteer">{t('volunteer')}</option>
         </select>
         <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-lg px-4 py-3 flex items-center gap-2 text-gray-600 dark:text-slate-300">
           <Users className="w-4 h-4 text-emerald-400" />
-          Current profile: {currentUserName}
+          {t('currentProfileLabel')}: {currentUserName}
         </div>
       </div>
 
       <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl overflow-hidden">
         <div className="p-4 border-b border-gray-200 dark:border-slate-800 flex items-center gap-2 text-gray-900 dark:text-white font-semibold">
           <Trophy className="w-5 h-5 text-amber-400" />
-          Top Contributors
-          {scope !== 'all' && <span className="text-sm font-normal text-gray-500 dark:text-slate-400 capitalize">- {scope}</span>}
+          {t('topContributors')}
+          {scope !== 'all' && <span className="text-sm font-normal text-gray-500 dark:text-slate-400 capitalize">- {scope === 'weekly' ? t('weekly') : t('monthly')}</span>}
         </div>
 
         {loading ? (
           <div className="flex items-center justify-center py-16">
             <Loader2 className="w-5 h-5 text-emerald-400 animate-spin" />
-            <span className="ml-3 text-gray-500 dark:text-slate-400 text-sm">Loading rankings…</span>
+            <span className="ml-3 text-gray-500 dark:text-slate-400 text-sm">{t('loadingRankings')}</span>
           </div>
         ) : (
           <div className="divide-y divide-gray-100 dark:divide-slate-800">
@@ -101,32 +103,30 @@ export default function Leaderboards() {
                   className={`p-4 flex items-center justify-between ${isCurrentUser ? 'bg-emerald-50 dark:bg-emerald-500/5' : ''}`}
                 >
                   <div className="flex items-center gap-3">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${
-                      rank === 1 ? 'bg-amber-100 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400'
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${rank === 1 ? 'bg-amber-100 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400'
                         : rank === 2 ? 'bg-gray-200 dark:bg-slate-700 text-gray-600 dark:text-slate-300'
                           : rank === 3 ? 'bg-orange-100 dark:bg-orange-500/20 text-orange-600 dark:text-orange-400'
                             : 'bg-gray-100 dark:bg-slate-800 text-gray-500 dark:text-slate-400'
-                    }`}>
+                      }`}>
                       {rank}
                     </div>
                     <div>
                       <p className="text-gray-900 dark:text-white font-medium flex items-center gap-2">
-                        {rank <= 3 && <Medal className={`w-4 h-4 ${
-                          rank === 1 ? 'text-amber-400' : rank === 2 ? 'text-gray-400' : 'text-orange-400'
-                        }`} />}
+                        {rank <= 3 && <Medal className={`w-4 h-4 ${rank === 1 ? 'text-amber-400' : rank === 2 ? 'text-gray-400' : 'text-orange-400'
+                          }`} />}
                         {entry.name}
-                        {isCurrentUser && <span className="text-xs text-emerald-500 font-normal">(You)</span>}
+                        {isCurrentUser && <span className="text-xs text-emerald-500 font-normal">({t('you')})</span>}
                       </p>
                       <p className="text-xs text-gray-500 dark:text-slate-500">{entry.role}</p>
                     </div>
                   </div>
-                  <div className="text-emerald-500 font-semibold">{entry.score} pts</div>
+                  <div className="text-emerald-500 font-semibold">{entry.score} {t('pts')}</div>
                 </div>
               )
             })}
             {filteredRows.length === 0 && (
               <div className="p-6 text-center text-gray-500 dark:text-slate-500">
-                No leaderboard entries for selected filters.
+                {t('noLeaderboardEntries')}
               </div>
             )}
           </div>

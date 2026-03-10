@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react'
 import { Star, MessageCircle, Loader2, AlertCircle, TrendingUp } from 'lucide-react'
 import { getDonations, createFeedback, getFeedbackForDonation, getDonorAverageRating, type Donation, type FeedbackItem } from '../../services/api'
+import { useTranslation } from 'react-i18next'
 
 export default function FeedbackRatings() {
   const [deliveredDonations, setDeliveredDonations] = useState<Donation[]>([])
@@ -13,6 +14,7 @@ export default function FeedbackRatings() {
   const [error, setError] = useState<string | null>(null)
   const [successMsg, setSuccessMsg] = useState<string | null>(null)
   const [donorRating, setDonorRating] = useState<{ averageScore: number; totalReviews: number } | null>(null)
+  const { t } = useTranslation()
 
   const user = JSON.parse(localStorage.getItem('user') || '{}') as { id?: string; role?: string }
   const isNGO = user.role === 'NGO'
@@ -87,7 +89,7 @@ export default function FeedbackRatings() {
       setComment('')
       setRating(5)
       setSelectedDonationId('')
-      setSuccessMsg('Feedback submitted successfully!')
+      setSuccessMsg(t('feedbackSubmitted'))
       setTimeout(() => setSuccessMsg(null), 3000)
     } catch (err: any) {
       setError(err?.response?.data?.message || err?.message || 'Failed to submit feedback')
@@ -107,8 +109,8 @@ export default function FeedbackRatings() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold text-white">NGO Feedback & Ratings</h1>
-        <p className="text-slate-400 mt-1">Post-delivery feedback to track food quality and donor reliability.</p>
+        <h1 className="text-2xl font-semibold text-white">{t('ngoFeedbackRatings')}</h1>
+        <p className="text-slate-400 mt-1">{t('feedbackDesc')}</p>
       </div>
 
       {error && (
@@ -133,12 +135,12 @@ export default function FeedbackRatings() {
                 <TrendingUp className="w-7 h-7 text-amber-400" />
               </div>
               <div>
-                <p className="text-sm text-slate-400">Your Donor Rating</p>
+                <p className="text-sm text-slate-400">{t('yourDonorRating')}</p>
                 <div className="flex items-center gap-3 mt-1">
                   <span className="text-3xl font-bold text-white">{donorRating.averageScore.toFixed(1)}</span>
                   <span className="text-amber-400 text-lg">{'★'.repeat(Math.round(donorRating.averageScore))}{'☆'.repeat(5 - Math.round(donorRating.averageScore))}</span>
                 </div>
-                <p className="text-xs text-slate-500 mt-1">Based on {donorRating.totalReviews} review{donorRating.totalReviews !== 1 ? 's' : ''} from NGOs</p>
+                <p className="text-xs text-slate-500 mt-1">{t('basedOnReviews', { count: donorRating.totalReviews })}</p>
               </div>
             </div>
           </div>
@@ -147,10 +149,10 @@ export default function FeedbackRatings() {
           <div className="card p-5 xl:col-span-1">
             <h2 className="text-white font-semibold mb-4 flex items-center gap-2">
               <MessageCircle className="w-5 h-5 text-emerald-400" />
-              Leave Review
+              {t('leaveReview')}
             </h2>
             {unreviewedDonations.length === 0 ? (
-              <p className="text-slate-400 text-sm">No delivered donations awaiting feedback.</p>
+              <p className="text-slate-400 text-sm">{t('noDeliveredAwaiting')}</p>
             ) : (
               <form onSubmit={submitReview} className="space-y-3">
                 <select
@@ -158,23 +160,23 @@ export default function FeedbackRatings() {
                   value={selectedDonationId}
                   onChange={(e) => setSelectedDonationId(e.target.value)}
                 >
-                  <option value="">Select a delivered donation</option>
+                  <option value="">{t('selectDeliveredDonation')}</option>
                   {unreviewedDonations.map(d => (
                     <option key={d.id} value={d.id}>
-                      {d.name} — {d.donorName || 'Unknown Donor'}
+                      {d.name} — {d.donorName || t('unknownDonor')}
                     </option>
                   ))}
                 </select>
                 <select className="select-field" value={rating} onChange={(e) => setRating(Number(e.target.value))}>
-                  <option value={5}>5 stars</option>
-                  <option value={4}>4 stars</option>
-                  <option value={3}>3 stars</option>
-                  <option value={2}>2 stars</option>
-                  <option value={1}>1 star</option>
+                  <option value={5}>5 {t('stars')}</option>
+                  <option value={4}>4 {t('stars')}</option>
+                  <option value={3}>3 {t('stars')}</option>
+                  <option value={2}>2 {t('stars')}</option>
+                  <option value={1}>1 {t('starSingular')}</option>
                 </select>
                 <textarea
                   className="input-field min-h-[100px]"
-                  placeholder="Share your experience with this donation"
+                  placeholder={t('shareFeedbackPlaceholder')}
                   value={comment}
                   onChange={(e) => setComment(e.target.value)}
                 />
@@ -183,7 +185,7 @@ export default function FeedbackRatings() {
                   className="btn-primary w-full"
                   disabled={!selectedDonationId || submitting}
                 >
-                  {submitting ? 'Submitting...' : 'Submit Feedback'}
+                  {submitting ? t('submitting') : t('submitFeedback')}
                 </button>
               </form>
             )}
@@ -193,7 +195,7 @@ export default function FeedbackRatings() {
         {/* Rating Summary & Reviews */}
         <div className={`card p-5 space-y-4 ${isNGO ? 'xl:col-span-2' : 'xl:col-span-3'}`}>
           <div className="flex items-center justify-between">
-            <h2 className="text-white font-semibold">Rating Summary</h2>
+            <h2 className="text-white font-semibold">{t('ratingSummary')}</h2>
             <span className="badge badge-success flex items-center gap-1">
               <Star className="w-3 h-3" />
               {avgRating.toFixed(1)} / 5
@@ -201,7 +203,7 @@ export default function FeedbackRatings() {
           </div>
 
           {reviews.length === 0 ? (
-            <p className="text-slate-400 text-sm py-8 text-center">No feedback submitted yet.</p>
+            <p className="text-slate-400 text-sm py-8 text-center">{t('noFeedbackYet')}</p>
           ) : (
             <div className="space-y-3">
               {reviews.map((review) => (

@@ -19,7 +19,7 @@ export default function DashboardLayout() {
   // Refresh profile from backend so isVerified and other fields are up-to-date
   useEffect(() => {
     getUserProfile()
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => setProfileReady(true));
   }, [])
 
@@ -78,14 +78,14 @@ export default function DashboardLayout() {
     { to: userRole === 'ngo' ? '/dashboard/ngo' : '/dashboard', icon: LayoutDashboard, label: t('dashboard'), roles: ['donor', 'ngo', 'volunteer'] },
     { to: '/dashboard/add', icon: PlusCircle, label: t('addFood'), roles: ['donor'] },
     { to: '/dashboard/map', icon: Map, label: t('discover'), roles: ['donor', 'ngo', 'volunteer'] },
-    { to: '/dashboard/location', icon: Navigation2, label: 'Live Tracking', roles: ['volunteer'] },
-    { to: '/dashboard/navigation', icon: MapPin, label: 'Navigation', roles: ['ngo', 'volunteer'] },
+    { to: '/dashboard/location', icon: Navigation2, label: t('liveTracking'), roles: ['volunteer'] },
+    { to: '/dashboard/navigation', icon: MapPin, label: t('navigationLabel'), roles: ['ngo', 'volunteer'] },
     { to: '/dashboard/history', icon: History, label: t('history'), roles: ['donor', 'ngo', 'volunteer'] },
-    { to: '/dashboard/alerts', icon: AlertTriangle, label: 'Near-Expiry', roles: ['donor', 'ngo', 'volunteer'] },
+    { to: '/dashboard/alerts', icon: AlertTriangle, label: t('nearExpiry'), roles: ['donor', 'ngo', 'volunteer'] },
     { to: '/dashboard/impact', icon: TrendingUp, label: t('impact'), roles: ['donor', 'ngo', 'volunteer'] },
-    { to: '/dashboard/leaderboard', icon: Trophy, label: 'Leaderboards', roles: ['donor', 'ngo', 'volunteer'] },
-    { to: '/dashboard/feedback', icon: Star, label: 'Ratings', roles: ['donor', 'ngo'] },
-    { to: '/dashboard/support', icon: LifeBuoy, label: 'Support', roles: ['donor', 'ngo', 'volunteer'] },
+    { to: '/dashboard/leaderboard', icon: Trophy, label: t('leaderboards'), roles: ['donor', 'ngo', 'volunteer'] },
+    { to: '/dashboard/feedback', icon: Star, label: t('ratings'), roles: ['donor', 'ngo'] },
+    { to: '/dashboard/support', icon: LifeBuoy, label: t('support'), roles: ['donor', 'ngo', 'volunteer'] },
   ].filter(link => link.roles.includes(userRole))
 
   const isActive = (path: string) => {
@@ -206,7 +206,7 @@ export default function DashboardLayout() {
               }`}
           >
             <Settings className="w-5 h-5" />
-            <span>Preferences</span>
+            <span>{t('preferences')}</span>
           </Link>
 
           <button
