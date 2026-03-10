@@ -599,12 +599,7 @@ const ta: Record<string, string> = {
   critical: 'அவசரம்',
   warning: 'எச்சரிக்கை',
   minLabel: 'நிமிடம்',
-  claimNow: 'இப்போதே கோருங்கள்',
-  claiming: 'கோரப்படுகிறது...',
-  alreadyClaimedStatus: 'ஏற்கனவே கோரப்பட்டது',
   noExpiringSoon: 'விரைவில் காலாவதியாகும் நன்கொடைகள் இல்லை. எல்லாம் நலம்!',
-  all: 'அனைத்தும்',
-  inProgress: 'நடைபெற்றில்',
 
   // —— Leaderboards ——
   leaderboardsTitle: 'தரவரிசைப் பட்டியல்',
