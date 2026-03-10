@@ -124,6 +124,20 @@ export class DonationsController {
     return this.donationsService.getLeaderboard(scope, role);
   }
 
+  @Get('my-deliveries')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Get active deliveries assigned to the current volunteer',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Active deliveries for the volunteer',
+  })
+  async getMyDeliveries(@Req() req: any) {
+    return this.donationsService.getVolunteerDeliveries(req.user.userId);
+  }
+
   // ─── PARAMETERISED ROUTES ─────────────────────────────────────────────────
 
   @Post()

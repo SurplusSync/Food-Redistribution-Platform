@@ -142,7 +142,7 @@ export const getUserProfile = async (): Promise<User> => {
     throw new Error('Failed to fetch profile');
   }
 
-  return {
+  const profile = {
     ...user,
     phoneNumber: user.phoneNumber || user.phone || '',
     karmaPoints: user.karmaPoints || 0,
@@ -156,6 +156,12 @@ export const getUserProfile = async (): Promise<User> => {
       kgSaved: 0,
     },
   };
+
+  // Sync key fields to localStorage so other pages see up-to-date data
+  const stored = JSON.parse(localStorage.getItem('user') || '{}');
+  localStorage.setItem('user', JSON.stringify({ ...stored, ...profile }));
+
+  return profile;
 };
 
 export const updateUserProfile = async (data: any) => {
@@ -456,6 +462,13 @@ export const supportAPI = {
   getMyTickets: () => api.get('/support/tickets'),
   createTicket: (data: { subject: string; description: string; priority?: string }) =>
     api.post('/support/tickets', data),
+};
+
+// ── Volunteer deliveries ────────────────────────────────────────────────────
+export const getMyDeliveries = async () => {
+  const res = await api.get('/donations/my-deliveries');
+  const raw = Array.isArray(res.data) ? res.data : [];
+  return raw;
 };
 
 // Feedback API
