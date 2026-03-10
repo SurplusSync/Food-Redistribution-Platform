@@ -384,63 +384,75 @@ The frontend will start at **http://localhost:5173**
 
 ## Environment Variables
 
-### Root .env (Docker Compose)
+### Backend Environment (.env in root, read by NestJS)
 
-Copy `.env.example` to `.env` in the project root. This file is used by `docker-compose.yml` and the backend:
+**Database (PostgreSQL)**
 
-```env
-# DATABASE CONFIGURATION
-POSTGRES_USER=surplus_admin
-POSTGRES_PASSWORD=password123
-POSTGRES_DB=surplus_db
-POSTGRES_PORT=5432
+| Variable | Local default | Required | Description |
+|----------|---------------|----------|-------------|
+| `DATABASE_HOST` | `postgres` | ✅ | PostgreSQL host |
+| `DATABASE_PORT` | `5432` | ✅ | PostgreSQL port |
+| `POSTGRES_USER` | `postgres` | ✅ | Database username |
+| `POSTGRES_PASSWORD`| `postgres` | ✅ | Database password |
+| `POSTGRES_DB` | `surplus_db` | ✅ | Database name |
+| `DB_SSL` | `false` | Prod only | Set true for Neon/Supabase |
 
-# REDIS CONFIGURATION
-REDIS_HOST=surplus_redis
-REDIS_PORT=6379
-REDIS_URL=redis://surplus_redis:6379
+**Redis**
 
-# EXTERNAL APIS
-RESEND_API_KEY=your_resend_api_key_here
+| Variable | Local default | Required | Description |
+|----------|---------------|----------|-------------|
+| `REDIS_HOST` | `redis` | ✅ | Redis host |
+| `REDIS_PORT` | `6379` | ✅ | Redis port |
+| `REDIS_PASSWORD` | `(empty)` | Prod only | Upstash password |
+| `REDIS_USERNAME` | `(empty)` | Prod only | Upstash username |
+| `REDIS_TLS` | `false` | Prod only | Set true for Upstash |
+| `REDIS_URL` | `(computed)` | Optional | Full Redis URL override |
 
-# PGADMIN (DB DASHBOARD)
-PGADMIN_EMAIL=admin@surplussync.com
-PGADMIN_PASSWORD=adminsurp123
+**Authentication**
 
-# JWT
-JWT_SECRET=your_jwt_secret_here
+| Variable | Default | Required | Description |
+|----------|---------|----------|-------------|
+| `JWT_SECRET` | `(none)` | ✅ | Must set for JWT token signing |
 
-# CLOUDINARY (Image Uploads)
-CLOUDINARY_CLOUD_NAME=your_cloud_name_here
-CLOUDINARY_API_KEY=your_api_key_here
-CLOUDINARY_API_SECRET=your_api_secret_here
-```
+**Server**
 
-### Backend Environment
+| Variable | Default | Required | Description |
+|----------|---------|----------|-------------|
+| `PORT` | `3000` | Optional | Backend API port |
+| `FRONTEND_URL` | `http://localhost:5173`| Prod only | Comma-separated for multiple origins |
 
-When running without Docker, the backend reads these variables (defaults shown):
+**Admin Seeder**
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `DATABASE_HOST` | `postgres` | PostgreSQL host (`localhost` for manual setup) |
-| `DATABASE_PORT` | `5432` | PostgreSQL port |
-| `POSTGRES_USER` | `surplus_admin` | Database username |
-| `POSTGRES_PASSWORD` | `password123` | Database password |
-| `POSTGRES_DB` | `surplus_db` | Database name |
-| `REDIS_HOST` | `redis` | Redis host |
-| `REDIS_PORT` | `6379` | Redis port |
-| `REDIS_URL` | - | Full redis connection string |
-| `JWT_SECRET` | - | **Required.** Secret key for JWT token signing |
-| `CLOUDINARY_CLOUD_NAME` | - | Cloudinary account cloud name |
-| `CLOUDINARY_API_KEY` | - | Cloudinary API key |
-| `CLOUDINARY_API_SECRET` | - | Cloudinary API secret |
-| `RESEND_API_KEY` | - | API key for sending emails via Resend |
+| Variable | Default | Required | Description |
+|----------|---------|----------|-------------|
+| `SUPER_ADMIN_EMAIL`| `admin@surplussync.com` | Optional | Default admin email |
+| `SUPER_ADMIN_PASSWORD` | `SecureAdmin123!` | Optional | Default admin password |
 
-### Frontend Environment
+**Cloudinary (image uploads)**
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `VITE_API_URL` | `http://localhost:3000` | Backend API base URL |
+| Variable | Default | Required | Description |
+|----------|---------|----------|-------------|
+| `CLOUDINARY_CLOUD_NAME`| `(none)` | ✅ | Cloudinary cloud name |
+| `CLOUDINARY_API_KEY` | `(none)` | ✅ | Cloudinary API key |
+| `CLOUDINARY_API_SECRET`| `(none)` | ✅ | Cloudinary API secret |
+
+**Email / SMTP**
+
+| Variable | Default | Required | Description |
+|----------|---------|----------|-------------|
+| `SMTP_HOST` | `(none)` | Optional | SMTP server (emails skipped if missing) |
+| `SMTP_PORT` | `587` | Optional | SMTP port |
+| `SMTP_USER` | `(none)` | Optional | SMTP username |
+| `SMTP_PASS` | `(none)` | Optional | SMTP password |
+| `SMTP_FROM` | `noreply@surplussync.app`| Optional | Sender address |
+
+### Frontend Environment (.env in frontend)
+
+Vite reads variables with `VITE_*` prefix.
+
+| Variable | Default | Required | Description |
+|----------|---------|----------|-------------|
+| `VITE_API_URL` | `http://localhost:3000`| Prod only | Point to Render URL |
 
 ---
 
