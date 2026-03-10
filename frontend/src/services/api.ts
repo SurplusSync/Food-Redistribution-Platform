@@ -17,6 +17,19 @@ api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   return config;
 });
 
+// Handle 401 responses — expired or invalid token → redirect to login
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401 && localStorage.getItem('token')) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.replace('/login');
+    }
+    return Promise.reject(error);
+  },
+);
+
 // Types
 
 export type UserRole = 'DONOR' | 'NGO' | 'VOLUNTEER';

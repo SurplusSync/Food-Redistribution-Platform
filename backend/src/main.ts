@@ -33,6 +33,8 @@ async function bootstrap() {
       callback(new Error('Not allowed by CORS'), false);
     },
     credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
   });
 
   // Enable automatic validation
