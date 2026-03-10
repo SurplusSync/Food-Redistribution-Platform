@@ -10,6 +10,7 @@ import { RedisService } from '../common/redis.service';
 
 // 1. Create a SHARED mock for QueryBuilder
 const mockQueryBuilder = {
+  where: jest.fn().mockReturnThis(),
   addSelect: jest.fn().mockReturnThis(),
   having: jest.fn().mockReturnThis(),
   setParameters: jest.fn().mockReturnThis(),
@@ -227,10 +228,14 @@ describe('DonationsService Unit Tests', () => {
   // --- TEST SUITE 4: GEOSPATIAL DISCOVERY ---
   describe('findAll (Discovery)', () => {
     it('should use QueryBuilder (Haversine) when lat/lon are provided', async () => {
+      // First find call is the on-the-fly expiry sweep, return empty
+      mockDonationRepo.find.mockResolvedValueOnce([]);
+
       await service.findAll(12.97, 77.59, 5);
 
       // 3. 👇 Check against the SHARED mock
       expect(mockDonationRepo.createQueryBuilder).toHaveBeenCalled();
+      expect(mockQueryBuilder.where).toHaveBeenCalled();
       expect(mockQueryBuilder.addSelect).toHaveBeenCalledWith(
         expect.stringContaining('6371 * acos'),
         'distance',
@@ -238,8 +243,12 @@ describe('DonationsService Unit Tests', () => {
     });
 
     it('should use standard find() when no location is provided', async () => {
+      // First find call is the on-the-fly expiry sweep, return empty
+      mockDonationRepo.find.mockResolvedValueOnce([]);
+
       await service.findAll();
-      expect(mockDonationRepo.find).toHaveBeenCalled();
+      // find is called twice: once for expiry sweep, once for the actual query
+      expect(mockDonationRepo.find).toHaveBeenCalledTimes(2);
       expect(mockDonationRepo.createQueryBuilder).not.toHaveBeenCalled();
     });
   });
