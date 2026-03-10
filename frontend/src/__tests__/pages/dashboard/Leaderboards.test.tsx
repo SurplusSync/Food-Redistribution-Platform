@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import Leaderboards from '../../../pages/dashboard/Leaderboards'
 import { getLeaderboard } from '../../../services/api'
 
