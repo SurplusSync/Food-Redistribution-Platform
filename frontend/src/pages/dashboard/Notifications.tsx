@@ -1,6 +1,6 @@
 import { useEffect, useState, type ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
-import { getNotifications, markNotificationRead, addNotification, type Notification } from '../../services/api'
+import { getNotifications, markNotificationRead, markAllNotificationsRead, type Notification } from '../../services/api'
 import { socketService } from '../../services/socket'
 import { Bell, CheckCircle, AlertTriangle, MapPin, Package } from 'lucide-react'
 
@@ -17,7 +17,6 @@ export default function Notifications() {
 
         // Subscribe to real-time notifications
         const unsubNotif = socketService.onNotification((data) => {
-            addNotification(data);
             const mapped: Notification = {
                 ...data,
                 type: (['food_claimed', 'pickup_assigned', 'delivery_confirmed', 'near_expiry', 'new_food_nearby'].includes(data.type)
@@ -51,8 +50,7 @@ export default function Notifications() {
     }
 
     const handleMarkAllRead = async () => {
-        const unreadIds = notifications.filter(n => !n.read).map(n => n.id)
-        await Promise.all(unreadIds.map(id => markNotificationRead(id)))
+        await markAllNotificationsRead()
         setNotifications(notifications.map(n => ({ ...n, read: true })))
     }
 

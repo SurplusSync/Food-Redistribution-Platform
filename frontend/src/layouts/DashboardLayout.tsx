@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom'
-import { LayoutDashboard, PlusCircle, Map, History, LogOut, Bell, TrendingUp, User, Navigation2, Trophy, LifeBuoy, AlertTriangle, MapPin, Star, Languages } from 'lucide-react'
+import { LayoutDashboard, PlusCircle, Map, History, LogOut, Bell, TrendingUp, User, Navigation2, Trophy, LifeBuoy, AlertTriangle, MapPin, Star, Languages, Settings } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { getNotifications, addNotification, getUserProfile } from "../services/api";
+import { getNotifications, getUserProfile } from "../services/api";
 import { socketService } from "../services/socket";
 
 export default function DashboardLayout() {
@@ -49,9 +49,8 @@ export default function DashboardLayout() {
     loadNotifications()
 
     // Listen for real-time notifications
-    const unsubNotif = socketService.onNotification((data) => {
-      addNotification(data);
-      // Update unread count
+    const unsubNotif = socketService.onNotification(() => {
+      // Backend persists notifications; just bump the count
       setUnreadCount(prev => prev + 1);
     });
 
@@ -199,6 +198,15 @@ export default function DashboardLayout() {
           >
             <Languages className="w-5 h-5" />
             <span>{t('accessibilitySettings')}</span>
+          </Link>
+
+          <Link
+            to="/dashboard/preferences"
+            className={`nav-item ${isActive('/dashboard/preferences') ? 'nav-item-active' : 'nav-item-inactive'
+              }`}
+          >
+            <Settings className="w-5 h-5" />
+            <span>Preferences</span>
           </Link>
 
           <button

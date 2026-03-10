@@ -163,7 +163,12 @@ export class DonationsService {
     }
   }
 
-  async findAll(latitude?: number, longitude?: number, radius: number = 5) {
+  async findAll(
+    latitude?: number,
+    longitude?: number,
+    radius: number = 5,
+    statusFilter?: string[],
+  ) {
     // First, mark any expired donations that the cron hasn't caught yet
     const now = new Date();
     try {
@@ -186,12 +191,18 @@ export class DonationsService {
       this.logger.warn('Failed to mark expired donations on-the-fly', error);
     }
 
-    const activeStatuses = In([
+    const defaultStatuses = [
       DonationStatus.AVAILABLE,
       DonationStatus.CLAIMED,
       DonationStatus.PICKED_UP,
       DonationStatus.DELIVERED,
-    ]);
+    ];
+    const statuses = statusFilter?.length
+      ? statusFilter.filter((s) =>
+          Object.values(DonationStatus).includes(s as DonationStatus),
+        )
+      : defaultStatuses;
+    const activeStatuses = In(statuses.length ? statuses : defaultStatuses);
 
     if (!latitude || !longitude) {
       try {
@@ -209,12 +220,7 @@ export class DonationsService {
       return await this.donationsRepository
         .createQueryBuilder('donation')
         .where('donation.status IN (:...statuses)', {
-          statuses: [
-            DonationStatus.AVAILABLE,
-            DonationStatus.CLAIMED,
-            DonationStatus.PICKED_UP,
-            DonationStatus.DELIVERED,
-          ],
+          statuses: statuses.length ? statuses : defaultStatuses,
         })
         .addSelect(
           `(6371 * acos(cos(radians(:lat)) * cos(radians(donation.latitude)) * cos(radians(donation.longitude) - radians(:lon)) + sin(radians(:lat)) * sin(radians(donation.latitude))))`,

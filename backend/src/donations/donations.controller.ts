@@ -62,13 +62,23 @@ export class DonationsController {
     type: Number,
     description: 'Search radius in km (default: 5)',
   })
+  @ApiQuery({
+    name: 'status',
+    required: false,
+    type: String,
+    description: 'Comma-separated statuses to filter (e.g. AVAILABLE,CLAIMED)',
+  })
   @ApiResponse({ status: 200, description: 'List of available donations' })
   findAll(
     @Query('latitude') latitude?: number,
     @Query('longitude') longitude?: number,
     @Query('radius') radius: number = 5,
+    @Query('status') status?: string,
   ) {
-    return this.donationsService.findAll(latitude, longitude, radius);
+    const statuses = status
+      ? status.split(',').map((s) => s.trim().toUpperCase())
+      : undefined;
+    return this.donationsService.findAll(latitude, longitude, radius, statuses);
   }
 
   @Get('stats/monthly')

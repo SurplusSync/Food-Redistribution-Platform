@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import {
   getDonations,
   updateDonationStatus,
+  markAsDelivered,
   getUserProfile,
   updateUserProfile,
   getCompletedTrips,
@@ -611,7 +612,7 @@ export default function VolunteerDashboard() {
   const handleConfirmDelivery = async (id: string) => {
     setProcessingId(id)
     try {
-      await updateDonationStatus(id, 'DELIVERED')
+      await markAsDelivered(id)
       toast.success(`🎉 ${t('deliveryConfirmed')}`, { duration: 5000 })
       await load()
       await loadProfile()

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react'
-import { Star, MessageCircle, Loader2, AlertCircle } from 'lucide-react'
-import { getDonations, createFeedback, getFeedbackForDonation, type Donation, type FeedbackItem } from '../../services/api'
+import { Star, MessageCircle, Loader2, AlertCircle, TrendingUp } from 'lucide-react'
+import { getDonations, createFeedback, getFeedbackForDonation, getDonorAverageRating, type Donation, type FeedbackItem } from '../../services/api'
 
 export default function FeedbackRatings() {
   const [deliveredDonations, setDeliveredDonations] = useState<Donation[]>([])
@@ -12,9 +12,11 @@ export default function FeedbackRatings() {
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [successMsg, setSuccessMsg] = useState<string | null>(null)
+  const [donorRating, setDonorRating] = useState<{ averageScore: number; totalReviews: number } | null>(null)
 
-  const user = JSON.parse(localStorage.getItem('user') || '{}') as { role?: string }
+  const user = JSON.parse(localStorage.getItem('user') || '{}') as { id?: string; role?: string }
   const isNGO = user.role === 'NGO'
+  const isDonor = user.role === 'DONOR'
 
   useEffect(() => {
     loadData()
@@ -40,6 +42,16 @@ export default function FeedbackRatings() {
         }
       }
       setReviews(allFeedback)
+
+      // For donors, fetch their average rating
+      if (isDonor && user.id) {
+        try {
+          const avg = await getDonorAverageRating(user.id)
+          setDonorRating(avg)
+        } catch {
+          // No ratings yet
+        }
+      }
     } catch (err: any) {
       setError(err?.response?.data?.message || err?.message || 'Failed to load data')
     } finally {
@@ -113,7 +125,24 @@ export default function FeedbackRatings() {
       )}
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
-        {/* Leave Review Form — NGO only */}
+        {/* Donor Rating Summary */}
+        {isDonor && donorRating && (
+          <div className="xl:col-span-3 card p-5">
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 rounded-xl bg-amber-500/10 flex items-center justify-center">
+                <TrendingUp className="w-7 h-7 text-amber-400" />
+              </div>
+              <div>
+                <p className="text-sm text-slate-400">Your Donor Rating</p>
+                <div className="flex items-center gap-3 mt-1">
+                  <span className="text-3xl font-bold text-white">{donorRating.averageScore.toFixed(1)}</span>
+                  <span className="text-amber-400 text-lg">{'★'.repeat(Math.round(donorRating.averageScore))}{'☆'.repeat(5 - Math.round(donorRating.averageScore))}</span>
+                </div>
+                <p className="text-xs text-slate-500 mt-1">Based on {donorRating.totalReviews} review{donorRating.totalReviews !== 1 ? 's' : ''} from NGOs</p>
+              </div>
+            </div>
+          </div>
+        )}
         {isNGO && (
           <div className="card p-5 xl:col-span-1">
             <h2 className="text-white font-semibold mb-4 flex items-center gap-2">

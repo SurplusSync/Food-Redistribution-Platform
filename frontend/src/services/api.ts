@@ -177,7 +177,11 @@ export const getDonations = async (filters?: {
   role?: string;
   userId?: string;
 }) => {
-  const response = await api.get('/donations');
+  const params: Record<string, string> = {};
+  if (filters?.status?.length) {
+    params.status = filters.status.join(',');
+  }
+  const response = await api.get('/donations', { params });
 
   // FIX: safely handle both plain array and wrapped { data: [] } response shapes
   const rawList = Array.isArray(response.data)
@@ -223,10 +227,6 @@ export const getDonations = async (filters?: {
     if (d.expiryTime && new Date(d.expiryTime).getTime() < Date.now()) return false;
     return true;
   });
-
-  if (filters?.status) {
-    data = data.filter((d: any) => filters.status?.includes(d.status));
-  }
 
   return data;
 };
@@ -286,51 +286,31 @@ export const updateDonationStatus = async (id: string, status: DonationStatus) =
   return response.data;
 };
 
-// Notifications — in-memory store backed by WebSocket events
-
-let notificationStore: Notification[] = [
-  {
-    id: 'welcome-1',
-    title: 'Welcome!',
-    message: 'Welcome to SurplusSync.',
-    type: 'new_food_nearby',
-    read: false,
-    createdAt: new Date(),
-  },
-];
-
-export const addNotification = (notif: {
-  id: string;
-  title: string;
-  message: string;
-  type: string;
-  read: boolean;
-  createdAt: string;
-}) => {
-  const mapped: Notification = {
-    ...notif,
-    type: (['food_claimed', 'pickup_assigned', 'delivery_confirmed', 'near_expiry', 'new_food_nearby'].includes(notif.type)
-      ? notif.type
-      : 'new_food_nearby') as Notification['type'],
-    createdAt: new Date(notif.createdAt),
-  };
-  notificationStore = [mapped, ...notificationStore];
+export const markAsDelivered = async (id: string) => {
+  const response = await api.patch(`/donations/${id}/deliver`);
+  return response.data;
 };
 
-export const getNotificationStore = (): Notification[] => notificationStore;
+// Notifications — persisted in backend DB
 
 export const getNotifications = async (_userId: string): Promise<Notification[]> => {
-  return [...notificationStore];
+  const response = await api.get('/notifications');
+  const raw = Array.isArray(response.data) ? response.data : (response.data?.data || []);
+  return raw.map((n: any) => ({
+    ...n,
+    type: (['food_claimed', 'pickup_assigned', 'delivery_confirmed', 'near_expiry', 'new_food_nearby'].includes(n.type)
+      ? n.type
+      : 'new_food_nearby') as Notification['type'],
+    createdAt: new Date(n.createdAt),
+  }));
 };
 
 export const markNotificationRead = async (id: string) => {
-  notificationStore = notificationStore.map(n =>
-    n.id === id ? { ...n, read: true } : n
-  );
+  await api.patch(`/notifications/${id}/read`);
 };
 
-export const markAllNotificationsRead = () => {
-  notificationStore = notificationStore.map(n => ({ ...n, read: true }));
+export const markAllNotificationsRead = async () => {
+  await api.patch('/notifications/read-all');
 };
 
 // Stats API

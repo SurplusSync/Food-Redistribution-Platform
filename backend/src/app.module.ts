@@ -17,6 +17,8 @@ import { EventsModule } from './events/events.module';
 import { ExpiryModule } from './expiry/expiry.module';
 import { FeedbackModule } from './feedback/feedback.module';
 import { DonationFeedback } from './feedback/entities/donation-feedback.entity';
+import { NotificationsModule } from './notifications/notifications.module';
+import { UserNotification } from './notifications/entities/user-notification.entity';
 
 @Module({
   imports: [
@@ -82,7 +84,7 @@ import { DonationFeedback } from './feedback/entities/donation-feedback.entity';
           username: configService.get<string>('POSTGRES_USER') || 'student',
           password: configService.get<string>('POSTGRES_PASSWORD') || 'student',
           database: configService.get<string>('POSTGRES_DB') || 'surplus_db',
-          entities: [User, Donation, SupportTicket, FlaggedDonation, DonationFeedback],
+          entities: [User, Donation, SupportTicket, FlaggedDonation, DonationFeedback, UserNotification],
           synchronize: true,
           ssl: dbSslEnabled ? { rejectUnauthorized: false } : false,
         };
@@ -95,6 +97,7 @@ import { DonationFeedback } from './feedback/entities/donation-feedback.entity';
     EventsModule,
     ExpiryModule,
     FeedbackModule,
+    NotificationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
