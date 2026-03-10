@@ -7,7 +7,7 @@
     "^.+\\.(t|j)s$": "ts-jest"
   },
   "transformIgnorePatterns": [
-    "node_modules/(?!(@keyv|keyv|cache-manager)/)"
+    "node_modules/(?!(@keyv|@cacheable|keyv|cache-manager|hookified|hashery)/)"
   ],
   "forceExit": true,
   "testTimeout": 60000
