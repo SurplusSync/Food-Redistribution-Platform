@@ -62,5 +62,5 @@ jobs:
           if [ -d "frontend" ]; then
             cd frontend
             npm install
-            npm run test
+            npm run test:run
           fi

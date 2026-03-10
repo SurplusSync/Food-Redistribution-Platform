@@ -1,0 +1,1498 @@
+
+> frontend@0.0.0 test:run
+> vitest --run src/components/__tests__/donationList.test.tsx src/components/__tests__/claimDonation.test.tsx
+
+
+[7m[1m[36m RUN [39m[22m[27m [36mv1.6.1[39m [90mD:/SEM6/SE/SE_PROJECT/Food-Redistribution-Platform/frontend[39m
+
+ [32m✓[39m src/components/__tests__/claimDonation.test.tsx [2m ([22m[2m1 test[22m[2m)[22m[33m 338[2mms[22m[39m
+ [33m❯[39m src/components/__tests__/donationList.test.tsx [2m ([22m[2m1 test[22m [2m|[22m [31m1 failed[39m[2m)[22m[33m 1123[2mms[22m[39m
+[31m   [33m❯[31m src/components/__tests__/donationList.test.tsx[2m > [22mDonationList Rendering[2m > [22mMock API response and ensure donation cards render correctly[39m
+[31m     → Unable to find an element with the text: Farm Fresh. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<div>[31m
+      [36m<div[31m
+        [33mclass[31m=[32m"mb-8"[31m
+      [36m>[31m
+        [36m<h1[31m
+          [33mclass[31m=[32m"text-2xl font-semibold text-gray-900 dark:text-white"[31m
+        [36m>[31m
+          [0mgoodEvening[0m
+          [0m, [0m
+          [0mNGO[0m
+          [0m![0m
+        [36m</h1>[31m
+        [36m<p[31m
+          [33mclass[31m=[32m"text-gray-500 dark:text-slate-500 mt-1"[31m
+        [36m>[31m
+          [0mfindClaimDonations[0m
+        [36m</p>[31m
+      [36m</div>[31m
+      [36m<div[31m
+        [33mclass[31m=[32m"grid grid-cols-1 md:grid-cols-3 gap-4 mb-8"[31m
+      [36m>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-5"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"flex items-center justify-between mb-3"[31m
+          [36m>[31m
+            [36m<span[31m
+              [33mclass[31m=[32m"text-xl text-emerald-400"[31m
+            [36m>[31m
+              [0m●[0m
+            [36m</span>[31m
+            [36m<span[31m
+              [33mclass[31m=[32m"text-xs font-medium px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 uppercase"[31m
+            [36m>[31m
+              [0mavailable[0m
+            [36m</span>[31m
+          [36m</div>[31m
+          [36m<p[31m
+            [33mclass[31m=[32m"text-sm text-gray-500 dark:text-slate-400 mb-1"[31m
+          [36m>[31m
+            [0mreadyToClaim[0m
+          [36m</p>[31m
+          [36m<p[31m
+            [33mclass[31m=[32m"text-3xl font-semibold text-emerald-400"[31m
+          [36m>[31m
+            [0m2[0m
+          [36m</p>[31m
+        [36m</div>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"rounded-xl border border-amber-500/20 bg-amber-500/10 p-5"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"flex items-center justify-between mb-3"[31m
+          [36m>[31m
+            [36m<span[31m
+              [33mclass[31m=[32m"text-xl text-amber-400"[31m
+            [36m>[31m
+              [0m◷[0m
+            [36m</span>[31m
+            [36m<span[31m
+              [33mclass[31m=[32m"text-xs font-medium px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 uppercase"[31m
+            [36m>[31m
+              [0minProgress[0m
+            [36m</span>[31m
+          [36m</div>[31m
+          [36m<p[31m
+            [33mclass[31m=[32m"text-sm text-gray-500 dark:text-slate-400 mb-1"[31m
+          [36m>[31m
+            [0mclaimedPending[0m
+          [36m</p>[31m
+          [36m<p[31m
+            [33mclass[31m=[32m"text-3xl font-semibold text-amber-400"[31m
+          [36m>[31m
+            [0m0[0m
+          [36m</p>[31m
+        [36m</div>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"rounded-xl border border-gray-300 dark:border-slate-700 bg-gray-100/50 dark:bg-slate-800/30 p-5"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"flex items-center justify-between mb-3"[31m
+          [36m>[31m
+            [36m<span[31m
+              [33mclass[31m=[32m"text-xl text-gray-500 dark:text-slate-400"[31m
+            [36m>[31m
+              [0m✓[0m
+            [36m</span>[31m
+            [36m<span[31m
+              [33mclass[31m=[32m"text-xs font-medium px-2 py-0.5 rounded bg-slate-500/10 text-gray-500 dark:text-slate-400 uppercase"[31m
+            [36m>[31m
+              [0mcomplete[0m
+            [36m</span>[31m
+          [36m</div>[31m
+          [36m<p[31m
+            [33mclass[31m=[32m"text-sm text-gray-500 dark:text-slate-400 mb-1"[31m
+          [36m>[31m
+            [0mdelivered[0m
+          [36m</p>[31m
+          [36m<p[31m
+            [33mclass[31m=[32m"text-3xl font-semibold text-gray-500 dark:text-slate-400"[31m
+          [36m>[31m
+            [0m0[0m
+          [36m</p>[31m
+        [36m</div>[31m
+      [36m</div>[31m
+      [36m<div[31m
+        [33mclass[31m=[32m"grid grid-cols-1 md:grid-cols-2 gap-4 mb-8"[31m
+      [36m>[31m
+        [36m<a[31m
+          [33mhref[31m=[32m"/dashboard/map"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"flex items-center gap-4"[31m
+          [36m>[31m
+            [36m<div[31m
+              [33mclass[31m=[32m"w-12 h-12 rounded-xl bg-gray-100 dark:bg-slate-800 flex items-center justify-center text-gray-500 dark:text-slate-400 group-hover:text-gray-900 dark:group-hover:text-white transition-colors"[31m
+            [36m>[31m
+              [36m<svg[31m
+                [33mclass[31m=[32m"w-6 h-6"[31m
+                [33mfill[31m=[32m"none"[31m
+                [33mheight[31m=[32m"24"[31m
+                [33mstroke[31m=[32m"currentColor"[31m
+                [33mstroke-linecap[31m=[32m"round"[31m
+                [33mstroke-linejoin[31m=[32m"round"[31m
+                [33mstroke-width[31m=[32m"2"[31m
+                [33mviewBox[31m=[32m"0 0 24 24"[31m
+                [33mwidth[31m=[32m"24"[31m
+                [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+              [36m>[31m
+                [36m<polygon[31m
+                  [33mpoints[31m=[32m"3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"[31m
+                [36m/>[31m
+                [36m<line[31m
+                  [33mx1[31m=[32m"9"[31m
+                  [33mx2[31m=[32m"9"[31m
+                  [33my1[31m=[32m"3"[31m
+                  [33my2[31m=[32m"18"[31m
+                [36m/>[31m
+                [36m<line[31m
+                  [33mx1[31m=[32m"15"[31m
+                  [33mx2[31m=[32m"15"[31m
+                  [33my1[31m=[32m"6"[31m
+                  [33my2[31m=[32m"21"[31m
+                [36m/>[31m
+              [36m</svg>[31m
+            [36m</div>[31m
+            [36m<div>[31m
+              [36m<h3[31m
+                [33mclass[31m=[32m"font-semibold text-gray-900 dark:text-white mb-1"[31m
+              [36m>[31m
+                [0mdiscoveryMap[0m
+              [36m</h3>[31m
+              [36m<p[31m
+                [33mclass[31m=[32m"text-sm text-gray-500 dark:text-slate-400"[31m
+              [36m>[31m
+                [0mfindClaimDonations[0m
+              [36m</p>[31m
+            [36m</div>[31m
+          [36m</div>[31m
+        [36m</a>[31m
+        [36m<a[31m
+          [33mhref[31m=[32m"/dashboard/impact"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"flex items-center gap-4"[31m
+          [36m>[31m
+            [36m<div[31m
+              [33mclass[31m=[32m"w-12 h-12 rounded-xl bg-gray-100 dark:bg-slate-800 flex items-center justify-center text-gray-500 dark:text-slate-400 group-hover:text-gray-900 dark:group-hover:text-white transition-colors"[31m
+            [36m>[31m
+              [36m<svg[31m
+                [33mclass[31m=[32m"w-6 h-6"[31m
+                [33mfill[31m=[32m"none"[31m
+                [33mheight[31m=[32m"24"[31m
+                [33mstroke[31m=[32m"currentColor"[31m
+                [33mstroke-linecap[31m=[32m"round"[31m
+                [33mstroke-linejoin[31m=[32m"round"[31m
+                [33mstroke-width[31m=[32m"2"[31m
+                [33mviewBox[31m=[32m"0 0 24 24"[31m
+                [33mwidth[31m=[32m"24"[31m
+                [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+              [36m>[31m
+                [36m<polyline[31m
+                  [33mpoints[31m=[32m"22 7 13.5 15.5 8.5 10.5 2 17"[31m
+                [36m/>[31m
+                [36m<polyline[31m
+                  [33mpoints[31m=[32m"16 7 22 7 22 13"[31m
+                [36m/>[31m
+              [36m</svg>[31m
+            [36m</div>[31m
+            [36m<div>[31m
+              [36m<h3[31m
+                [33mclass[31m=[32m"font-semibold text-gray-900 dark:text-white mb-1"[31m
+              [36m>[31m
+                [0myourImpact[0m
+              [36m</h3>[31m
+              [36m<p[31m
+                [33mclass[31m=[32m"text-sm text-gray-500 dark:text-slate-400"[31m
+              [36m>[31m
+                [0mseeDifference[0m
+              [36m</p>[31m
+            [36m</div>[31m
+          [36m</div>[31m
+        [36m</a>[31m
+      [36m</div>[31m
+      [36m<div[31m
+        [33mclass[31m=[32m"bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl overflow-hidden mb-8"[31m
+      [36m>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"p-5 border-b border-gray-200 dark:border-slate-800 flex items-center justify-between"[31m
+        [36m>[31m
+          [36m<h2[31m
+            [33mclass[31m=[32m"font-medium text-gray-900 dark:text-white"[31m
+          [36m>[31m
+            [0mavailableDonationsToClaim[0m
+          [36m</h2>[31m
+          [36m<a[31m
+            [33mhref[31m=[32m"/dashboard/history"[31m
+          [36m>[31m
+            [0mviewAll[0m
+          [36m</a>[31m
+        [36m</div>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"divide-y divide-gray-200 dark:divide-slate-800"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"p-4 hover:bg-gray-100/50 dark:bg-slate-800/30 transition-colors"[31m
+          [36m>[31m
+            [36m<div[31m
+              [33mclass[31m=[32m"flex items-center justify-between"[31m
+            [36m>[31m
+              [36m<div[31m
+                [33mclass[31m=[32m"flex items-center gap-4 flex-1"[31m
+              [36m>[31m
+                [36m<div[31m
+                  [33mclass[31m=[32m"w-12 h-12 rounded-lg flex items-center justify-center text-2xl bg-emerald-500/10"[31m
+                [36m>[31m
+                  [0m🥬[0m
+                [36m</div>[31m
+                [36m<div[31m
+                  [33mclass[31m=[32m"flex-1"[31m
+                [36m>[31m
+                  [36m<div[31m
+                    [33mclass[31m=[32m"flex items-center gap-2 mb-1"[31m
+                  [36m>[31m
+                    [36m<p[31m
+                      [33mclass[31m=[32m"font-medium text-gray-900 dark:text-white"[31m
+                    [36m>[31m
+                      [0mFresh Veggies[0m
+                    [36m</p>[31m
+                  [36m</div>[31m
+                  [36m<p[31m
+                    [33mclass[31m=[32m"text-sm text-gray-500 dark:text-slate-500"[31m
+                  [36m>[31m
+                    [0m10[0m
+                    [0m [0m
+                    [0mkg[0m
+                    [0m • [0m
+                    [0mFarm Fresh[0m
+                  [36m</p>[31m
+                [36m</div>[31m
+              [36m</div>[31m
+              [36m<div[31m
+                [33mclass[31m=[32m"flex items-center gap-2"[31m
+              [36m>[31m
+                [36m<button[31m
+                  [33mclass[31m=[32m"px-3 py-1 rounded-md text-xs font-medium bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-gray-200 dark:bg-slate-700 transition-colors border border-gray-300 dark:border-slate-700"[31m
+                [36m>[31m
+                  [0mviewDetails[0m
+                [36m</button>[31m
+                [36m<span[31m
+                  [33mclass[31m=[32m"px-3 py-1 rounded-md text-xs font-medium whitespace-nowrap bg-emerald-500/10 text-emerald-400"[31m
+                [36m>[31m
+                  [0mavailable[0m
+                [36m</span>[31m
+              [36m</div>[31m
+            [36m</div>[31m
+          [36m</div>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"p-4 hover:bg-gray-100/50 dark:bg-slate-800/30 transition-colors"[31m
+          [36m>[31m
+            [36m<div[31m
+              [33mclass[31m=[32m"flex items-center justify-between"[31m
+            [36m>[31m
+              [36m<div[31m
+                [33mclass[31m=[32m"flex items-center gap-4 flex-1"[31m
+              [36m>[31m
+                [36m<div[31m
+                  [33mclass[31m=[32m"w-12 h-12 rounded-lg flex items-center justify-center text-2xl bg-emerald-500/10"[31m
+                [36m>[31m
+                  [0m🍛[0m
+                [36m</div>[31m
+                [36m<div[31m
+                  [33mclass[31m=[32m"flex-1"[31m
+                [36m>[31m
+                  [36m<div[31m
+                    [33mclass[31m=[32m"flex items-center gap-2 mb-1"[31m
+                  [36m>[31m
+                    [36m<p[31m
+                      [33mclass[31m=[32m"font-medium text-gray-900 dark:text-white"[31m
+                    [36m>[31m
+                      [0mLeftover Buffet[0m
+                    [36m</p>[31m
+                  [36m</div>[31m
+                  [36m<p[31m
+                    [33mclass[31m=[32m"text-sm text-gray-500 dark:text-slate-500"[31m
+                  [36m>[31m
+                    [0m20[0m
+                    [0m [0m
+                    [0mmeals[0m
+                    [0m • [0m
+                    [0mGrand Hotel[0m
+                  [36m</p>[31m
+                [36m</div>[31m
+              [36m</div>[31m
+              [36m<div[31m
+                [33mclass[31m=[32m"flex items-center gap-2"[31m
+              [36m>[31m
+                [36m<button[31m
+                  [33mclass[31m=[32m"px-3 py-1 rounded-md text-xs font-medium bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-gray-200 dark:bg-slate-700 transition-colors border border-gray-300 dark:border-slate-700"[31m
+                [36m>[31m
+                  [0mviewDetails[0m
+                [36m</button>[31m
+                [36m<span[31m
+                  [33mclass[31m=[32m"px-3 py-1 rounded-md text-xs font-medium whitespace-nowrap bg-emerald-500/10 text-emerald-400"[31m
+                [36m>[31m
+                  [0mavailable[0m
+                [36m</span>[31m
+              [36m</div>[31m
+            [36m</div>[31m
+          [36m</div>[31m
+        [36m</div>[31m
+      [36m</div>[31m
+      [36m<div[31m
+        [33mclass[31m=[32m"bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl overflow-hidden"[31m
+      [36m>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"p-5 border-b border-gray-200 dark:border-slate-800"[31m
+        [36m>[31m
+          [36m<h2[31m
+            [33mclass[31m=[32m"font-medium text-gray-900 dark:text-white"[31m
+          [36m>[31m
+            [0myourClaimedDonations[0m
+          [36m</h2>[31m
+        [36m</div>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"p-8 text-center"[31m
+        [36m>[31m
+          [36m<p[31m
+            [33mclass[31m=[32m"text-gray-500 dark:text-slate-500"[31m
+          [36m>[31m
+            [0mnoClaimedDonations[0m
+          [36m</p>[31m
+        [36m</div>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"divide-y divide-gray-200 dark:divide-slate-800"[31m
+        [36m/>[31m
+      [36m</div>[31m
+    [36m</div>[31m
+  [36m</div>[31m
+[36m</body>[31m
+
+Ignored nodes: comments, script, style
+[36m<html>[31m
+  [36m<head />[31m
+  [36m<body>[31m
+    [36m<div>[31m
+      [36m<div>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"mb-8"[31m
+        [36m>[31m
+          [36m<h1[31m
+            [33mclass[31m=[32m"text-2xl font-semibold text-gray-900 dark:text-white"[31m
+          [36m>[31m
+            [0mgoodEvening[0m
+            [0m, [0m
+            [0mNGO[0m
+            [0m![0m
+          [36m</h1>[31m
+          [36m<p[31m
+            [33mclass[31m=[32m"text-gray-500 dark:text-slate-500 mt-1"[31m
+          [36m>[31m
+            [0mfindClaimDonations[0m
+          [36m</p>[31m
+        [36m</div>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"grid grid-cols-1 md:grid-cols-3 gap-4 mb-8"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-5"[31m
+          [36m>[31m
+            [36m<div[31m
+              [33mclass[31m=[32m"flex items-center justify-between mb-3"[31m
+            [36m>[31m
+              [36m<span[31m
+                [33mclass[31m=[32m"text-xl text-emerald-400"[31m
+              [36m>[31m
+                [0m●[0m
+              [36m</span>[31m
+              [36m<span[31m
+                [33mclass[31m=[32m"text-xs font-medium px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 uppercase"[31m
+              [36m>[31m
+                [0mavailable[0m
+              [36m</span>[31m
+            [36m</div>[31m
+            [36m<p[31m
+              [33mclass[31m=[32m"text-sm text-gray-500 dark:text-slate-400 mb-1"[31m
+            [36m>[31m
+              [0mreadyToClaim[0m
+            [36m</p>[31m
+            [36m<p[31m
+              [33mclass[31m=[32m"text-3xl font-semibold text-emerald-400"[31m
+            [36m>[31m
+              [0m2[0m
+            [36m</p>[31m
+          [36m</div>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"rounded-xl border border-amber-500/20 bg-amber-500/10 p-5"[31m
+          [36m>[31m
+            [36m<div[31m
+              [33mclass[31m=[32m"flex items-center justify-between mb-3"[31m
+            [36m>[31m
+              [36m<span[31m
+                [33mclass[31m=[32m"text-xl text-amber-400"[31m
+              [36m>[31m
+                [0m◷[0m
+              [36m</span>[31m
+              [36m<span[31m
+                [33mclass[31m=[32m"text-xs font-medium px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 uppercase"[31m
+              [36m>[31m
+                [0minProgress[0m
+              [36m</span>[31m
+            [36m</div>[31m
+            [36m<p[31m
+              [33mclass[31m=[32m"text-sm text-gray-500 dark:text-slate-400 mb-1"[31m
+            [36m>[31m
+              [0mclaimedPending[0m
+            [36m</p>[31m
+            [36m<p[31m
+              [33mclass[31m=[32m"text-3xl font-semibold text-amber-400"[31m
+            [36m>[31m
+              [0m0[0m
+            [36m</p>[31m
+          [36m</div>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"rounded-xl border border-gray-300 dark:border-slate-700 bg-gray-100/50 dark:bg-slate-800/30 p-5"[31m
+          [36m>[31m
+            [36m<div[31m
+              [33mclass[31m=[32m"flex items-center justify-between mb-3"[31m
+            [36m>[31m
+              [36m<span[31m
+                [33mclass[31m=[32m"text-xl text-gray-500 dark:text-slate-400"[31m
+              [36m>[31m
+                [0m✓[0m
+              [36m</span>[31m
+              [36m<span[31m
+                [33mclass[31m=[32m"text-xs font-medium px-2 py-0.5 rounded bg-slate-500/10 text-gray-500 dark:text-slate-400 uppercase"[31m
+              [36m>[31m
+                [0mcomplete[0m
+              [36m</span>[31m
+            [36m</div>[31m
+            [36m<p[31m
+              [33mclass[31m=[32m"text-sm text-gray-500 dark:text-slate-400 mb-1"[31m
+            [36m>[31m
+              [0mdelivered[0m
+            [36m</p>[31m
+            [36m<p[31m
+              [33mclass[31m=[32m"text-3xl font-semibold text-gray-500 dark:text-slate-400"[31m
+            [36m>[31m
+              [0m0[0m
+            [36m</p>[31m
+          [36m</div>[31m
+        [36m</div>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"grid grid-cols-1 md:grid-cols-2 gap-4 mb-8"[31m
+        [36m>[31m
+          [36m<a[31m
+            [33mhref[31m=[32m"/dashboard/map"[31m
+          [36m>[31m
+            [36m<div[31m
+              [33mclass[31m=[32m"flex items-center gap-4"[31m
+            [36m>[31m
+              [36m<div[31m
+                [33mclass[31m=[32m"w-12 h-12 rounded-xl bg-gray-100 dark:bg-slate-800 flex items-center justify-center text-gray-500 dark:text-slate-400 group-hover:text-gray-900 dark:group-hover:text-white transition-colors"[31m
+              [36m>[31m
+                [36m<svg[31m
+                  [33mclass[31m=[32m"w-6 h-6"[31m
+                  [33mfill[31m=[32m"none"[31m
+                  [33mheight[31m=[32m"24"[31m
+                  [33mstroke[31m=[32m"currentColor"[31m
+                  [33mstroke-linecap[31m=[32m"round"[31m
+                  [33mstroke-linejoin[31m=[32m"round"[31m
+                  [33mstroke-width[31m=[32m"2"[31m
+                  [33mviewBox[31m=[32m"0 0 24 24"[31m
+                  [33mwidth[31m=[32m"24"[31m
+                  [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+                [36m>[31m
+                  [36m<polygon[31m
+                    [33mpoints[31m=[32m"3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"[31m
+                  [36m/>[31m
+                  [36m<line[31m
+                    [33mx1[31m=[32m"9"[31m
+                    [33mx2[31m=[32m"9"[31m
+                    [33my1[31m=[32m"3"[31m
+                    [33my2[31m=[32m"18"[31m
+                  [36m/>[31m
+                  [36m<line[31m
+                    [33mx1[31m=[32m"15"[31m
+                    [33mx2[31m=[32m"15"[31m
+                    [33my1[31m=[32m"6"[31m
+                    [33my2[31m=[32m"21"[31m
+                  [36m/>[31m
+                [36m</svg>[31m
+              [36m</div>[31m
+              [36m<div>[31m
+                [36m<h3[31m
+                  [33mclass[31m=[32m"font-semibold text-gray-900 dark:text-white mb-1"[31m
+                [36m>[31m
+                  [0mdiscoveryMap[0m
+                [36m</h3>[31m
+                [36m<p[31m
+                  [33mclass[31m=[32m"text-sm text-gray-500 dark:text-slate-400"[31m
+                [36m>[31m
+                  [0mfindClaimDonations[0m
+                [36m</p>[31m
+              [36m</div>[31m
+            [36m</div>[31m
+          [36m</a>[31m
+          [36m<a[31m
+            [33mhref[31m=[32m"/dashboard/impact"[31m
+          [36m>[31m
+            [36m<div[31m
+              [33mclass[31m=[32m"flex items-center gap-4"[31m
+            [36m>[31m
+              [36m<div[31m
+                [33mclass[31m=[32m"w-12 h-12 rounded-xl bg-gray-100 dark:bg-slate-800 flex items-center justify-center text-gray-500 dark:text-slate-400 group-hover:text-gray-900 dark:group-hover:text-white transition-colors"[31m
+              [36m>[31m
+                [36m<svg[31m
+                  [33mclass[31m=[32m"w-6 h-6"[31m
+                  [33mfill[31m=[32m"none"[31m
+                  [33mheight[31m=[32m"24"[31m
+                  [33mstroke[31m=[32m"currentColor"[31m
+                  [33mstroke-linecap[31m=[32m"round"[31m
+                  [33mstroke-linejoin[31m=[32m"round"[31m
+                  [33mstroke-width[31m=[32m"2"[31m
+                  [33mviewBox[31m=[32m"0 0 24 24"[31m
+                  [33mwidth[31m=[32m"24"[31m
+                  [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+                [36m>[31m
+                  [36m<polyline[31m
+                    [33mpoints[31m=[32m"22 7 13.5 15.5 8.5 10.5 2 17"[31m
+                  [36m/>[31m
+                  [36m<polyline[31m
+                    [33mpoints[31m=[32m"16 7 22 7 22 13"[31m
+                  [36m/>[31m
+                [36m</svg>[31m
+              [36m</div>[31m
+              [36m<div>[31m
+                [36m<h3[31m
+                  [33mclass[31m=[32m"font-semibold text-gray-900 dark:text-white mb-1"[31m
+                [36m>[31m
+                  [0myourImpact[0m
+                [36m</h3>[31m
+                [36m<p[31m
+                  [33mclass[31m=[32m"text-sm text-gray-500 dark:text-slate-400"[31m
+                [36m>[31m
+                  [0mseeDifference[0m
+                [36m</p>[31m
+              [36m</div>[31m
+            [36m</div>[31m
+          [36m</a>[31m
+        [36m</div>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl overflow-hidden mb-8"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"p-5 border-b border-gray-200 dark:border-slate-800 flex items-center justify-between"[31m
+          [36m>[31m
+            [36m<h2[31m
+              [33mclass[31m=[32m"font-medium text-gray-900 dark:text-white"[31m
+            [36m>[31m
+              [0mavailableDonationsToClaim[0m
+            [36m</h2>[31m
+            [36m<a[31m
+              [33mhref[31m=[32m"/dashboard/history"[31m
+            [36m>[31m
+              [0mviewAll[0m
+            [36m</a>[31m
+          [36m</div>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"divide-y divide-gray-200 dark:divide-slate-800"[31m
+          [36m>[31m
+            [36m<div[31m
+              [33mclass[31m=[32m"p-4 hover:bg-gray-100/50 dark:bg-slate-800/30 transition-colors"[31m
+            [36m>[31m
+              [36m<div[31m
+                [33mclass[31m=[32m"flex items-center justify-between"[31m
+              [36m>[31m
+                [36m<div[31m
+                  [33mclass[31m=[32m"flex items-center gap-4 flex-1"[31m
+                [36m>[31m
+                  [36m<div[31m
+                    [33mclass[31m=[32m"w-12 h-12 rounded-lg flex items-center justify-center text-2xl bg-emerald-500/10"[31m
+                  [36m>[31m
+                    [0m🥬[0m
+                  [36m</div>[31m
+                  [36m<div[31m
+                    [33mclass[31m=[32m"flex-1"[31m
+                  [36m>[31m
+                    [36m<div[31m
+                      [33mclass[31m=[32m"flex items-center gap-2 mb-1"[31m
+                    [36m>[31m
+                      [36m<p[31m
+                        [33mclass[31m=[32m"font-medium text-gray-900 dark:text-white"[31m
+                      [36m>[31m
+                        [0mFresh Veggies[0m
+                      [36m</p>[31m
+                    [36m</div>[31m
+                    [36m<p[31m
+                      [33mclass[31m=[32m"text-sm text-gray-500 dark:text-slate-500"[31m
+                    [36m>[31m
+                      [0m10[0m
+                      [0m [0m
+                      [0mkg[0m
+                      [0m • [0m
+                      [0mFarm Fresh[0m
+                    [36m</p>[31m
+                  [36m</div>[31m
+                [36m</div>[31m
+                [36m<div[31m
+                  [33mclass[31m=[32m"flex items-center gap-2"[31m
+                [36m>[31m
+                  [36m<button[31m
+                    [33mclass[31m=[32m"px-3 py-1 rounded-md text-xs font-medium bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-gray-200 dark:bg-slate-700 transition-colors border border-gray-300 dark:border-slate-700"[31m
+                  [36m>[31m
+                    [0mviewDetails[0m
+                  [36m</button>[31m
+                  [36m<span[31m
+                    [33mclass[31m=[32m"px-3 py-1 rounded-md text-xs font-medium whitespace-nowrap bg-emerald-500/10 text-emerald-400"[31m
+                  [36m>[31m
+                    [0mavailable[0m
+                  [36m</span>[31m
+                [36m</div>[31m
+              [36m</div>[31m
+            [36m</div>[31m
+            [36m<div[31m
+              [33mclass[31m=[32m"p-4 hover:bg-gray-100/50 dark:bg-slate-800/30 transition-colors"[31m
+            [36m>[31m
+              [36m<div[31m
+                [33mclass[31m=[32m"flex items-center justify-between"[31m
+              [36m>[31m
+                [36m<div[31m
+                  [33mclass[31m=[32m"flex items-center gap-4 flex-1"[31m
+                [36m>[31m
+                  [36m<div[31m
+                    [33mclass[31m=[32m"w-12 h-12 rounded-lg flex items-center justify-center text-2xl bg-emerald-500/10"[31m
+                  [36m>[31m
+                    [0m🍛[0m
+                  [36m</div>[31m
+                  [36m<div[31m
+                    [33mclass[31m=[32m"flex-1"[31m
+                  [36m>[31m
+                    [36m<div[31m
+                      [33mclass[31m=[32m"flex items-center gap-2 mb-1"[31m
+                    [36m>[31m
+                      [36m<p[31m
+                        [33mclass[31m=[32m"font-medium text-gray-900 dark:text-white"[31m
+                      [36m>[31m
+                        [0mLeftover Buffet[0m
+                      [36m</p>[31m
+                    [36m</div>[31m
+                    [36m<p[31m
+                      [33mclass[31m=[32m"text-sm text-gray-500 dark:text-slate-500"[31m
+                    [36m>[31m
+                      [0m20[0m
+                      [0m [0m
+                      [0mmeals[0m
+                      [0m • [0m
+                      [0mGrand Hotel[0m
+                    [36m</p>[31m
+                  [36m</div>[31m
+                [36m</div>[31m
+                [36m<div[31m
+                  [33mclass[31m=[32m"flex items-center gap-2"[31m
+                [36m>[31m
+                  [36m<button[31m
+                    [33mclass[31m=[32m"px-3 py-1 rounded-md text-xs font-medium bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-gray-200 dark:bg-slate-700 transition-colors border border-gray-300 dark:border-slate-700"[31m
+                  [36m>[31m
+                    [0mviewDetails[0m
+                  [36m</button>[31m
+                  [36m<span[31m
+                    [33mclass[31m=[32m"px-3 py-1 rounded-md text-xs font-medium whitespace-nowrap bg-emerald-500/10 text-emerald-400"[31m
+                  [36m>[31m
+                    [0mavailable[0m
+                  [36m</span>[31m
+                [36m</div>[31m
+              [36m</div>[31m
+            [36m</div>[31m
+          [36m</div>[31m
+        [36m</div>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl overflow-hidden"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"p-5 border-b border-gray-200 dark:border-slate-800"[31m
+          [36m>[31m
+            [36m<h2[31m
+              [33mclass[31m=[32m"font-medium text-gray-900 dark:text-white"[31m
+            [36m>[31m
+              [0myourClaimedDonations[0m
+            [36m</h2>[31m
+          [36m</div>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"p-8 text-center"[31m
+          [36m>[31m
+            [36m<p[31m
+              [33mclass[31m=[32m"text-gray-500 dark:text-slate-500"[31m
+            [36m>[31m
+              [0mnoClaimedDonations[0m
+            [36m</p>[31m
+          [36m</div>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"divide-y divide-gray-200 dark:divide-slate-800"[31m
+          [36m/>[31m
+        [36m</div>[31m
+      [36m</div>[31m
+    [36m</div>[31m
+  [36m</body>[31m
+[36m</html>[31m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[1m[7m Failed Tests 1 [27m[22m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[31m[1m[7m FAIL [27m[22m[39m src/components/__tests__/donationList.test.tsx[2m > [22mDonationList Rendering[2m > [22mMock API response and ensure donation cards render correctly
+[31m[1mTestingLibraryElementError[22m[39m: Unable to find an element with the text: Farm Fresh. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"mb-8"[39m
+      [36m>[39m
+        [36m<h1[39m
+          [33mclass[39m=[32m"text-2xl font-semibold text-gray-900 dark:text-white"[39m
+        [36m>[39m
+          [0mgoodEvening[0m
+          [0m, [0m
+          [0mNGO[0m
+          [0m![0m
+        [36m</h1>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"text-gray-500 dark:text-slate-500 mt-1"[39m
+        [36m>[39m
+          [0mfindClaimDonations[0m
+        [36m</p>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"grid grid-cols-1 md:grid-cols-3 gap-4 mb-8"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-5"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex items-center justify-between mb-3"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"text-xl text-emerald-400"[39m
+            [36m>[39m
+              [0m●[0m
+            [36m</span>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"text-xs font-medium px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 uppercase"[39m
+            [36m>[39m
+              [0mavailable[0m
+            [36m</span>[39m
+          [36m</div>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-sm text-gray-500 dark:text-slate-400 mb-1"[39m
+          [36m>[39m
+            [0mreadyToClaim[0m
+          [36m</p>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-3xl font-semibold text-emerald-400"[39m
+          [36m>[39m
+            [0m2[0m
+          [36m</p>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"rounded-xl border border-amber-500/20 bg-amber-500/10 p-5"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex items-center justify-between mb-3"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"text-xl text-amber-400"[39m
+            [36m>[39m
+              [0m◷[0m
+            [36m</span>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"text-xs font-medium px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 uppercase"[39m
+            [36m>[39m
+              [0minProgress[0m
+            [36m</span>[39m
+          [36m</div>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-sm text-gray-500 dark:text-slate-400 mb-1"[39m
+          [36m>[39m
+            [0mclaimedPending[0m
+          [36m</p>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-3xl font-semibold text-amber-400"[39m
+          [36m>[39m
+            [0m0[0m
+          [36m</p>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"rounded-xl border border-gray-300 dark:border-slate-700 bg-gray-100/50 dark:bg-slate-800/30 p-5"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex items-center justify-between mb-3"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"text-xl text-gray-500 dark:text-slate-400"[39m
+            [36m>[39m
+              [0m✓[0m
+            [36m</span>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"text-xs font-medium px-2 py-0.5 rounded bg-slate-500/10 text-gray-500 dark:text-slate-400 uppercase"[39m
+            [36m>[39m
+              [0mcomplete[0m
+            [36m</span>[39m
+          [36m</div>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-sm text-gray-500 dark:text-slate-400 mb-1"[39m
+          [36m>[39m
+            [0mdelivered[0m
+          [36m</p>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-3xl font-semibold text-gray-500 dark:text-slate-400"[39m
+          [36m>[39m
+            [0m0[0m
+          [36m</p>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"grid grid-cols-1 md:grid-cols-2 gap-4 mb-8"[39m
+      [36m>[39m
+        [36m<a[39m
+          [33mhref[39m=[32m"/dashboard/map"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex items-center gap-4"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"w-12 h-12 rounded-xl bg-gray-100 dark:bg-slate-800 flex items-center justify-center text-gray-500 dark:text-slate-400 group-hover:text-gray-900 dark:group-hover:text-white transition-colors"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33mclass[39m=[32m"w-6 h-6"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<polygon[39m
+                  [33mpoints[39m=[32m"3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"[39m
+                [36m/>[39m
+                [36m<line[39m
+                  [33mx1[39m=[32m"9"[39m
+                  [33mx2[39m=[32m"9"[39m
+                  [33my1[39m=[32m"3"[39m
+                  [33my2[39m=[32m"18"[39m
+                [36m/>[39m
+                [36m<line[39m
+                  [33mx1[39m=[32m"15"[39m
+                  [33mx2[39m=[32m"15"[39m
+                  [33my1[39m=[32m"6"[39m
+                  [33my2[39m=[32m"21"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</div>[39m
+            [36m<div>[39m
+              [36m<h3[39m
+                [33mclass[39m=[32m"font-semibold text-gray-900 dark:text-white mb-1"[39m
+              [36m>[39m
+                [0mdiscoveryMap[0m
+              [36m</h3>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"text-sm text-gray-500 dark:text-slate-400"[39m
+              [36m>[39m
+                [0mfindClaimDonations[0m
+              [36m</p>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</a>[39m
+        [36m<a[39m
+          [33mhref[39m=[32m"/dashboard/impact"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex items-center gap-4"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"w-12 h-12 rounded-xl bg-gray-100 dark:bg-slate-800 flex items-center justify-center text-gray-500 dark:text-slate-400 group-hover:text-gray-900 dark:group-hover:text-white transition-colors"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33mclass[39m=[32m"w-6 h-6"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<polyline[39m
+                  [33mpoints[39m=[32m"22 7 13.5 15.5 8.5 10.5 2 17"[39m
+                [36m/>[39m
+                [36m<polyline[39m
+                  [33mpoints[39m=[32m"16 7 22 7 22 13"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</div>[39m
+            [36m<div>[39m
+              [36m<h3[39m
+                [33mclass[39m=[32m"font-semibold text-gray-900 dark:text-white mb-1"[39m
+              [36m>[39m
+                [0myourImpact[0m
+              [36m</h3>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"text-sm text-gray-500 dark:text-slate-400"[39m
+              [36m>[39m
+                [0mseeDifference[0m
+              [36m</p>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</a>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl overflow-hidden mb-8"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"p-5 border-b border-gray-200 dark:border-slate-800 flex items-center justify-between"[39m
+        [36m>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"font-medium text-gray-900 dark:text-white"[39m
+          [36m>[39m
+            [0mavailableDonationsToClaim[0m
+          [36m</h2>[39m
+          [36m<a[39m
+            [33mhref[39m=[32m"/dashboard/history"[39m
+          [36m>[39m
+            [0mviewAll[0m
+          [36m</a>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"divide-y divide-gray-200 dark:divide-slate-800"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"p-4 hover:bg-gray-100/50 dark:bg-slate-800/30 transition-colors"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex items-center justify-between"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex items-center gap-4 flex-1"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"w-12 h-12 rounded-lg flex items-center justify-center text-2xl bg-emerald-500/10"[39m
+                [36m>[39m
+                  [0m🥬[0m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"flex-1"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"flex items-center gap-2 mb-1"[39m
+                  [36m>[39m
+                    [36m<p[39m
+                      [33mclass[39m=[32m"font-medium text-gray-900 dark:text-white"[39m
+                    [36m>[39m
+                      [0mFresh Veggies[0m
+                    [36m</p>[39m
+                  [36m</div>[39m
+                  [36m<p[39m
+                    [33mclass[39m=[32m"text-sm text-gray-500 dark:text-slate-500"[39m
+                  [36m>[39m
+                    [0m10[0m
+                    [0m [0m
+                    [0mkg[0m
+                    [0m • [0m
+                    [0mFarm Fresh[0m
+                  [36m</p>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex items-center gap-2"[39m
+              [36m>[39m
+                [36m<button[39m
+                  [33mclass[39m=[32m"px-3 py-1 rounded-md text-xs font-medium bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-gray-200 dark:bg-slate-700 transition-colors border border-gray-300 dark:border-slate-700"[39m
+                [36m>[39m
+                  [0mviewDetails[0m
+                [36m</button>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"px-3 py-1 rounded-md text-xs font-medium whitespace-nowrap bg-emerald-500/10 text-emerald-400"[39m
+                [36m>[39m
+                  [0mavailable[0m
+                [36m</span>[39m
+              [36m</div>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"p-4 hover:bg-gray-100/50 dark:bg-slate-800/30 transition-colors"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex items-center justify-between"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex items-center gap-4 flex-1"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"w-12 h-12 rounded-lg flex items-center justify-center text-2xl bg-emerald-500/10"[39m
+                [36m>[39m
+                  [0m🍛[0m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"flex-1"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"flex items-center gap-2 mb-1"[39m
+                  [36m>[39m
+                    [36m<p[39m
+                      [33mclass[39m=[32m"font-medium text-gray-900 dark:text-white"[39m
+                    [36m>[39m
+                      [0mLeftover Buffet[0m
+                    [36m</p>[39m
+                  [36m</div>[39m
+                  [36m<p[39m
+                    [33mclass[39m=[32m"text-sm text-gray-500 dark:text-slate-500"[39m
+                  [36m>[39m
+                    [0m20[0m
+                    [0m [0m
+                    [0mmeals[0m
+                    [0m • [0m
+                    [0mGrand Hotel[0m
+                  [36m</p>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex items-center gap-2"[39m
+              [36m>[39m
+                [36m<button[39m
+                  [33mclass[39m=[32m"px-3 py-1 rounded-md text-xs font-medium bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-gray-200 dark:bg-slate-700 transition-colors border border-gray-300 dark:border-slate-700"[39m
+                [36m>[39m
+                  [0mviewDetails[0m
+                [36m</button>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"px-3 py-1 rounded-md text-xs font-medium whitespace-nowrap bg-emerald-500/10 text-emerald-400"[39m
+                [36m>[39m
+                  [0mavailable[0m
+                [36m</span>[39m
+              [36m</div>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl overflow-hidden"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"p-5 border-b border-gray-200 dark:border-slate-800"[39m
+        [36m>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"font-medium text-gray-900 dark:text-white"[39m
+          [36m>[39m
+            [0myourClaimedDonations[0m
+          [36m</h2>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"p-8 text-center"[39m
+        [36m>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-gray-500 dark:text-slate-500"[39m
+          [36m>[39m
+            [0mnoClaimedDonations[0m
+          [36m</p>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"divide-y divide-gray-200 dark:divide-slate-800"[39m
+        [36m/>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<html>[39m
+  [36m<head />[39m
+  [36m<body>[39m
+    [36m<div>[39m
+      [36m<div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mb-8"[39m
+        [36m>[39m
+          [36m<h1[39m
+            [33mclass[39m=[32m"text-2xl font-semibold text-gray-900 dark:text-white"[39m
+          [36m>[39m
+            [0mgoodEvening[0m
+            [0m, [0m
+            [0mNGO[0m
+            [0m![0m
+          [36m</h1>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-gray-500 dark:text-slate-500 mt-1"[39m
+          [36m>[39m
+            [0mfindClaimDonations[0m
+          [36m</p>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"grid grid-cols-1 md:grid-cols-3 gap-4 mb-8"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-5"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex items-center justify-between mb-3"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"text-xl text-emerald-400"[39m
+              [36m>[39m
+                [0m●[0m
+              [36m</span>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"text-xs font-medium px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 uppercase"[39m
+              [36m>[39m
+                [0mavailable[0m
+              [36m</span>[39m
+            [36m</div>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"text-sm text-gray-500 dark:text-slate-400 mb-1"[39m
+            [36m>[39m
+              [0mreadyToClaim[0m
+            [36m</p>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"text-3xl font-semibold text-emerald-400"[39m
+            [36m>[39m
+              [0m2[0m
+            [36m</p>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"rounded-xl border border-amber-500/20 bg-amber-500/10 p-5"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex items-center justify-between mb-3"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"text-xl text-amber-400"[39m
+              [36m>[39m
+                [0m◷[0m
+              [36m</span>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"text-xs font-medium px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 uppercase"[39m
+              [36m>[39m
+                [0minProgress[0m
+              [36m</span>[39m
+            [36m</div>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"text-sm text-gray-500 dark:text-slate-400 mb-1"[39m
+            [36m>[39m
+              [0mclaimedPending[0m
+            [36m</p>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"text-3xl font-semibold text-amber-400"[39m
+            [36m>[39m
+              [0m0[0m
+            [36m</p>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"rounded-xl border border-gray-300 dark:border-slate-700 bg-gray-100/50 dark:bg-slate-800/30 p-5"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex items-center justify-between mb-3"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"text-xl text-gray-500 dark:text-slate-400"[39m
+              [36m>[39m
+                [0m✓[0m
+              [36m</span>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"text-xs font-medium px-2 py-0.5 rounded bg-slate-500/10 text-gray-500 dark:text-slate-400 uppercase"[39m
+              [36m>[39m
+                [0mcomplete[0m
+              [36m</span>[39m
+            [36m</div>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"text-sm text-gray-500 dark:text-slate-400 mb-1"[39m
+            [36m>[39m
+              [0mdelivered[0m
+            [36m</p>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"text-3xl font-semibold text-gray-500 dark:text-slate-400"[39m
+            [36m>[39m
+              [0m0[0m
+            [36m</p>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"grid grid-cols-1 md:grid-cols-2 gap-4 mb-8"[39m
+        [36m>[39m
+          [36m<a[39m
+            [33mhref[39m=[32m"/dashboard/map"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex items-center gap-4"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"w-12 h-12 rounded-xl bg-gray-100 dark:bg-slate-800 flex items-center justify-center text-gray-500 dark:text-slate-400 group-hover:text-gray-900 dark:group-hover:text-white transition-colors"[39m
+              [36m>[39m
+                [36m<svg[39m
+                  [33mclass[39m=[32m"w-6 h-6"[39m
+                  [33mfill[39m=[32m"none"[39m
+                  [33mheight[39m=[32m"24"[39m
+                  [33mstroke[39m=[32m"currentColor"[39m
+                  [33mstroke-linecap[39m=[32m"round"[39m
+                  [33mstroke-linejoin[39m=[32m"round"[39m
+                  [33mstroke-width[39m=[32m"2"[39m
+                  [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [33mwidth[39m=[32m"24"[39m
+                  [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                [36m>[39m
+                  [36m<polygon[39m
+                    [33mpoints[39m=[32m"3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"[39m
+                  [36m/>[39m
+                  [36m<line[39m
+                    [33mx1[39m=[32m"9"[39m
+                    [33mx2[39m=[32m"9"[39m
+                    [33my1[39m=[32m"3"[39m
+                    [33my2[39m=[32m"18"[39m
+                  [36m/>[39m
+                  [36m<line[39m
+                    [33mx1[39m=[32m"15"[39m
+                    [33mx2[39m=[32m"15"[39m
+                    [33my1[39m=[32m"6"[39m
+                    [33my2[39m=[32m"21"[39m
+                  [36m/>[39m
+                [36m</svg>[39m
+              [36m</div>[39m
+              [36m<div>[39m
+                [36m<h3[39m
+                  [33mclass[39m=[32m"font-semibold text-gray-900 dark:text-white mb-1"[39m
+                [36m>[39m
+                  [0mdiscoveryMap[0m
+                [36m</h3>[39m
+                [36m<p[39m
+                  [33mclass[39m=[32m"text-sm text-gray-500 dark:text-slate-400"[39m
+                [36m>[39m
+                  [0mfindClaimDonations[0m
+                [36m</p>[39m
+              [36m</div>[39m
+            [36m</div>[39m
+          [36m</a>[39m
+          [36m<a[39m
+            [33mhref[39m=[32m"/dashboard/impact"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex items-center gap-4"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"w-12 h-12 rounded-xl bg-gray-100 dark:bg-slate-800 flex items-center justify-center text-gray-500 dark:text-slate-400 group-hover:text-gray-900 dark:group-hover:text-white transition-colors"[39m
+              [36m>[39m
+                [36m<svg[39m
+                  [33mclass[39m=[32m"w-6 h-6"[39m
+                  [33mfill[39m=[32m"none"[39m
+                  [33mheight[39m=[32m"24"[39m
+                  [33mstroke[39m=[32m"currentColor"[39m
+                  [33mstroke-linecap[39m=[32m"round"[39m
+                  [33mstroke-linejoin[39m=[32m"round"[39m
+                  [33mstroke-width[39m=[32m"2"[39m
+                  [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [33mwidth[39m=[32m"24"[39m
+                  [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                [36m>[39m
+                  [36m<polyline[39m
+                    [33mpoints[39m=[32m"22 7 13.5 15.5 8.5 10.5 2 17"[39m
+                  [36m/>[39m
+                  [36m<polyline[39m
+                    [33mpoints[39m=[32m"16 7 22 7 22 13"[39m
+                  [36m/>[39m
+                [36m</svg>[39m
+              [36m</div>[39m
+              [36m<div>[39m
+                [36m<h3[39m
+                  [33mclass[39m=[32m"font-semibold text-gray-900 dark:text-white mb-1"[39m
+                [36m>[39m
+                  [0myourImpact[0m
+                [36m</h3>[39m
+                [36m<p[39m
+                  [33mclass[39m=[32m"text-sm text-gray-500 dark:text-slate-400"[39m
+                [36m>[39m
+                  [0mseeDifference[0m
+                [36m</p>[39m
+              [36m</div>[39m
+            [36m</div>[39m
+          [36m</a>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl overflow-hidden mb-8"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"p-5 border-b border-gray-200 dark:border-slate-800 flex items-center justify-between"[39m
+          [36m>[39m
+            [36m<h2[39m
+              [33mclass[39m=[32m"font-medium text-gray-900 dark:text-white"[39m
+            [36m>[39m
+              [0mavailableDonationsToClaim[0m
+            [36m</h2>[39m
+            [36m<a[39m
+              [33mhref[39m=[32m"/dashboard/history"[39m
+            [36m>[39m
+              [0mviewAll[0m
+            [36m</a>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"divide-y divide-gray-200 dark:divide-slate-800"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"p-4 hover:bg-gray-100/50 dark:bg-slate-800/30 transition-colors"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex items-center justify-between"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"flex items-center gap-4 flex-1"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"w-12 h-12 rounded-lg flex items-center justify-center text-2xl bg-emerald-500/10"[39m
+                  [36m>[39m
+                    [0m🥬[0m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"flex-1"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"flex items-center gap-2 mb-1"[39m
+                    [36m>[39m
+                      [36m<p[39m
+                        [33mclass[39m=[32m"font-medium text-gray-900 dark:text-white"[39m
+                      [36m>[39m
+                        [0mFresh Veggies[0m
+                      [36m</p>[39m
+                    [36m</div>[39m
+                    [36m<p[39m
+                      [33mclass[39m=[32m"text-sm text-gray-500 dark:text-slate-500"[39m
+                    [36m>[39m
+                      [0m10[0m
+                      [0m [0m
+                      [0mkg[0m
+                      [0m • [0m
+                      [0mFarm Fresh[0m
+                    [36m</p>[39m
+                  [36m</div>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"flex items-center gap-2"[39m
+                [36m>[39m
+                  [36m<button[39m
+                    [33mclass[39m=[32m"px-3 py-1 rounded-md text-xs font-medium bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-gray-200 dark:bg-slate-700 transition-colors border border-gray-300 dark:border-slate-700"[39m
+                  [36m>[39m
+                    [0mviewDetails[0m
+                  [36m</button>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"px-3 py-1 rounded-md text-xs font-medium whitespace-nowrap bg-emerald-500/10 text-emerald-400"[39m
+                  [36m>[39m
+                    [0mavailable[0m
+                  [36m</span>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"p-4 hover:bg-gray-100/50 dark:bg-slate-800/30 transition-colors"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex items-center justify-between"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"flex items-center gap-4 flex-1"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"w-12 h-12 rounded-lg flex items-center justify-center text-2xl bg-emerald-500/10"[39m
+                  [36m>[39m
+                    [0m🍛[0m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"flex-1"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"flex items-center gap-2 mb-1"[39m
+                    [36m>[39m
+                      [36m<p[39m
+                        [33mclass[39m=[32m"font-medium text-gray-900 dark:text-white"[39m
+                      [36m>[39m
+                        [0mLeftover Buffet[0m
+                      [36m</p>[39m
+                    [36m</div>[39m
+                    [36m<p[39m
+                      [33mclass[39m=[32m"text-sm text-gray-500 dark:text-slate-500"[39m
+                    [36m>[39m
+                      [0m20[0m
+                      [0m [0m
+                      [0mmeals[0m
+                      [0m • [0m
+                      [0mGrand Hotel[0m
+                    [36m</p>[39m
+                  [36m</div>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"flex items-center gap-2"[39m
+                [36m>[39m
+                  [36m<button[39m
+                    [33mclass[39m=[32m"px-3 py-1 rounded-md text-xs font-medium bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-gray-200 dark:bg-slate-700 transition-colors border border-gray-300 dark:border-slate-700"[39m
+                  [36m>[39m
+                    [0mviewDetails[0m
+                  [36m</button>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"px-3 py-1 rounded-md text-xs font-medium whitespace-nowrap bg-emerald-500/10 text-emerald-400"[39m
+                  [36m>[39m
+                    [0mavailable[0m
+                  [36m</span>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl overflow-hidden"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"p-5 border-b border-gray-200 dark:border-slate-800"[39m
+          [36m>[39m
+            [36m<h2[39m
+              [33mclass[39m=[32m"font-medium text-gray-900 dark:text-white"[39m
+            [36m>[39m
+              [0myourClaimedDonations[0m
+            [36m</h2>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"p-8 text-center"[39m
+          [36m>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"text-gray-500 dark:text-slate-500"[39m
+            [36m>[39m
+              [0mnoClaimedDonations[0m
+            [36m</p>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"divide-y divide-gray-200 dark:divide-slate-800"[39m
+          [36m/>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</body>[39m
+[36m</html>[39m
+[90m [2m❯[22m Proxy.waitForWrapper node_modules/@testing-library/react/node_modules/@testing-library/dom/dist/wait-for.js:[2m163:27[22m[39m
+[36m [2m❯[22m src/components/__tests__/donationList.test.tsx:[2m81:15[22m[39m
+    [90m 79| [39m
+    [90m 80| [39m        [90m// Wait for the elements to fetch and render[39m
+    [90m 81| [39m        [35mawait[39m [34mwaitFor[39m(() [33m=>[39m {
+    [90m   | [39m              [31m^[39m
+    [90m 82| [39m            [90m// 2. Assert API Data Renders fully onto the cards![39m
+    [90m 83| [39m            [34mexpect[39m(screen[33m.[39m[34mgetByText[39m([32m'Fresh Veggies'[39m))[33m.[39m[34mtoBeInTheDocumen[39m…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m1 passed[39m[22m[90m (2)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m1 passed[39m[22m[90m (2)[39m
+[2m   Start at [22m 22:16:40
+[2m   Duration [22m 3.89s[2m (transform 340ms, setup 57ms, collect 1.50s, tests 1.46s, environment 1.66s, prepare 1.41s)[22m
+
