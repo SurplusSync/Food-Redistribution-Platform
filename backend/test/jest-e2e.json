@@ -6,6 +6,9 @@
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
   },
+  "transformIgnorePatterns": [
+    "node_modules/(?!(@keyv|keyv|cache-manager)/)"
+  ],
   "forceExit": true,
   "testTimeout": 60000
 }
