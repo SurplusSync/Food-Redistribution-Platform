@@ -1,10 +1,43 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { getDonations, claimDonation, type Donation } from '../../services/api'
 import { socketService } from '../../services/socket'
-import { Map, TrendingUp, Clock, X, Image as ImageIcon, Shield, CheckCircle2, MapPin, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Map, TrendingUp, Clock, X, Image as ImageIcon, Shield, CheckCircle2, MapPin, ChevronLeft, ChevronRight, Navigation2, Radio } from 'lucide-react'
 import { toast } from 'sonner'
+import { MapContainer, TileLayer, Marker, Polyline, useMap } from 'react-leaflet'
+import L from 'leaflet'
+import 'leaflet/dist/leaflet.css'
+
+// Fix for default marker icons
+delete (L.Icon.Default.prototype as any)._getIconUrl
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
+  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+})
+
+const volunteerIcon = new L.DivIcon({
+  className: 'volunteer-live-marker',
+  html: `<div style="width:16px;height:16px;background:#3b82f6;border-radius:50%;border:3px solid white;box-shadow:0 0 0 4px rgba(59,130,246,0.35),0 2px 6px rgba(0,0,0,0.3);"></div>`,
+  iconSize: [16, 16],
+  iconAnchor: [8, 8],
+})
+
+const pickupIcon = new L.DivIcon({
+  className: 'pickup-marker',
+  html: `<div style="width:14px;height:14px;background:#10b981;border-radius:50%;border:2px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.3);"></div>`,
+  iconSize: [14, 14],
+  iconAnchor: [7, 7],
+})
+
+function MapFollower({ position }: { position: [number, number] }) {
+  const map = useMap()
+  useEffect(() => {
+    map.flyTo(position, map.getZoom(), { duration: 0.5 })
+  }, [position, map])
+  return null
+}
 
 export default function NGODashboard() {
   const { t } = useTranslation()
@@ -13,8 +46,44 @@ export default function NGODashboard() {
   const [selectedDonation, setSelectedDonation] = useState<Donation | null>(null)
   const [claiming, setClaiming] = useState<string | null>(null)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
+  const [trackingDonation, setTrackingDonation] = useState<Donation | null>(null)
+  const [volunteerPos, setVolunteerPos] = useState<{ lat: number; lng: number } | null>(null)
+  const [lastUpdate, setLastUpdate] = useState<string | null>(null)
+  const [routeHistory, setRouteHistory] = useState<[number, number][]>([])
+  const trackingUnsubRef = useRef<(() => void) | null>(null)
 
   const user = JSON.parse(localStorage.getItem('user') || '{}')
+
+  // ── Live Tracking ──────────────────────────────────
+  const openTracking = useCallback((donation: Donation) => {
+    // Clean up previous subscription
+    if (trackingUnsubRef.current) trackingUnsubRef.current()
+    setVolunteerPos(null)
+    setLastUpdate(null)
+    setRouteHistory([])
+    setTrackingDonation(donation)
+
+    // Subscribe to real-time volunteer location for this donation
+    trackingUnsubRef.current = socketService.onVolunteerLocation(donation.id, (loc) => {
+      setVolunteerPos({ lat: loc.lat, lng: loc.lng })
+      setLastUpdate(loc.timestamp)
+      setRouteHistory(prev => [...prev, [loc.lat, loc.lng]])
+    })
+  }, [])
+
+  const closeTracking = useCallback(() => {
+    if (trackingUnsubRef.current) {
+      trackingUnsubRef.current()
+      trackingUnsubRef.current = null
+    }
+    setTrackingDonation(null)
+    setVolunteerPos(null)
+    setLastUpdate(null)
+    setRouteHistory([])
+  }, [])
+
+  // Cleanup tracking subscription on unmount
+  useEffect(() => () => { if (trackingUnsubRef.current) trackingUnsubRef.current() }, [])
 
   const load = async () => {
     setLoading(true)
@@ -31,11 +100,8 @@ export default function NGODashboard() {
 
   useEffect(() => {
     load()
-    
-    // Connect to WebSocket
-    socketService.connect()
 
-    // Listen for new donations
+    // Listen for new donations (socket is already connected by DashboardLayout)
     const unsubscribeCreated = socketService.onDonationCreated((data) => {
       toast.success(`🍕 ${t('newFoodAlert')}: ${data.foodType}!`, {
         description: `${data.name} - ${data.location.address}`,
@@ -62,11 +128,9 @@ export default function NGODashboard() {
       }
     })
 
-    // Cleanup on unmount
     return () => {
       unsubscribeCreated()
       unsubscribeClaimed()
-      socketService.disconnect()
     }
   }, [])
 
@@ -330,6 +394,13 @@ export default function NGODashboard() {
                   </div>
                   <div className="flex items-center gap-2">
                     <button
+                      onClick={() => openTracking(donation)}
+                      className="px-3 py-1 rounded-md text-xs font-medium bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 transition-colors border border-blue-500/20 flex items-center gap-1"
+                    >
+                      <Navigation2 className="w-3 h-3" />
+                      Track Volunteer
+                    </button>
+                    <button
                       onClick={() => setSelectedDonation(donation)}
                       className="px-3 py-1 rounded-md text-xs font-medium bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-gray-200 dark:bg-slate-700 transition-colors border border-gray-300 dark:border-slate-700"
                     >
@@ -482,10 +553,127 @@ export default function NGODashboard() {
                     )}
                   </button>
                 ) : (
-                  <div className="text-center p-3 bg-amber-500/10 text-amber-400 rounded-lg font-medium border border-amber-500/20">
-                    {selectedDonation.status === 'CLAIMED' ? t('alreadyClaimed') : t('alreadyPickedUp')}
+                  <div className="space-y-2">
+                    <div className="text-center p-3 bg-amber-500/10 text-amber-400 rounded-lg font-medium border border-amber-500/20">
+                      {selectedDonation.status === 'CLAIMED' ? t('alreadyClaimed') : t('alreadyPickedUp')}
+                    </div>
+                    <button
+                      onClick={() => { setSelectedDonation(null); setCurrentImageIndex(0); openTracking(selectedDonation); }}
+                      className="w-full py-3 bg-blue-500 hover:bg-blue-400 text-white rounded-lg font-semibold transition-all shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2"
+                    >
+                      <Navigation2 className="w-4 h-4" />
+                      Track Volunteer Live
+                    </button>
                   </div>
                 )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Live Volunteer Tracking Modal ────────────────── */}
+      {trackingDonation && (
+        <div className="fixed inset-0 z-[2100] flex items-center justify-center p-4 bg-black/30 dark:bg-slate-950/80 backdrop-blur-sm">
+          <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl w-full max-w-xl shadow-2xl">
+            {/* Header */}
+            <div className="flex items-center justify-between p-5 border-b border-gray-200 dark:border-slate-800">
+              <div>
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                  <Navigation2 className="w-5 h-5 text-blue-400" />
+                  Live Volunteer Tracking
+                </h2>
+                <p className="text-sm text-gray-500 dark:text-slate-400 mt-0.5">{trackingDonation.name}</p>
+              </div>
+              <div className="flex items-center gap-3">
+                {volunteerPos && (
+                  <span className="flex items-center gap-1.5 text-xs font-medium text-emerald-400">
+                    <Radio className="w-3 h-3 animate-pulse" />
+                    Live
+                  </span>
+                )}
+                <button onClick={closeTracking} className="p-1.5 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full text-gray-500 dark:text-slate-400 transition-colors">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+
+            {/* Map */}
+            <div className="p-5">
+              {volunteerPos ? (
+                <>
+                  <div className="rounded-xl overflow-hidden border border-gray-200 dark:border-slate-800" style={{ height: 350 }}>
+                    <MapContainer
+                      center={[volunteerPos.lat, volunteerPos.lng]}
+                      zoom={15}
+                      style={{ height: '100%', width: '100%' }}
+                      zoomControl={true}
+                    >
+                      <TileLayer
+                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                      />
+                      <MapFollower position={[volunteerPos.lat, volunteerPos.lng]} />
+
+                      {/* Route trail */}
+                      {routeHistory.length > 1 && (
+                        <Polyline
+                          positions={routeHistory}
+                          pathOptions={{ color: '#3b82f6', weight: 4, opacity: 0.7, dashArray: '8 6' }}
+                        />
+                      )}
+
+                      {/* Start marker */}
+                      {routeHistory.length > 0 && (
+                        <Marker position={routeHistory[0]} icon={pickupIcon} />
+                      )}
+
+                      {/* Current volunteer position */}
+                      <Marker position={[volunteerPos.lat, volunteerPos.lng]} icon={volunteerIcon} />
+
+                      {/* Pickup location marker */}
+                      {trackingDonation?.location?.lat && trackingDonation?.location?.lng && (
+                        <Marker
+                          position={[trackingDonation.location.lat, trackingDonation.location.lng]}
+                          icon={pickupIcon}
+                        />
+                      )}
+                    </MapContainer>
+                  </div>
+                  <div className="flex items-center justify-between mt-3">
+                    <p className="text-xs text-gray-500 dark:text-slate-500">
+                      📍 {volunteerPos.lat.toFixed(5)}, {volunteerPos.lng.toFixed(5)}
+                    </p>
+                    <div className="flex items-center gap-3">
+                      {routeHistory.length > 1 && (
+                        <span className="text-xs text-blue-400">{routeHistory.length} points tracked</span>
+                      )}
+                      {lastUpdate && (
+                        <p className="text-xs text-gray-400 dark:text-slate-600">
+                          Updated {new Date(lastUpdate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div className="rounded-xl border border-gray-200 dark:border-slate-800 bg-gray-50 dark:bg-slate-950 p-10 flex items-center justify-center" style={{ height: 350 }}>
+                  <div className="text-center">
+                    <Navigation2 className="w-10 h-10 text-gray-400 dark:text-slate-600 mx-auto mb-3 animate-pulse" />
+                    <p className="text-gray-500 dark:text-slate-400 font-medium text-sm">Waiting for volunteer to share location…</p>
+                    <p className="text-xs text-gray-400 dark:text-slate-600 mt-1">
+                      The map will appear once the volunteer starts sharing their GPS.
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Pickup info footer */}
+            <div className="px-5 pb-5">
+              <div className="p-3 bg-gray-100/80 dark:bg-slate-800/50 rounded-lg border border-gray-200 dark:border-slate-800">
+                <p className="text-xs text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1">Pickup Location</p>
+                <p className="text-sm text-gray-700 dark:text-slate-300">📍 {trackingDonation.location?.address || 'Unknown'}</p>
               </div>
             </div>
           </div>

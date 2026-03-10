@@ -1,20 +1,12 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { render } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import DashboardLayout from '../../layouts/DashboardLayout'
+import { getNotifications, getUserProfile } from '../../services/api'
 
 vi.mock('react-router-dom', () => ({
   useNavigate: () => vi.fn(),
   useLocation: () => ({ pathname: '/dashboard' }),
   Link: ({ to, children }: any) => <a href={to}>{children}</a>,
   Outlet: () => <div data-testid="outlet" />,
-  BrowserRouter: ({ children }: any) => children,
-  Routes: ({ children }: any) => children,
-  Route: ({ element }: any) => element,
-}))
-
-vi.mock('../../services/api', () => ({
-  getNotifications: vi.fn().mockResolvedValue([]),
-  checkExpiringDonations: vi.fn(),
 }))
 
 describe('DashboardLayout - Main Dashboard Structure', () => {
@@ -27,6 +19,8 @@ describe('DashboardLayout - Main Dashboard Structure', () => {
       email: 'test@example.com'
     }))
     vi.clearAllMocks()
+    vi.mocked(getNotifications).mockResolvedValue([])
+    vi.mocked(getUserProfile).mockResolvedValue({} as any)
   })
 
   it('should render dashboard layout container', () => {
@@ -35,20 +29,22 @@ describe('DashboardLayout - Main Dashboard Structure', () => {
   })
 
   it('should display sidebar with navigation links', () => {
-    const { container } = render(<DashboardLayout />)
-    const links = container.querySelectorAll('a')
-    expect(links.length >= 0).toBeTruthy()
+    render(<DashboardLayout />)
+    const links = screen.getAllByRole('link')
+    expect(links.length).toBeGreaterThan(0)
   })
 
-  it('should have outlet for nested dashboard routes', () => {
+  it('should have outlet for nested dashboard routes', async () => {
     const { container } = render(<DashboardLayout />)
-    const outlet = container.querySelector('[data-testid="outlet"]')
-    expect(outlet || container.querySelector('div')).toBeTruthy()
+    // Outlet renders after profile is ready
+    await waitFor(() => {
+      expect(container.querySelector('[data-testid="outlet"]')).toBeTruthy()
+    })
   })
 
-  it('should render user profile section in header', () => {
-    const { container } = render(<DashboardLayout />)
-    expect(container.querySelector('header, nav, div')).toBeTruthy()
+  it('should render user name in sidebar', () => {
+    render(<DashboardLayout />)
+    expect(screen.getByText('Test User')).toBeTruthy()
   })
 
   it('should render without errors', () => {

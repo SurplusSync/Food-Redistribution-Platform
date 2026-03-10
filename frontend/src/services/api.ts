@@ -47,6 +47,7 @@ export interface Donation {
   createdAt: Date;
   status: DonationStatus;
   claimedBy?: string;
+  volunteerId?: string;
   imageUrls: string[];
 }
 

@@ -547,8 +547,6 @@ export default function VolunteerDashboard() {
     load()
     loadProfile()
 
-    socketService.connect()
-
     const unsubCreated = socketService.onDonationCreated((data) => {
       toast.info(`🍕 ${t('newDonationNearby')}: ${data.name}`, { duration: 4000 })
     })
@@ -569,7 +567,6 @@ export default function VolunteerDashboard() {
       unsubCreated()
       unsubClaimed()
       unsubAssigned()
-      socketService.disconnect()
     }
   }, [load, loadProfile])
 

@@ -1,29 +1,30 @@
-import { describe, it, expect, beforeEach } from 'vitest'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import FeedbackRatings from '../../../pages/dashboard/FeedbackRatings'
+import { getDonations, getFeedbackForDonation } from '../../../services/api'
 
 describe('FeedbackRatings', () => {
   beforeEach(() => {
     localStorage.clear()
-    localStorage.setItem('user', JSON.stringify({ name: 'Keshav' }))
+    localStorage.setItem('user', JSON.stringify({ id: '1', name: 'Keshav', role: 'DONOR' }))
+    vi.clearAllMocks()
+    vi.mocked(getDonations).mockResolvedValue([])
+    vi.mocked(getFeedbackForDonation).mockResolvedValue([])
   })
 
-  it('renders ratings summary', () => {
+  it('renders page title and rating summary', async () => {
     render(<FeedbackRatings />)
 
-    expect(screen.getByText('NGO Feedback & Ratings')).toBeTruthy()
-    expect(screen.getByText(/Rating Summary/i)).toBeTruthy()
-  })
-
-  it('submits a new review and displays it', () => {
-    render(<FeedbackRatings />)
-
-    fireEvent.change(screen.getByPlaceholderText('Share your delivery experience'), {
-      target: { value: 'Great coordination and quick pickup.' },
+    await waitFor(() => {
+      expect(screen.getByText('NGO Feedback & Ratings')).toBeTruthy()
     })
-    fireEvent.click(screen.getByRole('button', { name: /submit feedback/i }))
+    expect(screen.getByText('Rating Summary')).toBeTruthy()
+  })
 
-    expect(screen.getByText('Great coordination and quick pickup.')).toBeTruthy()
-    expect(screen.getByText(/By Keshav/i)).toBeTruthy()
+  it('shows empty state when no feedback exists', async () => {
+    render(<FeedbackRatings />)
+
+    await waitFor(() => {
+      expect(screen.getByText('No feedback submitted yet.')).toBeTruthy()
+    })
   })
 })

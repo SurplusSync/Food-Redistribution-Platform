@@ -45,11 +45,8 @@ export default function DiscoveryMap() {
 
     useEffect(() => {
         loadDonations()
-        
-        // Connect to WebSocket
-        socketService.connect()
 
-        // Listen for new donations
+        // Listen for new donations (socket is managed by DashboardLayout)
         const unsubscribeCreated = socketService.onDonationCreated((data) => {
             toast.success(`🍕 ${t('newFoodAlert')}: ${data.foodType}!`, {
                 description: `${data.name} - ${data.location.address}`,
@@ -76,11 +73,9 @@ export default function DiscoveryMap() {
             }
         })
 
-        // Cleanup on unmount
         return () => {
             unsubscribeCreated()
             unsubscribeClaimed()
-            socketService.disconnect()
         }
     }, [])
 

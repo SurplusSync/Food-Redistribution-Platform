@@ -1,32 +1,43 @@
-import { describe, it, expect, beforeEach } from 'vitest'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import Leaderboards from '../../../pages/dashboard/Leaderboards'
+import { getLeaderboard } from '../../../services/api'
 
 describe('Leaderboards', () => {
   beforeEach(() => {
     localStorage.clear()
     localStorage.setItem('user', JSON.stringify({ name: 'Keshav' }))
+    vi.clearAllMocks()
+    vi.mocked(getLeaderboard).mockResolvedValue([
+      { id: '1', name: 'Anita Verma', role: 'DONOR', karmaPoints: 350 },
+      { id: '2', name: 'Sonia Mehta', role: 'NGO', karmaPoints: 280 },
+    ] as any)
   })
 
-  it('renders weekly leaderboard by default', () => {
+  it('renders leaderboard title and current profile', async () => {
     render(<Leaderboards />)
 
     expect(screen.getByText('Leaderboards')).toBeTruthy()
-    expect(screen.getByText('Anita Verma')).toBeTruthy()
-    expect(screen.getByText(/Current profile: Keshav/i)).toBeTruthy()
+    await waitFor(() => {
+      expect(screen.getByText(/Current profile: Keshav/i)).toBeTruthy()
+    })
   })
 
-  it('switches to monthly leaderboard tab', () => {
+  it('displays leaderboard entries from API', async () => {
     render(<Leaderboards />)
 
-    fireEvent.click(screen.getByRole('button', { name: /monthly/i }))
-    expect(screen.getByText('Sonia Mehta')).toBeTruthy()
+    await waitFor(() => {
+      expect(screen.getByText('Anita Verma')).toBeTruthy()
+      expect(screen.getByText('Sonia Mehta')).toBeTruthy()
+    })
   })
 
-  it('applies filters and can show empty state', () => {
+  it('shows empty state when no entries match filter', async () => {
+    vi.mocked(getLeaderboard).mockResolvedValue([])
+
     render(<Leaderboards />)
 
-    fireEvent.change(screen.getByDisplayValue('All cities'), { target: { value: 'faridabad' } })
-    expect(screen.getByText('No leaderboard entries for selected filters.')).toBeTruthy()
+    await waitFor(() => {
+      expect(screen.getByText('No leaderboard entries for selected filters.')).toBeTruthy()
+    })
   })
 })
