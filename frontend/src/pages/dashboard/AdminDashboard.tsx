@@ -50,6 +50,9 @@ export default function AdminDashboard() {
       }
     } catch (error) {
       toast.error('Failed to fetch admin data');
+      if (activeTab !== 'flagged') {
+        setData([]);
+      }
     } finally {
       setLoading(false);
     }
