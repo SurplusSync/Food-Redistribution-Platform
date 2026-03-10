@@ -63,7 +63,12 @@ class SocketService {
 
     const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
-    // Disconnect existing connection if any
+    // Already connected — reuse existing socket
+    if (this.socket?.connected) {
+      return;
+    }
+
+    // Disconnect stale socket if any
     if (this.socket) {
       this.socket.disconnect();
     }

@@ -234,8 +234,6 @@ export default function History() {
     useEffect(() => {
         load()
 
-        socketService.connect()
-
         const unsubscribeCreated = socketService.onDonationCreated(() => {
             load()
         })
@@ -247,7 +245,6 @@ export default function History() {
         return () => {
             unsubscribeCreated()
             unsubscribeClaimed()
-            socketService.disconnect()
         }
     }, [])
 

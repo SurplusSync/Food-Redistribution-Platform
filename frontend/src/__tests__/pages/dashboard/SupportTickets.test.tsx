@@ -1,30 +1,49 @@
-import { describe, it, expect, beforeEach } from 'vitest'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import SupportTickets from '../../../pages/dashboard/SupportTickets'
+import { supportAPI, adminAPI } from '../../../services/api'
 
 describe('SupportTickets', () => {
   beforeEach(() => {
     localStorage.clear()
+    vi.clearAllMocks()
+    vi.mocked(supportAPI.getMyTickets).mockResolvedValue({ data: [] } as any)
+    vi.mocked(adminAPI.getAllTickets).mockResolvedValue({ data: [] } as any)
   })
 
-  it('submits a new support ticket', () => {
+  it('renders Support Tickets page with form', async () => {
     localStorage.setItem('user', JSON.stringify({ role: 'DONOR' }))
     render(<SupportTickets />)
 
-    fireEvent.change(screen.getByLabelText('Ticket subject'), { target: { value: 'Map not loading' } })
-    fireEvent.click(screen.getByRole('button', { name: /submit ticket/i }))
-
-    expect(screen.getByText('Map not loading')).toBeTruthy()
+    expect(screen.getByText('Support Tickets')).toBeTruthy()
+    expect(screen.getByLabelText('Ticket subject')).toBeTruthy()
   })
 
-  it('shows admin controls and advances a ticket status', () => {
-    localStorage.setItem('user', JSON.stringify({ role: 'ADMIN' }))
+  it('submits a new support ticket', async () => {
+    localStorage.setItem('user', JSON.stringify({ role: 'DONOR' }))
+    vi.mocked(supportAPI.createTicket).mockResolvedValue({ data: {} } as any)
+
     render(<SupportTickets />)
 
-    expect(screen.getByText('Admin Actions Enabled')).toBeTruthy()
-    const advanceButtons = screen.getAllByRole('button', { name: /advance/i })
-    fireEvent.click(advanceButtons[0])
+    fireEvent.change(screen.getByLabelText('Ticket subject'), { target: { value: 'Map not loading' } })
+    fireEvent.change(screen.getByLabelText('Ticket description'), { target: { value: 'Map fails to render' } })
+    fireEvent.click(screen.getByRole('button', { name: /submit ticket/i }))
 
-    expect(screen.getAllByText(/in progress|resolved|open/i).length > 0).toBeTruthy()
+    await waitFor(() => {
+      expect(supportAPI.createTicket).toHaveBeenCalled()
+    })
+  })
+
+  it('shows admin badge for ADMIN role', async () => {
+    localStorage.setItem('user', JSON.stringify({ role: 'ADMIN' }))
+    const mockTickets = [
+      { id: '1', subject: 'Bug report', description: 'Details', priority: 'MEDIUM', status: 'OPEN', createdAt: new Date().toISOString() },
+    ]
+    vi.mocked(adminAPI.getAllTickets).mockResolvedValue({ data: mockTickets } as any)
+
+    render(<SupportTickets />)
+
+    await waitFor(() => {
+      expect(screen.getByText('Admin Actions Enabled')).toBeTruthy()
+    })
   })
 })

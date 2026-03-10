@@ -30,8 +30,6 @@ export default function DonorHome() {
   useEffect(() => {
     load()
 
-    socketService.connect()
-
     const unsubscribeCreated = socketService.onDonationCreated(() => {
       load()
     })
@@ -43,7 +41,6 @@ export default function DonorHome() {
     return () => {
       unsubscribeCreated()
       unsubscribeClaimed()
-      socketService.disconnect()
     }
   }, [])
 
