@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, In, LessThanOrEqual } from 'typeorm';
-import { Cron, CronExpression } from '@nestjs/schedule';
+import { Cron } from '@nestjs/schedule';
 import { CreateDonationDto, ClaimDonationDto } from './dto/donations.dto';
 import { Donation, DonationStatus } from './entities/donation.entity';
 import { User, UserRole } from '../auth/entities/user.entity';
@@ -130,7 +130,7 @@ export class DonationsService {
     // Non-high-risk foods (e.g. bakery, produce, canned): only reject if already expired (handled above)
   }
 
-  @Cron(CronExpression.EVERY_HOUR)
+  @Cron('*/5 * * * *')
   async handleExpiredDonations(): Promise<void> {
     const now = new Date();
     this.logger.log('Running expiry cron job...');
@@ -164,9 +164,37 @@ export class DonationsService {
   }
 
   async findAll(latitude?: number, longitude?: number, radius: number = 5) {
+    // First, mark any expired donations that the cron hasn't caught yet
+    const now = new Date();
+    try {
+      const missed = await this.donationsRepository.find({
+        where: {
+          status: In([DonationStatus.AVAILABLE, DonationStatus.CLAIMED]),
+          expiryTime: LessThanOrEqual(now),
+        },
+      });
+      if (missed.length > 0) {
+        for (const d of missed) {
+          d.status = DonationStatus.EXPIRED;
+        }
+        await this.donationsRepository.save(missed);
+        this.logger.log(`Marked ${missed.length} expired donation(s) on-the-fly.`);
+      }
+    } catch (error) {
+      this.logger.warn('Failed to mark expired donations on-the-fly', error);
+    }
+
+    const activeStatuses = In([
+      DonationStatus.AVAILABLE,
+      DonationStatus.CLAIMED,
+      DonationStatus.PICKED_UP,
+      DonationStatus.DELIVERED,
+    ]);
+
     if (!latitude || !longitude) {
       try {
         return await this.donationsRepository.find({
+          where: { status: activeStatuses },
           order: { createdAt: 'DESC' },
         });
       } catch (error) {
@@ -178,6 +206,14 @@ export class DonationsService {
     try {
       return await this.donationsRepository
         .createQueryBuilder('donation')
+        .where('donation.status IN (:...statuses)', {
+          statuses: [
+            DonationStatus.AVAILABLE,
+            DonationStatus.CLAIMED,
+            DonationStatus.PICKED_UP,
+            DonationStatus.DELIVERED,
+          ],
+        })
         .addSelect(
           `(6371 * acos(cos(radians(:lat)) * cos(radians(donation.latitude)) * cos(radians(donation.longitude) - radians(:lon)) + sin(radians(:lat)) * sin(radians(donation.latitude))))`,
           'distance',
@@ -192,6 +228,7 @@ export class DonationsService {
         error,
       );
       return await this.donationsRepository.find({
+        where: { status: activeStatuses },
         order: { createdAt: 'DESC' },
       });
     }

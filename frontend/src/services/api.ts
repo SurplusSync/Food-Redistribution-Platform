@@ -211,6 +211,13 @@ export const getDonations = async (filters?: {
         : [],
   }));
 
+  // Filter out expired donations (by status or by time)
+  data = data.filter((d: any) => {
+    if (d.status === 'EXPIRED') return false;
+    if (d.expiryTime && new Date(d.expiryTime).getTime() < Date.now()) return false;
+    return true;
+  });
+
   if (filters?.status) {
     data = data.filter((d: any) => filters.status?.includes(d.status));
   }

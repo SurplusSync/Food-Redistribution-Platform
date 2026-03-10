@@ -54,14 +54,16 @@ export default function DonorHome() {
   const getTimeRemaining = (expiryTime: Date) => {
     const now = new Date()
     const remaining = new Date(expiryTime).getTime() - now.getTime()
+    if (remaining <= 0) return { hours: 0, minutes: 0, urgent: true, expired: true }
     const hours = Math.floor(remaining / (1000 * 60 * 60))
     const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60))
-    return { hours, minutes, urgent: hours < 3 }
+    return { hours, minutes, urgent: hours < 3, expired: false }
   }
 
   const urgentDonations = donations.filter(d => {
     if (d.status !== 'AVAILABLE') return false
-    return getTimeRemaining(d.expiryTime).urgent
+    const time = getTimeRemaining(d.expiryTime)
+    return time.urgent && !time.expired
   })
 
   const getStatusStyle = (status: string) => {
@@ -235,7 +237,7 @@ export default function DonorHome() {
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
                         <p className="font-medium text-gray-900 dark:text-white">{donation.name}</p>
-                        {donation.status === 'AVAILABLE' && timeLeft.urgent && (
+                        {donation.status === 'AVAILABLE' && timeLeft.urgent && !timeLeft.expired && (
                           <span className="text-xs px-1.5 py-0.5 bg-red-500/10 text-red-400 rounded flex items-center gap-1">
                             <Clock className="w-3 h-3" />
                             {timeLeft.hours}h {timeLeft.minutes}m
