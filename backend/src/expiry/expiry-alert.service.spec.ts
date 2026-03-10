@@ -47,32 +47,85 @@ describe('ExpiryAlertService', () => {
 
   // ── findNearExpiryDonations ───────────────────
   describe('findNearExpiryDonations', () => {
-    it('should query donations expiring within 1-2 hours', async () => {
-      mockDonationRepo.find.mockResolvedValue([]);
+    const SYSTEM_TIME = new Date('2026-03-10T12:00:00.000Z');
 
-      await service.findNearExpiryDonations();
-
-      expect(mockDonationRepo.find).toHaveBeenCalledWith(
-        expect.objectContaining({
-          where: expect.objectContaining({
-            status: expect.anything(),
-            expiryTime: expect.anything(),
-          }),
-          relations: ['donor'],
-        }),
-      );
+    beforeEach(() => {
+      jest.useFakeTimers().setSystemTime(SYSTEM_TIME);
     });
 
-    it('should return matching donations', async () => {
-      const donations = [
-        { id: 'd1', name: 'Rice', expiryTime: new Date(), donor: { email: 'a@b.com' } },
-      ];
-      mockDonationRepo.find.mockResolvedValue(donations);
+    afterEach(() => {
+      jest.useRealTimers();
+    });
 
-      const result = await service.findNearExpiryDonations();
+    const getFindBounds = () => {
+      const calls = mockDonationRepo.find.mock.calls;
+      if (calls.length === 0) throw new Error('find not called');
+      // The most recent call is the last one
+      const operator = calls[calls.length - 1][0].where.expiryTime;
+      return (operator.value || operator._value) as [Date, Date];
+    };
 
-      expect(result).toHaveLength(1);
-      expect(result[0].id).toBe('d1');
+    const isDateWithinBounds = (targetDate: Date) => {
+      const [start, end] = getFindBounds();
+      return targetDate.getTime() >= start.getTime() && targetDate.getTime() <= end.getTime();
+    };
+
+    describe('1. Expiry Window Calculation', () => {
+      it('Verify donation expiring in 90 minutes triggers near-expiry detection', async () => {
+        mockDonationRepo.find.mockResolvedValue([]);
+        await service.findNearExpiryDonations();
+        const ninetyMinsFromNow = new Date(SYSTEM_TIME.getTime() + 90 * 60 * 1000);
+        expect(isDateWithinBounds(ninetyMinsFromNow)).toBe(true);
+      });
+
+      it('Verify donation expiring in 3 hours does NOT trigger alert', async () => {
+        mockDonationRepo.find.mockResolvedValue([]);
+        await service.findNearExpiryDonations();
+        const threeHoursFromNow = new Date(SYSTEM_TIME.getTime() + 3 * 60 * 60 * 1000);
+        expect(isDateWithinBounds(threeHoursFromNow)).toBe(false);
+      });
+    });
+
+    describe('2. Boundary Conditions', () => {
+      it('Exactly 1 hour remaining should trigger alert', async () => {
+        mockDonationRepo.find.mockResolvedValue([]);
+        await service.findNearExpiryDonations();
+        const oneHourFromNow = new Date(SYSTEM_TIME.getTime() + 60 * 60 * 1000);
+        expect(isDateWithinBounds(oneHourFromNow)).toBe(true);
+      });
+
+      it('Exactly 2 hours remaining should trigger alert', async () => {
+        mockDonationRepo.find.mockResolvedValue([]);
+        await service.findNearExpiryDonations();
+        const twoHoursFromNow = new Date(SYSTEM_TIME.getTime() + 2 * 60 * 60 * 1000);
+        expect(isDateWithinBounds(twoHoursFromNow)).toBe(true);
+      });
+
+      it('Less than 1 hour should not trigger near-expiry alert', async () => {
+        mockDonationRepo.find.mockResolvedValue([]);
+        await service.findNearExpiryDonations();
+        const fiftyNineMinsFromNow = new Date(SYSTEM_TIME.getTime() + 59 * 60 * 1000);
+        expect(isDateWithinBounds(fiftyNineMinsFromNow)).toBe(false);
+      });
+    });
+
+    describe('3. Service Reliability', () => {
+      it('Ensure function returns correct list of near-expiry donations', async () => {
+        const mockResult = [
+          { id: '1', name: 'Bread', expiryTime: new Date(SYSTEM_TIME.getTime() + 90 * 60 * 1000), status: DonationStatus.AVAILABLE },
+        ] as Donation[];
+        mockDonationRepo.find.mockResolvedValue(mockResult);
+
+        const result = await service.findNearExpiryDonations();
+        expect(result).toEqual(mockResult);
+      });
+
+      it('Ensure expired donations are excluded', async () => {
+        mockDonationRepo.find.mockResolvedValue([]);
+        await service.findNearExpiryDonations();
+        const expiredTime = new Date('2023-12-31T12:00:00.000Z');
+        expect(isDateWithinBounds(expiredTime)).toBe(false);
+      });
     });
   });
 

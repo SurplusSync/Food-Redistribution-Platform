@@ -1,56 +1,66 @@
-name: CI Pipeline
+name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
   pull_request:
-    branches: [ "main" ]
+    branches:
+      - main
 
 jobs:
-  test-backend:
+  build-and-test:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./backend
-    
-    steps:
-    - uses: actions/checkout@v3
-    - name: Use Node.js 20
-      uses: actions/setup-node@v3
-      with:
-        node-version: '20'
-        
-    - name: Install Dependencies
-      run: |
-        if [ -f package-lock.json ]; then
-          npm ci
-        else
-          npm install
-        fi
-      
-    - name: Run Unit Tests
-      run: npm run test
 
-  test-frontend:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./frontend
-        
+    # Step 4: Start Docker environment for PostgreSQL
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: surplus_admin
+          POSTGRES_PASSWORD: password123
+          POSTGRES_DB: surplus_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
-    - uses: actions/checkout@v3
-    - name: Use Node.js 20
-      uses: actions/setup-node@v3
-      with:
-        node-version: '20'
-        
-    - name: Install Dependencies
-      run: |
-        if [ -f package-lock.json ]; then
-          npm ci
-        else
+      - name: Step 1: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Step 2: Setup Node.js (use Node 18)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Step 3: Install backend dependencies
+        run: |
+          cd backend
           npm install
-        fi
-      
-    - name: Check Build
-      run: npm run build
+
+      - name: Step 5: Run backend tests
+        run: |
+          cd backend
+          npm run test
+        env:
+          DATABASE_HOST: localhost
+          DATABASE_PORT: 5432
+          POSTGRES_USER: surplus_admin
+          POSTGRES_PASSWORD: password123
+          POSTGRES_DB: surplus_db
+          JWT_SECRET: test_jwt_secret
+          CLOUDINARY_CLOUD_NAME: test_cloud_name
+          CLOUDINARY_API_KEY: test_api_key
+          CLOUDINARY_API_SECRET: test_api_secret
+
+      - name: Step 6: Run frontend tests (if frontend exists)
+        run: |
+          if [ -d "frontend" ]; then
+            cd frontend
+            npm install
+            npm run test:run
+          fi
