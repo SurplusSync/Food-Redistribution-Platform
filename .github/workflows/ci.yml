@@ -64,6 +64,11 @@ jobs:
         run: npm install
         working-directory: backend
 
+      - name: Security audit
+        run: npm audit --audit-level=high
+        working-directory: backend
+        continue-on-error: true
+
       - name: Wait for Postgres
         run: |
           for i in $(seq 1 30); do
@@ -119,6 +124,11 @@ jobs:
         run: npm install
         working-directory: frontend
 
+      - name: Security audit
+        run: npm audit --audit-level=high
+        working-directory: frontend
+        continue-on-error: true
+
       - name: TypeScript type check
         run: npx tsc -b --noEmit
         working-directory: frontend
@@ -131,6 +141,28 @@ jobs:
       - name: Unit tests
         run: npm run test:run
         working-directory: frontend
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+        working-directory: frontend
+
+      - name: Playwright E2E tests
+        run: npm run test:e2e
+        working-directory: frontend
+        continue-on-error: true
+        env:
+          # E2E tests need full stack - currently runs against dev server
+          # TODO: Set up proper E2E environment with seeded test data
+          E2E_BASE_URL: http://localhost:5173
+          E2E_API_URL: http://localhost:3000
+
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: frontend/playwright-report/
+          retention-days: 7
 
       - name: Build
         run: npm run build
