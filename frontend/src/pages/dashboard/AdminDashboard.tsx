@@ -163,8 +163,12 @@ export default function AdminDashboard() {
                 {data.map((item) => (
                   <tr key={item.id} className="hover:bg-gray-100/80 dark:bg-slate-800/50 transition-colors">
                     <td className="p-4">
-                      <div className="font-medium text-gray-900 dark:text-white">{item.organizationName || item.name || item.foodType}</div>
-                      <div className="text-xs text-gray-500 dark:text-slate-500">{item.role || `${item.quantity} ${item.unit}`}</div>
+                      <div className="font-medium text-gray-900 dark:text-white">{item.name || item.organizationName || item.foodType || 'N/A'}</div>
+                      <div className="text-xs text-gray-500 dark:text-slate-500">
+                        {activeTab === 'pending' ? (item.organizationName || '') :
+                         activeTab === 'donations' ? (item.quantity && item.unit ? `${item.quantity} ${item.unit}` : item.status || '') :
+                         (item.role || '')}
+                      </div>
                     </td>
                     <td className="p-4 text-gray-700 dark:text-slate-300">{item.email || item.donor?.email || 'N/A'}</td>
                     <td className="p-4">
