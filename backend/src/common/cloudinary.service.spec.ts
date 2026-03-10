@@ -1,67 +1,72 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { CloudinaryService } from './cloudinary.service';
 import { ConfigService } from '@nestjs/config';
-import { v2 as cloudinary } from 'cloudinary';
-import * as streamifier from 'streamifier';
-import 'multer';
 
-@Injectable()
-export class CloudinaryService {
-  private readonly logger = new Logger(CloudinaryService.name);
-  private readonly isMockMode: boolean;
+const configuredConfigService = {
+  get: jest.fn((key) => {
+    if (key === 'CLOUDINARY_CLOUD_NAME') return 'test_cloud';
+    if (key === 'CLOUDINARY_API_KEY') return 'test_key';
+    if (key === 'CLOUDINARY_API_SECRET') return 'test_secret';
+    return null;
+  }),
+};
 
-  constructor(private configService: ConfigService) {
-    const cloudName = this.configService.get<string>('CLOUDINARY_CLOUD_NAME');
-    const apiKey = this.configService.get<string>('CLOUDINARY_API_KEY');
-    const apiSecret = this.configService.get<string>('CLOUDINARY_API_SECRET');
+const missingKeysConfigService = {
+  get: jest.fn((key) => {
+    if (key === 'CLOUDINARY_CLOUD_NAME') return 'test_cloud';
+    return null;
+  }),
+};
 
-    if (cloudName && apiKey && apiSecret) {
-      cloudinary.config({ cloud_name: cloudName, api_key: apiKey, api_secret: apiSecret });
-      this.isMockMode = false;
-      this.logger.log('✅ Cloudinary Configured');
-    } else {
-      this.isMockMode = true;
-      console.warn('⚠️ Cloudinary keys missing. Falling back to Mock mode.');
-    }
-  }
+describe('CloudinaryService', () => {
+  let service: CloudinaryService;
+  let warnSpy: jest.SpyInstance;
 
-  get mockMode(): boolean {
-    return this.isMockMode;
-  }
+  beforeEach(() => {
+    warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+  });
 
-  async uploadImage(file: Express.Multer.File): Promise<string> {
-    if (this.isMockMode) {
-      this.logger.warn(`Mock upload for "${file.originalname}" — Cloudinary not configured`);
-      return this.getMockUrl(file.originalname);
-    }
+  afterEach(() => {
+    warnSpy.mockRestore();
+    jest.clearAllMocks();
+  });
 
-    return new Promise((resolve) => {
-      const uploadStream = cloudinary.uploader.upload_stream(
-        { folder: 'surplus-donations' },
-        (error, result) => {
-          if (error || !result) {
-            this.logger.error(`❌ Cloudinary upload failed: ${error?.message}`);
-            return resolve(this.getMockUrl(file.originalname));
-          }
-          this.logger.log(`✅ Uploaded: ${result.secure_url}`);
-          resolve(result.secure_url);
-        },
-      );
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        CloudinaryService,
+        { provide: ConfigService, useValue: configuredConfigService },
+      ],
+    }).compile();
 
-      try {
-        streamifier.createReadStream(file.buffer).pipe(uploadStream);
-      } catch (err) {
-        this.logger.error(`Stream error: ${err}`);
-        resolve(this.getMockUrl(file.originalname));
-      }
-    });
-  }
+    service = module.get<CloudinaryService>(CloudinaryService);
+  });
 
-  async uploadImages(files: Express.Multer.File[]): Promise<string[]> {
-    if (!files || files.length === 0) return [];
-    return Promise.all(files.map((file) => this.uploadImage(file)));
-  }
+  it('should be defined', () => {
+    expect(service).toBeDefined();
+  });
 
-  private getMockUrl(filename: string): string {
-    return `https://placehold.co/600x400/059669/ffffff?text=${encodeURIComponent(filename)}`;
-  }
-}
+  it('should return a MOCK url if API keys are missing (Safe Mode)', async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        CloudinaryService,
+        { provide: ConfigService, useValue: missingKeysConfigService },
+      ],
+    }).compile();
+    const safeModeService = module.get<CloudinaryService>(CloudinaryService);
+
+    // 👇 Added 'originalname' to fix the "undefined" error
+    const mockFile = {
+      buffer: Buffer.from('fake image'),
+      originalname: 'mocked-image.jpg',
+    } as any;
+    const result = await safeModeService.uploadImage(mockFile);
+
+    // The result will look like: https://placehold.co/...?text=mocked-image.jpg
+    expect(result).toContain('https://placehold.co');
+    expect(result).toContain('mocked-image');
+    expect(warnSpy).toHaveBeenCalledWith(
+      '⚠️ Cloudinary keys missing. Falling back to Mock mode.',
+    );
+  });
+});
