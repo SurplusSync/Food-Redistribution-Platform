@@ -81,6 +81,7 @@ Everyone's impact dashboard updates
 ```
 
 <img width="8192" height="3532" alt="Architecture_diagram" src="https://github.com/user-attachments/assets/2a170e13-8b32-468c-a2a1-e311e6de9019" />
+<!-- TODO: Replace the `src` above with the GitHub attachment URL of the new architecture diagram you just uploaded. -->
 
 ---
 
@@ -110,6 +111,8 @@ SurplusSync is designed to tackle the problem of food waste by creating a seamle
 ### For NGOs
 - **Discovery Map** - Interactive Leaflet map with geolocation-based filtering by radius
 - **Claim Donations** - Reserve available food with an estimated pickup time
+- **Real-time Alerts** - Receive instant notifications via WebSockets when new food is listed nearby
+- **Near-Expiry Alerts** - Receive email notifications from Resend for critical, expiring food
 - **NGO Dashboard** - Dedicated dashboard showing claimed donations, active pickups, and delivery status
 - **Mark as Delivered** - Confirm receipt of food donations
 - **Impact Statistics** - View aggregated impact across all claimed and delivered donations
@@ -141,12 +144,16 @@ SurplusSync is designed to tackle the problem of food waste by creating a seamle
 | **Styling** | [Tailwind CSS](https://tailwindcss.com/) 3 | Utility-first CSS framework |
 | **State Management** | LocalStorage + React State | Persistent auth/user data across refreshes with component-level state via `useState` |
 | **Maps** | [Leaflet](https://leafletjs.com/) + [React-Leaflet](https://react-leaflet.js.org/) | Interactive map-based food discovery |
+| **Real-time Engine** | [Socket.io](https://socket.io/) | WebSocket connections for real-time alerts |
 | **HTTP Client** | [Axios](https://axios-http.com/) | Promise-based HTTP requests with interceptors |
 | **Icons** | [Lucide React](https://lucide.dev/) | Modern, clean SVG icon library |
 | **Routing** | [React Router](https://reactrouter.com/) v6 | Client-side routing with nested layouts |
 | **Containerization** | [Docker](https://www.docker.com/) + Docker Compose | Multi-service orchestration |
 | **Caching** | [Redis](https://redis.io/) | In-memory key-value store (Alpine image) |
 | **DB Administration** | [pgAdmin 4](https://www.pgadmin.org/) | Web-based PostgreSQL management |
+| **Monitoring** | [UptimeRobot](https://uptimerobot.com/) | Health check pings to ensure API reliability |
+| **Email Service** | [Resend](https://resend.com/) | Secure mailer for sending near-expiry alerts |
+| **Job Scheduling** | [@nestjs/schedule](https://docs.nestjs.com/techniques/task-scheduling) | Expiry Cron Engine for auto-expiring food |
 
 ### Project Structure
 
