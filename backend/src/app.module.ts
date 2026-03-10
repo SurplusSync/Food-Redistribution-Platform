@@ -5,14 +5,20 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { DonationsModule } from './donations/donations.module';
+import { AdminModule } from './admin/admin.module';
 import { User } from './auth/entities/user.entity';
 import { Donation } from './donations/entities/donation.entity';
+import { SupportTicket } from './admin/entities/support-ticket.entity';
+import { FlaggedDonation } from './admin/entities/flagged-donation.entity';
 import { CacheModule } from '@nestjs/cache-manager';
 import { ScheduleModule } from '@nestjs/schedule';
 import { createKeyv } from '@keyv/redis';
 import { EventsModule } from './events/events.module';
 import { ExpiryModule } from './expiry/expiry.module';
-import { AdminModule } from './admin/admin.module';
+import { FeedbackModule } from './feedback/feedback.module';
+import { DonationFeedback } from './feedback/entities/donation-feedback.entity';
+import { NotificationsModule } from './notifications/notifications.module';
+import { UserNotification } from './notifications/entities/user-notification.entity';
 
 @Module({
   imports: [
@@ -78,7 +84,7 @@ import { AdminModule } from './admin/admin.module';
           username: configService.get<string>('POSTGRES_USER') || 'student',
           password: configService.get<string>('POSTGRES_PASSWORD') || 'student',
           database: configService.get<string>('POSTGRES_DB') || 'surplus_db',
-          entities: [User, Donation],
+          entities: [User, Donation, SupportTicket, FlaggedDonation, DonationFeedback, UserNotification],
           synchronize: true,
           ssl: dbSslEnabled ? { rejectUnauthorized: false } : false,
         };
@@ -87,11 +93,13 @@ import { AdminModule } from './admin/admin.module';
 
     AuthModule,
     DonationsModule,
+    AdminModule,
     EventsModule,
     ExpiryModule,
-    AdminModule,
+    FeedbackModule,
+    NotificationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

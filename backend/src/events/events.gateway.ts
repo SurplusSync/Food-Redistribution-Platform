@@ -4,9 +4,16 @@ import {
   WebSocketServer,
   OnGatewayConnection,
   OnGatewayDisconnect,
+  SubscribeMessage,
+  MessageBody,
+  ConnectedSocket,
 } from '@nestjs/websockets';
-import { Logger } from '@nestjs/common';
+import { Inject, Logger, forwardRef } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
+import { NotificationsService } from '../notifications/notifications.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository, Not, Equal } from 'typeorm';
+import { User, UserRole } from '../auth/entities/user.entity';
 
 @WebSocketGateway({
   cors: {
@@ -19,6 +26,13 @@ export class EventsGateway
   @WebSocketServer() server: Server;
   private logger: Logger = new Logger('EventsGateway');
 
+  constructor(
+    @Inject(forwardRef(() => NotificationsService))
+    private readonly notificationsService: NotificationsService,
+    @InjectRepository(User)
+    private readonly usersRepository: Repository<User>,
+  ) {}
+
   afterInit() {
     this.logger.log('Init');
   }
@@ -29,6 +43,29 @@ export class EventsGateway
 
   handleConnection(client: Socket) {
     this.logger.log(`Client connected: ${client.id}`);
+  }
+
+  // ─── Volunteer Location Tracking ─────────────────────────────────────────
+
+  @SubscribeMessage('volunteer.shareLocation')
+  handleShareLocation(
+    @ConnectedSocket() client: Socket,
+    @MessageBody()
+    data: {
+      volunteerId: string;
+      donationId: string;
+      lat: number;
+      lng: number;
+    },
+  ) {
+    // Broadcast to everyone watching this delivery
+    this.server.emit(`volunteer.location.${data.donationId}`, {
+      volunteerId: data.volunteerId,
+      donationId: data.donationId,
+      lat: data.lat,
+      lng: data.lng,
+      timestamp: new Date().toISOString(),
+    });
   }
 
   emitDonationCreated(donationData: any) {
@@ -77,15 +114,53 @@ export class EventsGateway
     title: string;
     message: string;
     type: string;
+    targetUserIds?: string[];
   }) {
     const payload = {
       id: `notif-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-      ...notification,
+      title: notification.title,
+      message: notification.message,
+      type: notification.type,
       read: false,
       createdAt: new Date().toISOString(),
     };
     this.logger.log(`Emitting notification: ${notification.title}`);
     this.server.emit('notification', payload);
+
+    // Persist to database
+    this.persistNotification(notification).catch((err) =>
+      this.logger.warn('Failed to persist notification', err?.message),
+    );
+  }
+
+  private async persistNotification(notification: {
+    title: string;
+    message: string;
+    type: string;
+    targetUserIds?: string[];
+  }) {
+    const data = {
+      title: notification.title,
+      message: notification.message,
+      type: notification.type,
+    };
+
+    if (notification.targetUserIds?.length) {
+      await this.notificationsService.createForAllUsers(
+        notification.targetUserIds,
+        data,
+      );
+    } else {
+      // Broadcast: persist for all non-admin users
+      const users = await this.usersRepository.find({
+        where: { role: Not(Equal(UserRole.ADMIN)) },
+        select: ['id'],
+      });
+      const userIds = users.map((u) => u.id);
+      if (userIds.length > 0) {
+        await this.notificationsService.createForAllUsers(userIds, data);
+      }
+    }
   }
 
   emitNearExpiryAlert(payload: { donationId: string; expiryTime: Date }) {

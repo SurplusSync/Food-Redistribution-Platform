@@ -8,7 +8,7 @@ import {
 } from '../donations/entities/donation.entity';
 import { User } from '../auth/entities/user.entity';
 import { EventsGateway } from '../events/events.gateway';
-import { BasicMailerService } from './basic-mailer.service';
+import { EmailService } from '../common/email.service';
 
 @Injectable()
 export class ExpiryAlertService {
@@ -20,7 +20,7 @@ export class ExpiryAlertService {
     @InjectRepository(User)
     private usersRepository: Repository<User>,
     private eventsGateway: EventsGateway,
-    private mailerService: BasicMailerService,
+    private emailService: EmailService,
   ) {}
 
   async findNearExpiryDonations(): Promise<Donation[]> {
@@ -68,10 +68,20 @@ export class ExpiryAlertService {
 
         // 2. Send Email to Donor
         if (donation.donor && donation.donor.email) {
-          await this.mailerService.sendExpiryEmail(
+          await this.emailService.sendEmail(
             donation.donor.email,
-            'Donor',
-            payload,
+            '⏰ Food Listing Expiring Soon',
+            `
+            <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:32px">
+              <h2 style="color:#d97706">Expiry Alert</h2>
+              <p>Hello Donor,</p>
+              <p>Your food listing is expiring soon:</p>
+              <ul>
+                <li><strong>Item:</strong> ${payload.donationName}</li>
+                <li><strong>Expiry:</strong> ${payload.expiryTime.toLocaleString()}</li>
+              </ul>
+              <p>Please take necessary actions.</p>
+            </div>`,
           );
         }
 
@@ -81,10 +91,20 @@ export class ExpiryAlertService {
             where: { id: donation.claimedById },
           });
           if (claimedNgo && claimedNgo.email) {
-            await this.mailerService.sendExpiryEmail(
+            await this.emailService.sendEmail(
               claimedNgo.email,
-              'NGO',
-              payload,
+              '⏰ Claimed Food Expiring Soon',
+              `
+              <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:32px">
+                <h2 style="color:#d97706">Expiry Alert</h2>
+                <p>Hello NGO,</p>
+                <p>A food item you claimed is expiring soon:</p>
+                <ul>
+                  <li><strong>Item:</strong> ${payload.donationName}</li>
+                  <li><strong>Expiry:</strong> ${payload.expiryTime.toLocaleString()}</li>
+                </ul>
+                <p>Please arrange pickup as soon as possible.</p>
+              </div>`,
             );
           }
         }

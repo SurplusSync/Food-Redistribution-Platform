@@ -3,6 +3,9 @@ import { AdminController } from './admin.controller';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { User, UserRole } from '../auth/entities/user.entity';
 import { Donation } from '../donations/entities/donation.entity';
+import { SupportTicket } from './entities/support-ticket.entity';
+import { FlaggedDonation } from './entities/flagged-donation.entity';
+import { EmailService } from '../common/email.service';
 import { NotFoundException } from '@nestjs/common';
 
 describe('AdminController', () => {
@@ -12,10 +15,34 @@ describe('AdminController', () => {
     find: jest.fn(),
     findOne: jest.fn(),
     save: jest.fn(),
+    count: jest.fn().mockResolvedValue(0),
   };
 
   const mockDonationRepository = {
     find: jest.fn(),
+    count: jest.fn().mockResolvedValue(0),
+  };
+
+  const mockTicketRepository = {
+    find: jest.fn(),
+    findOne: jest.fn(),
+    save: jest.fn(),
+    create: jest.fn(),
+    count: jest.fn().mockResolvedValue(0),
+  };
+
+  const mockFlagRepository = {
+    find: jest.fn(),
+    findOne: jest.fn(),
+    save: jest.fn(),
+    create: jest.fn(),
+    count: jest.fn().mockResolvedValue(0),
+  };
+
+  const mockEmailService = {
+    sendNgoVerificationEmail: jest.fn(),
+    sendSupportTicketAck: jest.fn(),
+    sendTicketResolutionEmail: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -29,6 +56,18 @@ describe('AdminController', () => {
         {
           provide: getRepositoryToken(Donation),
           useValue: mockDonationRepository,
+        },
+        {
+          provide: getRepositoryToken(SupportTicket),
+          useValue: mockTicketRepository,
+        },
+        {
+          provide: getRepositoryToken(FlaggedDonation),
+          useValue: mockFlagRepository,
+        },
+        {
+          provide: EmailService,
+          useValue: mockEmailService,
         },
       ],
     }).compile();
@@ -95,29 +134,19 @@ describe('AdminController', () => {
       };
 
       mockUserRepository.findOne.mockResolvedValue(mockNGO);
-      mockUserRepository.save.mockResolvedValue({
-        ...mockNGO,
-        isVerified: true,
-      });
+      mockUserRepository.save.mockResolvedValue({ ...mockNGO, isVerified: true });
 
       const result = await controller.verifyNgo(ngoId);
 
-      expect(mockUserRepository.findOne).toHaveBeenCalledWith({
-        where: { id: ngoId },
-      });
-      expect(mockUserRepository.save).toHaveBeenCalledWith({
-        ...mockNGO,
-        isVerified: true,
-      });
+      expect(mockUserRepository.findOne).toHaveBeenCalledWith({ where: { id: ngoId } });
+      expect(mockUserRepository.save).toHaveBeenCalledWith({ ...mockNGO, isVerified: true });
       expect(result.message).toContain('verified');
     });
 
     it('should throw NotFoundException if NGO does not exist', async () => {
       mockUserRepository.findOne.mockResolvedValue(null);
 
-      await expect(controller.verifyNgo('invalid-id')).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(controller.verifyNgo('invalid-id')).rejects.toThrow(NotFoundException);
     });
   });
 
@@ -169,61 +198,34 @@ describe('AdminController', () => {
   describe('toggleUserStatus', () => {
     it('should suspend an active user', async () => {
       const userId = '123';
-      const mockUser = {
-        id: userId,
-        name: 'John Doe',
-        role: UserRole.DONOR,
-        isActive: true,
-      };
+      const mockUser = { id: userId, name: 'John Doe', role: UserRole.DONOR, isActive: true };
 
       mockUserRepository.findOne.mockResolvedValue(mockUser);
-      mockUserRepository.save.mockResolvedValue({
-        ...mockUser,
-        isActive: false,
-      });
+      mockUserRepository.save.mockResolvedValue({ ...mockUser, isActive: false });
 
       const result = await controller.toggleUserStatus(userId);
 
-      expect(mockUserRepository.save).toHaveBeenCalledWith({
-        ...mockUser,
-        isActive: false,
-      });
+      expect(mockUserRepository.save).toHaveBeenCalledWith({ ...mockUser, isActive: false });
       expect(result.message).toContain('suspended');
       expect(result.isActive).toBe(false);
     });
 
     it('should restore a suspended user', async () => {
       const userId = '123';
-      const mockUser = {
-        id: userId,
-        name: 'John Doe',
-        role: UserRole.DONOR,
-        isActive: false,
-      };
+      const mockUser = { id: userId, name: 'John Doe', role: UserRole.DONOR, isActive: false };
 
       mockUserRepository.findOne.mockResolvedValue(mockUser);
-      mockUserRepository.save.mockResolvedValue({
-        ...mockUser,
-        isActive: true,
-      });
+      mockUserRepository.save.mockResolvedValue({ ...mockUser, isActive: true });
 
       const result = await controller.toggleUserStatus(userId);
 
-      expect(mockUserRepository.save).toHaveBeenCalledWith({
-        ...mockUser,
-        isActive: true,
-      });
+      expect(mockUserRepository.save).toHaveBeenCalledWith({ ...mockUser, isActive: true });
       expect(result.message).toContain('unbanned');
       expect(result.isActive).toBe(true);
     });
 
     it('should prevent suspending an admin account', async () => {
-      const adminUser = {
-        id: 'admin-123',
-        name: 'System Admin',
-        role: UserRole.ADMIN,
-        isActive: true,
-      };
+      const adminUser = { id: 'admin-123', name: 'System Admin', role: UserRole.ADMIN, isActive: true };
 
       mockUserRepository.findOne.mockResolvedValue(adminUser);
 
@@ -235,9 +237,7 @@ describe('AdminController', () => {
     it('should throw NotFoundException if user does not exist', async () => {
       mockUserRepository.findOne.mockResolvedValue(null);
 
-      await expect(controller.toggleUserStatus('invalid-id')).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(controller.toggleUserStatus('invalid-id')).rejects.toThrow(NotFoundException);
     });
   });
 
@@ -250,10 +250,7 @@ describe('AdminController', () => {
           quantity: 50,
           unit: 'kg',
           status: 'AVAILABLE',
-          donor: {
-            id: 'donor-1',
-            name: 'Restaurant A',
-          },
+          donor: { id: 'donor-1', name: 'Restaurant A' },
           createdAt: new Date(),
         },
       ];

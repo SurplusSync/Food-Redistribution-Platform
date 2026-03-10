@@ -62,13 +62,23 @@ export class DonationsController {
     type: Number,
     description: 'Search radius in km (default: 5)',
   })
+  @ApiQuery({
+    name: 'status',
+    required: false,
+    type: String,
+    description: 'Comma-separated statuses to filter (e.g. AVAILABLE,CLAIMED)',
+  })
   @ApiResponse({ status: 200, description: 'List of available donations' })
   findAll(
     @Query('latitude') latitude?: number,
     @Query('longitude') longitude?: number,
     @Query('radius') radius: number = 5,
+    @Query('status') status?: string,
   ) {
-    return this.donationsService.findAll(latitude, longitude, radius);
+    const statuses = status
+      ? status.split(',').map((s) => s.trim().toUpperCase())
+      : undefined;
+    return this.donationsService.findAll(latitude, longitude, radius, statuses);
   }
 
   @Get('stats/monthly')
@@ -97,6 +107,45 @@ export class DonationsController {
   })
   async getCommunityStats() {
     return this.donationsService.getCommunityStats();
+  }
+
+  @Get('leaderboard')
+  @ApiOperation({ summary: 'Get leaderboard rankings by karma points' })
+  @ApiQuery({
+    name: 'scope',
+    required: false,
+    enum: ['weekly', 'monthly', 'all'],
+    description: 'Time scope (default: all)',
+  })
+  @ApiQuery({
+    name: 'role',
+    required: false,
+    enum: ['DONOR', 'NGO', 'VOLUNTEER'],
+    description: 'Filter by role',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Leaderboard retrieved successfully',
+  })
+  async getLeaderboard(
+    @Query('scope') scope: string = 'all',
+    @Query('role') role?: string,
+  ) {
+    return this.donationsService.getLeaderboard(scope, role);
+  }
+
+  @Get('my-deliveries')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Get active deliveries assigned to the current volunteer',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Active deliveries for the volunteer',
+  })
+  async getMyDeliveries(@Req() req: any) {
+    return this.donationsService.getVolunteerDeliveries(req.user.userId);
   }
 
   // ─── PARAMETERISED ROUTES ─────────────────────────────────────────────────

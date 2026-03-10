@@ -163,7 +163,12 @@ export class DonationsService {
     }
   }
 
-  async findAll(latitude?: number, longitude?: number, radius: number = 5) {
+  async findAll(
+    latitude?: number,
+    longitude?: number,
+    radius: number = 5,
+    statusFilter?: string[],
+  ) {
     // First, mark any expired donations that the cron hasn't caught yet
     const now = new Date();
     try {
@@ -178,18 +183,26 @@ export class DonationsService {
           d.status = DonationStatus.EXPIRED;
         }
         await this.donationsRepository.save(missed);
-        this.logger.log(`Marked ${missed.length} expired donation(s) on-the-fly.`);
+        this.logger.log(
+          `Marked ${missed.length} expired donation(s) on-the-fly.`,
+        );
       }
     } catch (error) {
       this.logger.warn('Failed to mark expired donations on-the-fly', error);
     }
 
-    const activeStatuses = In([
+    const defaultStatuses = [
       DonationStatus.AVAILABLE,
       DonationStatus.CLAIMED,
       DonationStatus.PICKED_UP,
       DonationStatus.DELIVERED,
-    ]);
+    ];
+    const statuses = statusFilter?.length
+      ? statusFilter.filter((s) =>
+          Object.values(DonationStatus).includes(s as DonationStatus),
+        )
+      : defaultStatuses;
+    const activeStatuses = In(statuses.length ? statuses : defaultStatuses);
 
     if (!latitude || !longitude) {
       try {
@@ -207,12 +220,7 @@ export class DonationsService {
       return await this.donationsRepository
         .createQueryBuilder('donation')
         .where('donation.status IN (:...statuses)', {
-          statuses: [
-            DonationStatus.AVAILABLE,
-            DonationStatus.CLAIMED,
-            DonationStatus.PICKED_UP,
-            DonationStatus.DELIVERED,
-          ],
+          statuses: statuses.length ? statuses : defaultStatuses,
         })
         .addSelect(
           `(6371 * acos(cos(radians(:lat)) * cos(radians(donation.latitude)) * cos(radians(donation.longitude) - radians(:lon)) + sin(radians(:lat)) * sin(radians(donation.latitude))))`,
@@ -663,6 +671,161 @@ export class DonationsService {
       };
     }
   }
+
+  async getVolunteerDeliveries(userId: string) {
+    return await this.donationsRepository.find({
+      where: [
+        { volunteerId: userId, status: In([DonationStatus.CLAIMED, DonationStatus.PICKED_UP]) },
+        { claimedById: userId, status: In([DonationStatus.CLAIMED, DonationStatus.PICKED_UP]) },
+      ],
+      relations: ['donor'],
+      order: { createdAt: 'DESC' },
+    });
+  }
+
+  async getLeaderboard(scope: string = 'all', role?: string) {
+    try {
+      const roleFilter =
+        role && ['DONOR', 'NGO', 'VOLUNTEER'].includes(role.toUpperCase())
+          ? (role.toUpperCase() as UserRole)
+          : undefined;
+
+      // For 'all' scope, rank by karmaPoints directly
+      if (scope === 'all') {
+        const where: any = { isActive: true };
+        if (roleFilter) where.role = roleFilter;
+
+        const users = await this.usersRepository.find({
+          where,
+          order: { karmaPoints: 'DESC' },
+          take: 20,
+          select: [
+            'id',
+            'name',
+            'organizationName',
+            'role',
+            'karmaPoints',
+          ],
+        });
+
+        return {
+          success: true,
+          data: users
+            .filter((u) => u.role !== UserRole.ADMIN)
+            .map((u) => ({
+              id: u.id,
+              name: u.organizationName || u.name,
+              role:
+                u.role === UserRole.DONOR
+                  ? 'Donor'
+                  : u.role === UserRole.NGO
+                    ? 'NGO'
+                    : 'Volunteer',
+              score: u.karmaPoints,
+            })),
+        };
+      }
+
+      // For weekly/monthly, count delivered donations within the time window
+      const now = new Date();
+      const since = new Date();
+      if (scope === 'weekly') {
+        since.setDate(now.getDate() - 7);
+      } else {
+        since.setDate(now.getDate() - 30);
+      }
+
+      // Count deliveries per user in the time window
+      const qb = this.donationsRepository
+        .createQueryBuilder('d')
+        .select('d.donorId', 'userId')
+        .addSelect('COUNT(*)', 'score')
+        .where('d.status = :status', { status: DonationStatus.DELIVERED })
+        .andWhere('d.deliveredAt >= :since', { since })
+        .groupBy('d.donorId')
+        .orderBy('score', 'DESC')
+        .limit(20);
+
+      const donorScores = await qb.getRawMany();
+
+      // Also count claims for NGOs
+      const ngoQb = this.donationsRepository
+        .createQueryBuilder('d')
+        .select('d.claimedById', 'userId')
+        .addSelect('COUNT(*)', 'score')
+        .where('d.status IN (:...statuses)', {
+          statuses: [
+            DonationStatus.DELIVERED,
+            DonationStatus.PICKED_UP,
+            DonationStatus.CLAIMED,
+          ],
+        })
+        .andWhere('d.createdAt >= :since', { since })
+        .andWhere('d.claimedById IS NOT NULL')
+        .groupBy('d.claimedById')
+        .orderBy('score', 'DESC')
+        .limit(20);
+
+      const ngoScores = await ngoQb.getRawMany();
+
+      // Merge scores
+      const scoreMap = new Map<string, number>();
+      for (const row of [...donorScores, ...ngoScores]) {
+        if (row.userId) {
+          scoreMap.set(
+            row.userId,
+            (scoreMap.get(row.userId) || 0) + Number(row.score),
+          );
+        }
+      }
+
+      const userIds = [...scoreMap.keys()];
+      if (userIds.length === 0) return { success: true, data: [] };
+
+      const users = await this.usersRepository.find({
+        where: { id: In(userIds) },
+        select: ['id', 'name', 'organizationName', 'role'],
+      });
+
+      const userMap = new Map(users.map((u) => [u.id, u]));
+
+      let results = userIds
+        .map((uid) => {
+          const u = userMap.get(uid);
+          if (!u || u.role === UserRole.ADMIN) return null;
+          return {
+            id: u.id,
+            name: u.organizationName || u.name,
+            role:
+              u.role === UserRole.DONOR
+                ? 'Donor'
+                : u.role === UserRole.NGO
+                  ? 'NGO'
+                  : 'Volunteer',
+            score: scoreMap.get(uid) || 0,
+          };
+        })
+        .filter(Boolean)
+        .sort((a: any, b: any) => b.score - a.score);
+
+      if (roleFilter) {
+        const roleLabel =
+          roleFilter === UserRole.DONOR
+            ? 'Donor'
+            : roleFilter === UserRole.NGO
+              ? 'NGO'
+              : 'Volunteer';
+        results = results.filter((r: any) => r.role === roleLabel);
+      }
+
+      return { success: true, data: results };
+    } catch (error) {
+      this.logger.error('Leaderboard query failed', error);
+      return { success: true, data: [] };
+    }
+  }
+
+
 
   private checkAndAwardBadges(user: User): string[] {
     const newBadges: string[] = [];

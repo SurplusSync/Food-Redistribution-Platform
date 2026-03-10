@@ -1,5 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { EventsGateway } from './events.gateway';
+import { NotificationsService } from '../notifications/notifications.service';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { User } from '../auth/entities/user.entity';
 
 describe('EventsGateway Unit Tests', () => {
   let gateway: EventsGateway;
@@ -7,7 +10,22 @@ describe('EventsGateway Unit Tests', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [EventsGateway],
+      providers: [
+        EventsGateway,
+        {
+          provide: NotificationsService,
+          useValue: {
+            create: jest.fn(),
+            createForAllUsers: jest.fn(),
+          },
+        },
+        {
+          provide: getRepositoryToken(User),
+          useValue: {
+            find: jest.fn().mockResolvedValue([]),
+          },
+        },
+      ],
     }).compile();
 
     gateway = module.get<EventsGateway>(EventsGateway);
