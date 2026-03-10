@@ -99,6 +99,31 @@ export class DonationsController {
     return this.donationsService.getCommunityStats();
   }
 
+  @Get('leaderboard')
+  @ApiOperation({ summary: 'Get leaderboard rankings by karma points' })
+  @ApiQuery({
+    name: 'scope',
+    required: false,
+    enum: ['weekly', 'monthly', 'all'],
+    description: 'Time scope (default: all)',
+  })
+  @ApiQuery({
+    name: 'role',
+    required: false,
+    enum: ['DONOR', 'NGO', 'VOLUNTEER'],
+    description: 'Filter by role',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Leaderboard retrieved successfully',
+  })
+  async getLeaderboard(
+    @Query('scope') scope: string = 'all',
+    @Query('role') role?: string,
+  ) {
+    return this.donationsService.getLeaderboard(scope, role);
+  }
+
   // ─── PARAMETERISED ROUTES ─────────────────────────────────────────────────
 
   @Post()
