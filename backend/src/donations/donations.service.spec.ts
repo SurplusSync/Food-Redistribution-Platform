@@ -148,6 +148,7 @@ describe('DonationsService Unit Tests', () => {
       const fullNgo = {
         id: 'u1',
         role: UserRole.NGO,
+        isVerified: true,
         currentIntakeLoad: 80,
         dailyIntakeCapacity: 100,
       };
@@ -168,6 +169,7 @@ describe('DonationsService Unit Tests', () => {
       const ngo = {
         id: 'u1',
         role: UserRole.NGO,
+        isVerified: true,
         currentIntakeLoad: 50,
         dailyIntakeCapacity: 100,
       };
