@@ -666,6 +666,17 @@ export class DonationsService {
     }
   }
 
+  async getVolunteerDeliveries(userId: string) {
+    return await this.donationsRepository.find({
+      where: [
+        { volunteerId: userId, status: In([DonationStatus.CLAIMED, DonationStatus.PICKED_UP]) },
+        { claimedById: userId, status: In([DonationStatus.CLAIMED, DonationStatus.PICKED_UP]) },
+      ],
+      relations: ['donor'],
+      order: { createdAt: 'DESC' },
+    });
+  }
+
   async getLeaderboard(scope: string = 'all', role?: string) {
     try {
       const roleFilter =

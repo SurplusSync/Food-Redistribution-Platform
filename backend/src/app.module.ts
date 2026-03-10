@@ -14,6 +14,9 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { ScheduleModule } from '@nestjs/schedule';
 import { createKeyv } from '@keyv/redis';
 import { EventsModule } from './events/events.module';
+import { ExpiryModule } from './expiry/expiry.module';
+import { FeedbackModule } from './feedback/feedback.module';
+import { DonationFeedback } from './feedback/entities/donation-feedback.entity';
 
 @Module({
   imports: [
@@ -79,7 +82,7 @@ import { EventsModule } from './events/events.module';
           username: configService.get<string>('POSTGRES_USER') || 'student',
           password: configService.get<string>('POSTGRES_PASSWORD') || 'student',
           database: configService.get<string>('POSTGRES_DB') || 'surplus_db',
-          entities: [User, Donation, SupportTicket, FlaggedDonation],
+          entities: [User, Donation, SupportTicket, FlaggedDonation, DonationFeedback],
           synchronize: true,
           ssl: dbSslEnabled ? { rejectUnauthorized: false } : false,
         };
@@ -90,6 +93,8 @@ import { EventsModule } from './events/events.module';
     DonationsModule,
     AdminModule,
     EventsModule,
+    ExpiryModule,
+    FeedbackModule,
   ],
   controllers: [AppController],
   providers: [AppService],

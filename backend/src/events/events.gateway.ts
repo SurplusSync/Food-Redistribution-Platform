@@ -4,6 +4,9 @@ import {
   WebSocketServer,
   OnGatewayConnection,
   OnGatewayDisconnect,
+  SubscribeMessage,
+  MessageBody,
+  ConnectedSocket,
 } from '@nestjs/websockets';
 import { Logger } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
@@ -29,6 +32,29 @@ export class EventsGateway
 
   handleConnection(client: Socket) {
     this.logger.log(`Client connected: ${client.id}`);
+  }
+
+  // ─── Volunteer Location Tracking ─────────────────────────────────────────
+
+  @SubscribeMessage('volunteer.shareLocation')
+  handleShareLocation(
+    @ConnectedSocket() client: Socket,
+    @MessageBody()
+    data: {
+      volunteerId: string;
+      donationId: string;
+      lat: number;
+      lng: number;
+    },
+  ) {
+    // Broadcast to everyone watching this delivery
+    this.server.emit(`volunteer.location.${data.donationId}`, {
+      volunteerId: data.volunteerId,
+      donationId: data.donationId,
+      lat: data.lat,
+      lng: data.lng,
+      timestamp: new Date().toISOString(),
+    });
   }
 
   emitDonationCreated(donationData: any) {

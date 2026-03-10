@@ -211,6 +211,27 @@ class SocketService {
   }
 
   /**
+   * Emit volunteer GPS location for a delivery
+   */
+  emitVolunteerLocation(data: { volunteerId: string; donationId: string; lat: number; lng: number }): void {
+    if (!this.socket) return;
+    this.socket.emit('volunteer.shareLocation', data);
+  }
+
+  /**
+   * Listen for real-time volunteer location updates for a specific donation
+   */
+  onVolunteerLocation(
+    donationId: string,
+    callback: (data: { volunteerId: string; donationId: string; lat: number; lng: number; timestamp: string }) => void,
+  ): () => void {
+    if (!this.socket) return () => {};
+    const event = `volunteer.location.${donationId}`;
+    this.socket.on(event, callback);
+    return () => { if (this.socket) this.socket.off(event, callback); };
+  }
+
+  /**
    * Disconnect socket
    */
   disconnect(): void {

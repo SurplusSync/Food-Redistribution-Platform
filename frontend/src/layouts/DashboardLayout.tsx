@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { LayoutDashboard, PlusCircle, Map, History, LogOut, Bell, TrendingUp, User, Navigation2, Trophy, LifeBuoy, AlertTriangle, MapPin, Star, Languages } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { getNotifications, addNotification } from "../services/api";
+import { getNotifications, addNotification, getUserProfile } from "../services/api";
 import { socketService } from "../services/socket";
 
 export default function DashboardLayout() {
@@ -11,9 +11,17 @@ export default function DashboardLayout() {
   const location = useLocation()
   const [unreadCount, setUnreadCount] = useState(0)
   const [isRedirecting, setIsRedirecting] = useState(false)
+  const [profileReady, setProfileReady] = useState(false)
 
   const user = JSON.parse(localStorage.getItem('user') || '{}')
   const userRole = (user.role || 'donor').toLowerCase()
+
+  // Refresh profile from backend so isVerified and other fields are up-to-date
+  useEffect(() => {
+    getUserProfile()
+      .catch(() => {})
+      .finally(() => setProfileReady(true));
+  }, [])
 
   useEffect(() => {
     // Redirect to role-specific dashboard
@@ -206,7 +214,7 @@ export default function DashboardLayout() {
       {/* Main Content */}
       <main className="main-content p-8">
         <div className="max-w-7xl mx-auto">
-          {isRedirecting ? (
+          {isRedirecting || !profileReady ? (
             <div className="flex items-center justify-center h-screen">
               <div className="text-center">
                 <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-600 animate-pulse mx-auto mb-4"></div>
