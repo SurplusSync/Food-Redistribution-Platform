@@ -40,7 +40,8 @@ export default function DiscoveryMap() {
 
     const user = JSON.parse(localStorage.getItem('user') || '{}')
     const userRole = (user.role || 'donor').toLowerCase()
-    const canClaim = userRole === 'ngo' || userRole === 'volunteer'
+    const isVerified = user.isVerified === true
+    const canClaim = (userRole === 'ngo' && isVerified) || userRole === 'volunteer'
 
     useEffect(() => {
         loadDonations()
@@ -396,6 +397,10 @@ export default function DiscoveryMap() {
                                                 </>
                                             )}
                                         </button>
+                                    ) : userRole === 'ngo' && !isVerified ? (
+                                        <div className="text-center p-3 bg-amber-500/10 text-amber-400 rounded-lg text-sm font-medium border border-amber-500/20">
+                                            ⏳ {t('verificationPending')} — Cannot claim until verified.
+                                        </div>
                                     ) : (
                                         <div className="text-center p-3 bg-gray-100 dark:bg-slate-800 rounded-lg text-gray-500 dark:text-slate-400 text-sm">
                                             {t('loginAsNGO')}

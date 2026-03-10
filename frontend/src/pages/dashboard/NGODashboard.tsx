@@ -462,7 +462,11 @@ export default function NGODashboard() {
 
               {/* Action Button */}
               <div className="mt-6 pt-4 border-t border-gray-200 dark:border-slate-800">
-                {selectedDonation.status === 'AVAILABLE' ? (
+                {!user.isVerified ? (
+                  <div className="text-center p-3 bg-amber-500/10 text-amber-400 rounded-lg text-sm font-medium border border-amber-500/20">
+                    ⏳ {t('verificationPending')} — {t('verificationPendingDesc') || 'You cannot claim donations until your account is verified.'}
+                  </div>
+                ) : selectedDonation.status === 'AVAILABLE' ? (
                   <button
                     onClick={() => handleClaim(selectedDonation.id)}
                     disabled={claiming === selectedDonation.id}
