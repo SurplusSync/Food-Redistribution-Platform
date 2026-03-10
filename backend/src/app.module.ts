@@ -81,8 +81,8 @@ import { UserNotification } from './notifications/entities/user-notification.ent
             configService.get<string>('DATABASE_PORT') || '5432',
             10,
           ),
-          username: configService.get<string>('POSTGRES_USER') || 'student',
-          password: configService.get<string>('POSTGRES_PASSWORD') || 'student',
+          username: configService.get<string>('POSTGRES_USER') || 'postgres',
+          password: configService.get<string>('POSTGRES_PASSWORD') || 'postgres',
           database: configService.get<string>('POSTGRES_DB') || 'surplus_db',
           entities: [
             User,

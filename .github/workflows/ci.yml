@@ -17,13 +17,13 @@ jobs:
       postgres:
         image: postgres:15
         env:
-          POSTGRES_USER: surplus_admin
-          POSTGRES_PASSWORD: password123
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
           POSTGRES_DB: surplus_db
         ports:
           - 5432:5432
         options: >-
-          --health-cmd pg_isready
+          --health-cmd "pg_isready -U postgres"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
@@ -41,8 +41,8 @@ jobs:
     env:
       DATABASE_HOST: localhost
       DATABASE_PORT: 5432
-      POSTGRES_USER: surplus_admin
-      POSTGRES_PASSWORD: password123
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
       POSTGRES_DB: surplus_db
       REDIS_HOST: localhost
       REDIS_PORT: 6379
@@ -77,7 +77,7 @@ jobs:
         working-directory: backend
 
       - name: E2E tests
-        run: npm run test:e2e
+        run: npm run test:e2e -- --forceExit
         working-directory: backend
 
       - name: Build
