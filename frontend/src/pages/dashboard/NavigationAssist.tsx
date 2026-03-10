@@ -34,8 +34,6 @@ export default function NavigationAssist() {
   const [donations, setDonations] = useState<Donation[]>([])
   const [loading, setLoading] = useState(true)
 
-  const user = JSON.parse(localStorage.getItem('user') || '{}')
-
   const load = useCallback(async () => {
     setLoading(true)
     try {
