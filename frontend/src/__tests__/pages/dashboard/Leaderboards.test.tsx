@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, prefer-const, @typescript-eslint/no-unused-vars */
 import { render, screen, waitFor } from '@testing-library/react'
 import Leaderboards from '../../../pages/dashboard/Leaderboards'
 import { getLeaderboard } from '../../../services/api'
@@ -16,9 +17,9 @@ describe('Leaderboards', () => {
   it('renders leaderboard title and current profile', async () => {
     render(<Leaderboards />)
 
-    expect(screen.getByText('Leaderboards')).toBeTruthy()
+    expect(screen.getByText('leaderboardsTitle')).toBeTruthy()
     await waitFor(() => {
-      expect(screen.getByText(/Current profile: Keshav/i)).toBeTruthy()
+      expect(screen.getByText(/currentProfileLabel/i)).toBeTruthy()
     })
   })
 
@@ -37,7 +38,7 @@ describe('Leaderboards', () => {
     render(<Leaderboards />)
 
     await waitFor(() => {
-      expect(screen.getByText('No leaderboard entries for selected filters.')).toBeTruthy()
+      expect(screen.getByText('noLeaderboardEntries')).toBeTruthy()
     })
   })
 })

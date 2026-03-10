@@ -85,8 +85,9 @@ export default function NearExpiryAlerts() {
     try {
       await claimDonation(id)
       setItems(prev => prev.filter(item => item.id !== id))
-    } catch (err: any) {
-      alert(err?.response?.data?.message || err?.message || 'Failed to claim donation')
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } }, message?: string };
+      alert(error?.response?.data?.message || error?.message || 'Failed to claim donation')
     } finally {
       setClaiming(null)
     }

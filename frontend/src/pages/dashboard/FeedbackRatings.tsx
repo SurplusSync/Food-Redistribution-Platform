@@ -54,8 +54,9 @@ export default function FeedbackRatings() {
           // No ratings yet
         }
       }
-    } catch (err: any) {
-      setError(err?.response?.data?.message || err?.message || 'Failed to load data')
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } }, message?: string };
+      setError(error?.response?.data?.message || error?.message || 'Failed to load data')
     } finally {
       setLoading(false)
     }
@@ -91,8 +92,9 @@ export default function FeedbackRatings() {
       setSelectedDonationId('')
       setSuccessMsg(t('feedbackSubmitted'))
       setTimeout(() => setSuccessMsg(null), 3000)
-    } catch (err: any) {
-      setError(err?.response?.data?.message || err?.message || 'Failed to submit feedback')
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } }, message?: string };
+      setError(error?.response?.data?.message || error?.message || 'Failed to submit feedback')
     } finally {
       setSubmitting(false)
     }

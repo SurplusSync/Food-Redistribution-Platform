@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, prefer-const, @typescript-eslint/no-unused-vars */
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import VolunteerTracking from '../../../pages/dashboard/VolunteerTracking'
 import { getMyDeliveries } from '../../../services/api'

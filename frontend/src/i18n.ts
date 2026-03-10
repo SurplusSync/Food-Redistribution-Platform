@@ -606,8 +606,11 @@ export const enStrings: Record<string, string> = {
   warning: 'Warning',
   minLabel: 'min',
   claimNow: 'Claim Now',
+  claiming: 'Claiming...',
   alreadyClaimedStatus: 'Already Claimed',
   noExpiringSoon: 'No donations expiring soon. All clear!',
+  all: 'All',
+  inProgress: 'In Progress',
 
   // ── Leaderboards ──
   leaderboardsTitle: 'Leaderboards',

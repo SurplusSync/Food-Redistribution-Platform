@@ -31,7 +31,7 @@ export default function Register() {
         setError(null)
 
         try {
-            let payload: any
+            let payload: FormData | Record<string, string>
 
             if (formData.role === 'NGO' || certificateFile) {
                 const fd = new FormData()
@@ -58,8 +58,9 @@ export default function Register() {
             localStorage.setItem('user', JSON.stringify(data.user))
 
             navigate('/dashboard')
-        } catch (err: any) {
-            const msg = err.response?.data?.message || err.message || 'Registration failed'
+        } catch (err: unknown) {
+            const errorObj = err as { response?: { data?: { message?: string } }, message?: string }
+            const msg = errorObj.response?.data?.message || errorObj.message || 'Registration failed'
             setError(msg)
         } finally {
             setLoading(false)

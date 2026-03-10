@@ -8,6 +8,7 @@ import { createDonation, type FoodType } from '../../services/api'
 import { AlertTriangle, Clock, CheckCircle2, Upload } from 'lucide-react'
 
 // Fix for default marker
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 delete (L.Icon.Default.prototype as any)._getIconUrl
 L.Icon.Default.mergeOptions({
     iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
@@ -37,7 +38,7 @@ export default function AddFood() {
     const [location, setLocation] = useState<LatLng | null>(null)
     const [error, setError] = useState<string | null>(null)
     const [images, setImages] = useState<File[]>([]) // NEW: Image State
-    
+
     const [formData, setFormData] = useState({
         foodType: '' as FoodType | '',
         foodName: '',
@@ -90,23 +91,23 @@ export default function AddFood() {
 
     const getRemainingTime = () => {
         if (!formData.preparationTime || !selectedFoodType) return null
-        
+
         const prepTime = new Date(formData.preparationTime)
         const now = new Date()
-        
+
         // Check if preparation time is in the future
         if (prepTime > now) {
             return { expired: false, futureTime: true, hours: 0, minutes: 0 }
         }
-        
+
         const expiryTime = new Date(prepTime.getTime() + selectedFoodType.expiryHours * 60 * 60 * 1000)
         const remaining = expiryTime.getTime() - now.getTime()
-        
+
         if (remaining <= 0) return { expired: true, futureTime: false, hours: 0, minutes: 0 }
-        
+
         const hours = Math.floor(remaining / (1000 * 60 * 60))
         const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60))
-        
+
         return { expired: false, futureTime: false, hours, minutes }
     }
 
@@ -147,7 +148,7 @@ export default function AddFood() {
             // Calculate expiry time based on preparation time and food type
             const prepTime = new Date(formData.preparationTime);
             const expiryTime = new Date(prepTime.getTime() + (selectedFoodType!.expiryHours * 60 * 60 * 1000));
-            
+
             // Correctly constructing the payload and passing images
             const payload = {
                 name: formData.foodName,
@@ -171,19 +172,20 @@ export default function AddFood() {
             await createDonation(payload, images);
 
             navigate('/dashboard')
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error(err);
-            setError(err.response?.data?.message || err.message || t('failedCreateDonationGeneric'))
+            const errorObj = err as { response?: { data?: { message?: string } }, message?: string }
+            setError(errorObj.response?.data?.message || errorObj.message || t('failedCreateDonationGeneric'))
         } finally {
             setIsSubmitting(false)
         }
     }
 
     const hygieneComplete = formData.keptCovered && formData.containerClean
-    const isFormValid = 
-        hygieneComplete && 
-        formData.foodType && 
-        formData.foodName && 
+    const isFormValid =
+        hygieneComplete &&
+        formData.foodType &&
+        formData.foodName &&
         formData.preparationTime &&
         location &&
         timeStatus &&
@@ -212,11 +214,10 @@ export default function AddFood() {
                                 key={type.id}
                                 type="button"
                                 onClick={() => setFormData({ ...formData, foodType: type.id as FoodType })}
-                                className={`py-3 rounded-lg text-sm font-medium transition-all ${
-                                    formData.foodType === type.id
+                                className={`py-3 rounded-lg text-sm font-medium transition-all ${formData.foodType === type.id
                                         ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20'
                                         : 'bg-gray-100 dark:bg-slate-800 text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-slate-750'
-                                }`}
+                                    }`}
                             >
                                 <div className="text-lg mb-1">{type.icon}</div>
                                 {type.label}
@@ -331,9 +332,9 @@ export default function AddFood() {
                     <div>
                         <label className="block text-sm text-gray-500 dark:text-slate-400 mb-2">{t('foodImages')}</label>
                         <div className="relative">
-                            <input 
-                                type="file" 
-                                multiple 
+                            <input
+                                type="file"
+                                multiple
                                 accept="image/*"
                                 onChange={handleImageChange}
                                 className="block w-full text-sm text-gray-500 dark:text-slate-400
@@ -395,19 +396,17 @@ export default function AddFood() {
                 <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl p-5">
                     <div className="flex items-center justify-between mb-4">
                         <label className="text-sm text-gray-500 dark:text-slate-400">{t('hygieneChecklist')}</label>
-                        <span className={`text-xs font-medium px-2 py-0.5 rounded ${
-                            hygieneComplete ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400'
-                        }`}>
+                        <span className={`text-xs font-medium px-2 py-0.5 rounded ${hygieneComplete ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400'
+                            }`}>
                             {hygieneComplete ? t('hygieneComplete') : t('required')}
                         </span>
                     </div>
 
                     <div className="space-y-2">
-                        <label className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all ${
-                            formData.keptCovered 
-                                ? 'border-emerald-500 bg-emerald-500/5' 
+                        <label className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all ${formData.keptCovered
+                                ? 'border-emerald-500 bg-emerald-500/5'
                                 : 'border-gray-200 dark:border-slate-800 hover:border-gray-300 dark:hover:border-gray-300 dark:border-slate-700'
-                        }`}>
+                            }`}>
                             <input
                                 type="checkbox"
                                 name="keptCovered"
@@ -418,11 +417,10 @@ export default function AddFood() {
                             <span className="text-sm text-gray-700 dark:text-slate-300">{t('keptCoveredAlways')}</span>
                         </label>
 
-                        <label className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all ${
-                            formData.containerClean 
-                                ? 'border-emerald-500 bg-emerald-500/5' 
+                        <label className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all ${formData.containerClean
+                                ? 'border-emerald-500 bg-emerald-500/5'
                                 : 'border-gray-200 dark:border-slate-800 hover:border-gray-300 dark:hover:border-gray-300 dark:border-slate-700'
-                        }`}>
+                            }`}>
                             <input
                                 type="checkbox"
                                 name="containerClean"
@@ -445,11 +443,10 @@ export default function AddFood() {
                 <button
                     type="submit"
                     disabled={isSubmitting || !isFormValid}
-                    className={`w-full py-3 rounded-lg font-medium transition-all ${
-                        isSubmitting || !isFormValid
+                    className={`w-full py-3 rounded-lg font-medium transition-all ${isSubmitting || !isFormValid
                             ? 'bg-gray-100 dark:bg-slate-800 text-gray-500 dark:text-slate-500 cursor-not-allowed'
                             : 'bg-emerald-500 hover:bg-emerald-400 text-white shadow-lg shadow-emerald-500/20'
-                    }`}
+                        }`}
                 >
                     {isSubmitting ? t('creatingDonation') : t('addFoodDonation')}
                 </button>

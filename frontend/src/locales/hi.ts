@@ -600,8 +600,11 @@ const hi: Record<string, string> = {
   warning: 'चेतावनी',
   minLabel: 'मिनट',
   claimNow: 'अभी क्लेम करें',
+  claiming: 'क्लेम हो रहा है...',
   alreadyClaimedStatus: 'पहले से क्लेम किया गया',
   noExpiringSoon: 'कोई दान जल्द समाप्त नहीं हो रहा। सब ठीक है!',
+  all: 'सभी',
+  inProgress: 'प्रगति में',
 
   // —— Leaderboards ——
   leaderboardsTitle: 'लीडरबोर्ड',

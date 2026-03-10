@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, prefer-const, @typescript-eslint/no-unused-vars */
 import { render, screen, waitFor } from '@testing-library/react'
 import FeedbackRatings from '../../../pages/dashboard/FeedbackRatings'
 import { getDonations, getFeedbackForDonation } from '../../../services/api'
@@ -15,16 +16,16 @@ describe('FeedbackRatings', () => {
     render(<FeedbackRatings />)
 
     await waitFor(() => {
-      expect(screen.getByText('NGO Feedback & Ratings')).toBeTruthy()
+      expect(screen.getByText('ngoFeedbackRatings')).toBeTruthy()
     })
-    expect(screen.getByText('Rating Summary')).toBeTruthy()
+    expect(screen.getByText('ratingSummary')).toBeTruthy()
   })
 
   it('shows empty state when no feedback exists', async () => {
     render(<FeedbackRatings />)
 
     await waitFor(() => {
-      expect(screen.getByText('No feedback submitted yet.')).toBeTruthy()
+      expect(screen.getByText('noFeedbackYet')).toBeTruthy()
     })
   })
 })

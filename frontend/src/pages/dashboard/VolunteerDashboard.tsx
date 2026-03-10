@@ -69,8 +69,8 @@ function AvailabilityToggle({ isAvailable, onToggle, loading, t }: {
       onClick={onToggle}
       disabled={loading}
       className={`flex items-center gap-3 px-5 py-2.5 rounded-xl border font-medium text-sm transition-all duration-200 ${isAvailable
-          ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20'
-          : 'bg-gray-100 dark:bg-slate-800 border-gray-300 dark:border-slate-700 text-gray-500 dark:text-slate-400 hover:bg-gray-200 dark:hover:bg-slate-700'
+        ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20'
+        : 'bg-gray-100 dark:bg-slate-800 border-gray-300 dark:border-slate-700 text-gray-500 dark:text-slate-400 hover:bg-gray-200 dark:hover:bg-slate-700'
         }`}
     >
       {loading ? (
@@ -142,8 +142,8 @@ function VehicleProfile({ user, onSave, t }: { user: User; onSave: (data: { vehi
                   key={v.value}
                   onClick={() => setVehicleType(v.value)}
                   className={`flex flex-col items-center gap-1 p-2 rounded-lg border text-xs transition-all ${vehicleType === v.value
-                      ? 'border-purple-500 bg-purple-500/10 text-purple-300'
-                      : 'border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-500 dark:text-slate-400 hover:border-gray-400 dark:hover:border-slate-600'
+                    ? 'border-purple-500 bg-purple-500/10 text-purple-300'
+                    : 'border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-500 dark:text-slate-400 hover:border-gray-400 dark:hover:border-slate-600'
                     }`}
                 >
                   <span className="text-lg">{v.icon}</span>
@@ -238,8 +238,8 @@ function TaskCard({
             <div className="flex items-center gap-2 mb-0.5 flex-wrap">
               <p className="font-medium text-gray-900 dark:text-white truncate max-w-[180px] sm:max-w-none">{donation.name}</p>
               <span className={`shrink-0 text-xs px-1.5 py-0.5 rounded font-medium ${donation.status === 'PICKED_UP'
-                  ? 'bg-amber-500/10 text-amber-400'
-                  : 'bg-blue-500/10 text-blue-400'
+                ? 'bg-amber-500/10 text-amber-400'
+                : 'bg-blue-500/10 text-blue-400'
                 }`}>
                 {donation.status === 'PICKED_UP' ? t('enRoute') : t('awaitingPickup')}
               </span>
@@ -351,9 +351,9 @@ function CompletedTrips({ userId, t }: { userId: string; t: (key: string) => str
               <span className="text-xs px-2 py-0.5 bg-emerald-500/10 text-emerald-400 rounded-full font-medium">
                 ✓ {t('delivered')}
               </span>
-              {(trip as any).deliveredAt && (
+              {(trip as unknown as { deliveredAt?: string }).deliveredAt && (
                 <p className="text-xs text-gray-400 dark:text-slate-600 mt-1">
-                  {new Date((trip as any).deliveredAt).toLocaleDateString()}
+                  {new Date((trip as unknown as { deliveredAt?: string }).deliveredAt as string).toLocaleDateString()}
                 </p>
               )}
             </div>
@@ -434,8 +434,8 @@ function DetailModal({
           {/* Status badge */}
           <div className="flex items-center gap-2">
             <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${donation.status === 'PICKED_UP'
-                ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
-                : 'bg-blue-500/10 text-blue-400 border border-blue-500/20'
+              ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
+              : 'bg-blue-500/10 text-blue-400 border border-blue-500/20'
               }`}>
               {donation.status === 'PICKED_UP' ? `🚗 ${t('enRouteToNGO')}` : `📦 ${t('readyForPickup')}`}
             </span>
@@ -599,7 +599,8 @@ export default function VolunteerDashboard() {
       await updateDonationStatus(id, 'PICKED_UP')
       toast.success(t('pickupConfirmed'))
       await load()
-    } catch (err: any) {
+    } catch (error: unknown) {
+      const err = error as { message?: string };
       toast.error(err.message || t('pickupFailed'))
     } finally {
       setProcessingId(null)
@@ -613,7 +614,8 @@ export default function VolunteerDashboard() {
       toast.success(`🎉 ${t('deliveryConfirmed')}`, { duration: 5000 })
       await load()
       await loadProfile()
-    } catch (err: any) {
+    } catch (error: unknown) {
+      const err = error as { message?: string };
       toast.error(err.message || t('deliveryFailed'))
     } finally {
       setProcessingId(null)
@@ -714,10 +716,10 @@ export default function VolunteerDashboard() {
             ].map(tab => (
               <button
                 key={tab.key}
-                onClick={() => setActiveTab(tab.key as any)}
+                onClick={() => setActiveTab(tab.key as 'tasks' | 'trips')}
                 className={`flex items-center gap-2 px-5 py-3.5 text-sm font-medium transition-colors border-b-2 ${activeTab === tab.key
-                    ? 'text-gray-900 dark:text-white border-purple-500'
-                    : 'text-gray-500 dark:text-slate-500 border-transparent hover:text-gray-700 dark:hover:text-slate-300'
+                  ? 'text-gray-900 dark:text-white border-purple-500'
+                  : 'text-gray-500 dark:text-slate-500 border-transparent hover:text-gray-700 dark:hover:text-slate-300'
                   }`}
               >
                 {tab.icon}

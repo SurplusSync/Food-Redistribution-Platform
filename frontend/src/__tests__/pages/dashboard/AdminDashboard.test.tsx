@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, prefer-const, @typescript-eslint/no-unused-vars */
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import AdminDashboard from '../../../pages/dashboard/AdminDashboard';
 import { adminAPI } from '../../../services/api';
