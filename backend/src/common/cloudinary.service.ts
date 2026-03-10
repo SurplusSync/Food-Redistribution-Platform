@@ -20,14 +20,10 @@ export class CloudinaryService {
       this.logger.log('✅ Cloudinary Configured');
     } else {
       this.isMockMode = true;
-      this.logger.warn(
-        '⚠️  Cloudinary NOT configured (CLOUDINARY_CLOUD_NAME / CLOUDINARY_API_KEY / CLOUDINARY_API_SECRET missing). ' +
-        'Images will be stored as placeholder URLs. Add Cloudinary vars to .env to enable real uploads.',
-      );
+      console.warn('⚠️ Cloudinary keys missing. Falling back to Mock mode.');
     }
   }
 
-  /** Returns true when running without real Cloudinary credentials */
   get mockMode(): boolean {
     return this.isMockMode;
   }
