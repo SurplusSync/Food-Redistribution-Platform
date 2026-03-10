@@ -177,8 +177,12 @@ Food-Redistribution-Platform/
 │   │   │   ├── donations.module.ts
 │   │   │   ├── donations.service.ts
 │   │   │   └── donations.service.spec.ts
-│   │   ├── common/                 # Shared services
-│   │   │   └── cloudinary.service.ts
+│   │   ├── events/                 # WebSocket real-time events
+│   │   ├── expiry/                 # Cron engine for near-expiry
+│   │   ├── feedback/               # Ratings and feedback system
+│   │   ├── notifications/          # Socket and Email notification logic
+│   │   ├── scripts/                # Database seed scripts
+│   │   ├── common/                 # Shared services (Cloudinary, etc.)
 │   │   ├── app.module.ts           # Root module
 │   │   └── main.ts                 # Bootstrap & Swagger setup
 │   ├── Dockerfile
@@ -191,13 +195,21 @@ Food-Redistribution-Platform/
 │   │   │   ├── Login.tsx           # Login form
 │   │   │   ├── Register.tsx        # Registration form (role selection)
 │   │   │   └── dashboard/
+│   │   │       ├── AdminDashboard.tsx   # Admin dashboard
 │   │   │       ├── DonorHome.tsx        # Donor dashboard
 │   │   │       ├── NGODashboard.tsx     # NGO dashboard
 │   │   │       ├── VolunteerDashboard.tsx # Volunteer dashboard
 │   │   │       ├── AddFood.tsx          # Create donation form
-│   │   │       ├── DiscoveryMap.tsx      # Interactive Leaflet map
+│   │   │       ├── DiscoveryMap.tsx     # Interactive Leaflet map
 │   │   │       ├── History.tsx          # Donation history
 │   │   │       ├── Impact.tsx           # Impact analytics
+│   │   │       ├── Leaderboards.tsx     # User rankings
+│   │   │       ├── NearExpiryAlerts.tsx # Critical food alerts
+│   │   │       ├── FeedbackRatings.tsx  # Post-delivery ratings
+│   │   │       ├── SupportTickets.tsx   # Customer support
+│   │   │       ├── VolunteerTracking.tsx# Live volunteer location
+│   │   │       ├── NavigationAssist.tsx # Routing & directions
+│   │   │       ├── Preferences.tsx      # User settings
 │   │   │       ├── Notifications.tsx    # Notification center
 │   │   │       └── Profile.tsx          # User profile management
 │   │   ├── layouts/
@@ -384,7 +396,12 @@ POSTGRES_DB=surplus_db
 POSTGRES_PORT=5432
 
 # REDIS CONFIGURATION
+REDIS_HOST=surplus_redis
 REDIS_PORT=6379
+REDIS_URL=redis://surplus_redis:6379
+
+# EXTERNAL APIS
+RESEND_API_KEY=your_resend_api_key_here
 
 # PGADMIN (DB DASHBOARD)
 PGADMIN_EMAIL=admin@surplussync.com
@@ -407,13 +424,17 @@ When running without Docker, the backend reads these variables (defaults shown):
 |----------|---------|-------------|
 | `DATABASE_HOST` | `postgres` | PostgreSQL host (`localhost` for manual setup) |
 | `DATABASE_PORT` | `5432` | PostgreSQL port |
-| `POSTGRES_USER` | `student` | Database username |
-| `POSTGRES_PASSWORD` | `student` | Database password |
+| `POSTGRES_USER` | `surplus_admin` | Database username |
+| `POSTGRES_PASSWORD` | `password123` | Database password |
 | `POSTGRES_DB` | `surplus_db` | Database name |
+| `REDIS_HOST` | `redis` | Redis host |
+| `REDIS_PORT` | `6379` | Redis port |
+| `REDIS_URL` | - | Full redis connection string |
 | `JWT_SECRET` | - | **Required.** Secret key for JWT token signing |
 | `CLOUDINARY_CLOUD_NAME` | - | Cloudinary account cloud name |
 | `CLOUDINARY_API_KEY` | - | Cloudinary API key |
 | `CLOUDINARY_API_SECRET` | - | Cloudinary API secret |
+| `RESEND_API_KEY` | - | API key for sending emails via Resend |
 
 ### Frontend Environment
 
@@ -673,13 +694,21 @@ The backend automatically generates interactive API documentation using Swagger/
 | `/` | `LandingPage` | Public | Marketing landing page with hero section |
 | `/login` | `Login` | Public | Email + password login form |
 | `/register` | `Register` | Public | Registration with role selection (Donor/NGO/Volunteer) |
-| `/dashboard` | `DonorHome` | Donor | Donor's main dashboard with active donations |
+| `/dashboard/admin` | `AdminDashboard` | Admin | Administrative platform overview |
+| `/dashboard/donor` | `DonorHome` | Donor | Donor's main dashboard with active donations |
 | `/dashboard/ngo` | `NGODashboard` | NGO | NGO-specific dashboard with claimed donations |
 | `/dashboard/volunteer` | `VolunteerDashboard` | Volunteer | Volunteer task list with pickup/delivery actions |
 | `/dashboard/add` | `AddFood` | Donor | Multi-step donation creation form with image upload |
 | `/dashboard/map` | `DiscoveryMap` | All | Interactive Leaflet map showing nearby available food |
 | `/dashboard/history` | `History` | All | Donation history log |
 | `/dashboard/impact` | `Impact` | All | Impact analytics (meals, CO₂, kg redistributed) |
+| `/dashboard/leaderboards` | `Leaderboards` | All | Rankings based on karma points |
+| `/dashboard/alerts` | `NearExpiryAlerts` | NGO/Volunteer | Urgent alerts for near-expiry food |
+| `/dashboard/feedback` | `FeedbackRatings` | All | Post-delivery ratings and reviews |
+| `/dashboard/support` | `SupportTickets` | All | Helpdesk and customer support |
+| `/dashboard/tracking` | `VolunteerTracking` | Volunteer/NGO | Live location tracking for delivery |
+| `/dashboard/navigation` | `NavigationAssist` | Volunteer | Maps and turn-by-turn routing |
+| `/dashboard/preferences` | `Preferences` | All | Global user settings |
 | `/dashboard/notifications` | `Notifications` | All | Notification center |
 | `/dashboard/profile` | `Profile` | All | User profile management |
 
