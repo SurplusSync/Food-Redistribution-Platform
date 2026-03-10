@@ -94,6 +94,8 @@ import { UserNotification } from './notifications/entities/user-notification.ent
             UserNotification,
           ],
           synchronize: true,
+          retryAttempts: 3,
+          retryDelay: 3000,
           ssl: dbSslEnabled ? { rejectUnauthorized: false } : false,
         };
       },

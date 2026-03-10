@@ -64,6 +64,23 @@ jobs:
         run: npm install
         working-directory: backend
 
+      - name: Wait for Postgres
+        run: |
+          for i in $(seq 1 30); do
+            pg_isready -h localhost -p 5432 -U postgres && break
+            echo "Waiting for Postgres... ($i/30)"
+            sleep 2
+          done
+          pg_isready -h localhost -p 5432 -U postgres || (echo 'Postgres never became ready' && exit 1)
+
+      - name: Wait for Redis
+        run: |
+          for i in $(seq 1 15); do
+            redis-cli -h localhost -p 6379 ping && break
+            echo "Waiting for Redis... ($i/15)"
+            sleep 2
+          done
+
       - name: TypeScript type check
         run: npx tsc --noEmit
         working-directory: backend

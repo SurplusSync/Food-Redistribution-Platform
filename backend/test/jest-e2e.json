@@ -6,9 +6,9 @@
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
   },
-  "transformIgnorePatterns": [
-    "node_modules/(?!(@keyv|@cacheable|keyv|cache-manager|hookified|hashery)/)"
-  ],
   "forceExit": true,
-  "testTimeout": 60000
+  "testTimeout": 60000,
+  "testEnvironmentOptions": {
+    "customExportConditions": ["node", "node-addons", "require"]
+  }
 }
