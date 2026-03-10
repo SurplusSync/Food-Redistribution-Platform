@@ -59,14 +59,18 @@ export default function DiscoveryMap() {
 
         // Listen for claimed donations
         const unsubscribeClaimed = socketService.onDonationClaimed((data) => {
-            toast.info(`🔔 ${t('foodClaimedAlert')}`, {
-                description: `${data.donationId} has been claimed`,
-                duration: 3000,
-            })
-            // Remove the claimed donation from state
-            setDonations((prevDonations) =>
-                prevDonations.filter((donation) => donation.id !== data.donationId)
-            )
+            setDonations((prevDonations) => {
+                 const claimedDonation = prevDonations.find(d => d.id === data.donationId);
+                 const name = claimedDonation ? claimedDonation.name : 'A donation';
+
+                 toast.info(`🔔 ${t('foodClaimedAlert')}`, {
+                     description: `${name} has been claimed`,
+                     duration: 3000,
+                 });
+
+                 return prevDonations.filter((donation) => donation.id !== data.donationId);
+            });
+            
             // Close modal if it was for this donation
             if (selectedDonation?.id === data.donationId) {
                 setSelectedDonation(null)

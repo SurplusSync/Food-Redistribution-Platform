@@ -78,7 +78,7 @@ export default function VolunteerTracking() {
         toast.error('Location access denied or unavailable')
         setIsSharing(false)
       },
-      { enableHighAccuracy: true, maximumAge: 5000, timeout: 15000 },
+      { enableHighAccuracy: false, maximumAge: 10000, timeout: 60000 },
     )
   }, [deliveries, userId])
 
