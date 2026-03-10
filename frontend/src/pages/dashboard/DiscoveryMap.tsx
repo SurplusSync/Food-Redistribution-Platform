@@ -9,6 +9,7 @@ import { Clock, Shield, AlertTriangle, X, Image as ImageIcon, MapPin, CheckCircl
 import { toast } from 'sonner'
 
 // Fix for default marker icons
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 delete (L.Icon.Default.prototype as any)._getIconUrl
 L.Icon.Default.mergeOptions({
     iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
@@ -98,7 +99,8 @@ export default function DiscoveryMap() {
             await loadDonations()
             setSelectedDonation(null) // Close modal on success
             setCurrentImageIndex(0)
-        } catch (error: any) {
+        } catch (err: unknown) {
+            const error = err as { response?: { data?: { message?: string } }, message?: string };
             const msg =
                 error?.response?.data?.message ||
                 error?.message ||
@@ -117,7 +119,8 @@ export default function DiscoveryMap() {
             await loadDonations()
             setSelectedDonation(null)
             setCurrentImageIndex(0)
-        } catch (error: any) {
+        } catch (err: unknown) {
+            const error = err as { message?: string };
             alert(error.message || 'Failed to confirm pickup')
         } finally {
             setProcessingId(null)
@@ -132,7 +135,8 @@ export default function DiscoveryMap() {
             await loadDonations()
             setSelectedDonation(null)
             setCurrentImageIndex(0)
-        } catch (error: any) {
+        } catch (err: unknown) {
+            const error = err as { message?: string };
             alert(error.message || 'Failed to confirm delivery')
         } finally {
             setProcessingId(null)
@@ -145,8 +149,8 @@ export default function DiscoveryMap() {
         if (d.expiryTime && new Date(d.expiryTime).getTime() < Date.now()) return false
         return true
     })
-    const filtered = filter === 'all' 
-        ? nonExpired 
+    const filtered = filter === 'all'
+        ? nonExpired
         : nonExpired.filter(d => d.status === filter)
 
     const getTimeRemaining = (expiryTime: Date) => {
@@ -155,7 +159,7 @@ export default function DiscoveryMap() {
         if (remaining <= 0) return { text: 'Expired', urgent: true, expired: true }
         const hours = Math.floor(remaining / (1000 * 60 * 60))
         const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60))
-        
+
         if (hours < 1) return { text: `${minutes}m`, urgent: true, expired: false }
         if (hours < 3) return { text: `${hours}h ${minutes}m`, urgent: true, expired: false }
         return { text: `${hours}h`, urgent: false, expired: false }
@@ -181,11 +185,10 @@ export default function DiscoveryMap() {
                             <button
                                 key={f}
                                 onClick={() => setFilter(f)}
-                                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors capitalize ${
-                                    filter === f 
-                                        ? 'bg-emerald-500 text-white' 
+                                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors capitalize ${filter === f
+                                        ? 'bg-emerald-500 text-white'
                                         : 'bg-gray-100 dark:bg-slate-800 text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white'
-                                }`}
+                                    }`}
                             >
                                 {f === 'AVAILABLE' ? t('available') : f === 'CLAIMED' ? t('claimed') : t('all')}
                             </button>
@@ -223,20 +226,18 @@ export default function DiscoveryMap() {
                                             <p className="font-semibold text-gray-900 dark:text-white mb-0.5">{donation.name}</p>
                                             <p className="text-xs text-gray-500 dark:text-slate-400">{donation.quantity} {donation.unit} • {donation.foodType}</p>
                                         </div>
-                                        
+
                                         {/* Status Badge */}
                                         <div className="mb-3 flex items-center gap-2">
-                                            <span className={`inline-block px-2 py-0.5 rounded text-[10px] font-medium capitalize ${
-                                                donation.status === 'AVAILABLE'
+                                            <span className={`inline-block px-2 py-0.5 rounded text-[10px] font-medium capitalize ${donation.status === 'AVAILABLE'
                                                     ? 'bg-emerald-500/20 text-emerald-400'
                                                     : 'bg-amber-500/20 text-amber-400'
-                                            }`}>
+                                                }`}>
                                                 {donation.status === 'AVAILABLE' ? t('available') : donation.status.toLowerCase()}
                                             </span>
                                             {donation.status === 'AVAILABLE' && (
-                                                <span className={`text-[10px] font-medium ${
-                                                    getTimeRemaining(donation.expiryTime).urgent ? 'text-red-400' : 'text-emerald-400'
-                                                }`}>
+                                                <span className={`text-[10px] font-medium ${getTimeRemaining(donation.expiryTime).urgent ? 'text-red-400' : 'text-emerald-400'
+                                                    }`}>
                                                     {getTimeRemaining(donation.expiryTime).text} {t('left')}
                                                 </span>
                                             )}
@@ -261,14 +262,14 @@ export default function DiscoveryMap() {
             {selectedDonation && (
                 <div className="fixed inset-0 z-[2000] flex items-center justify-center p-4 bg-black/30 dark:bg-slate-950/80 backdrop-blur-sm">
                     <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl flex flex-col md:flex-row">
-                        
+
                         {/* LEFT: Image Section */}
                         <div className="w-full md:w-1/2 bg-gray-50 dark:bg-slate-950 h-64 md:h-auto relative group">
                             {selectedDonation.imageUrls && selectedDonation.imageUrls.length > 0 ? (
                                 <>
-                                    <img 
-                                        src={selectedDonation.imageUrls[currentImageIndex]} 
-                                        alt={selectedDonation.name} 
+                                    <img
+                                        src={selectedDonation.imageUrls[currentImageIndex]}
+                                        alt={selectedDonation.name}
                                         className="w-full h-full object-cover"
                                     />
                                     {/* Image Counter */}
@@ -299,7 +300,7 @@ export default function DiscoveryMap() {
                                     <span className="text-sm">{t('noImageUploaded')}</span>
                                 </div>
                             )}
-                            
+
                             {/* Urgent Badge Overlay */}
                             {selectedDonation.status === 'AVAILABLE' && getTimeRemaining(selectedDonation.expiryTime).urgent && (
                                 <div className="absolute top-4 left-4 bg-red-500 text-white text-xs px-2 py-1 rounded-md font-medium flex items-center gap-1 shadow-lg">
@@ -370,7 +371,7 @@ export default function DiscoveryMap() {
                                 {/* Time */}
                                 <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-slate-400">
                                     <Clock className="w-4 h-4" />
-                                    <span>{t('prepared', { time: new Date(selectedDonation.preparationTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) })}</span>
+                                    <span>{t('prepared', { time: new Date(selectedDonation.preparationTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) })}</span>
                                 </div>
                             </div>
 

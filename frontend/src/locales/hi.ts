@@ -599,8 +599,6 @@ const hi: Record<string, string> = {
   critical: 'गंभीर',
   warning: 'चेतावनी',
   minLabel: 'मिनट',
-  claimNow: 'अभी क्लेम करें',
-  alreadyClaimedStatus: 'पहले से क्लेम किया गया',
   noExpiringSoon: 'कोई दान जल्द समाप्त नहीं हो रहा। सब ठीक है!',
 
   // —— Leaderboards ——

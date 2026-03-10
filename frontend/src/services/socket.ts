@@ -99,7 +99,7 @@ class SocketService {
       this.reconnectAttempts = 0;
     });
 
-    this.socket.on('connect_error', (error: any) => {
+    this.socket.on('connect_error', (error: unknown) => {
       console.error('WebSocket connection error:', error);
     });
 
@@ -111,7 +111,7 @@ class SocketService {
       }
     });
 
-    this.socket.on('error', (error: any) => {
+    this.socket.on('error', (error: unknown) => {
       console.error('WebSocket error:', error);
     });
   }
@@ -125,18 +125,18 @@ class SocketService {
       return () => { };
     }
 
-    const normalizedCallback = (rawData: any) => {
+    const normalizedCallback = (rawData: Record<string, unknown>) => {
       const normalized: DonationCreatedEvent = {
         ...rawData,
         id: String(rawData?.id || ''),
-        name: rawData?.name || 'New Donation',
-        foodType: rawData?.foodType || 'Food',
-        donorName: rawData?.donorName || 'Community Donor',
-        expiryTime: rawData?.expiryTime || new Date().toISOString(),
-        location: rawData?.location || {
+        name: String(rawData?.name || 'New Donation'),
+        foodType: String(rawData?.foodType || 'Food'),
+        donorName: String(rawData?.donorName || 'Community Donor'),
+        expiryTime: String(rawData?.expiryTime || new Date().toISOString()),
+        location: (rawData?.location as DonationCreatedEvent['location']) || {
           lat: Number(rawData?.latitude) || 0,
           lng: Number(rawData?.longitude) || 0,
-          address: rawData?.address || 'Unknown Location',
+          address: String(rawData?.address || 'Unknown Location'),
         },
       };
 
@@ -162,14 +162,15 @@ class SocketService {
       return () => { };
     }
 
-    const normalizedCallback = (rawData: any) => {
+    const normalizedCallback = (rawData: unknown) => {
+      const dataObj = typeof rawData === 'object' && rawData !== null ? (rawData as Record<string, unknown>) : {};
       const normalized: DonationClaimedEvent =
         typeof rawData === 'string'
           ? { donationId: rawData, status: 'CLAIMED' }
           : {
-            donationId: String(rawData?.donationId || rawData?.id || ''),
-            claimedBy: rawData?.claimedBy || rawData?.claimedById,
-            status: rawData?.status || 'CLAIMED',
+            donationId: String(dataObj?.donationId || dataObj?.id || ''),
+            claimedBy: String(dataObj?.claimedBy || dataObj?.claimedById || ''),
+            status: String(dataObj?.status || 'CLAIMED'),
           };
 
       callback(normalized);
@@ -230,7 +231,7 @@ class SocketService {
     donationId: string,
     callback: (data: { volunteerId: string; donationId: string; lat: number; lng: number; timestamp: string }) => void,
   ): () => void {
-    if (!this.socket) return () => {};
+    if (!this.socket) return () => { };
     const event = `volunteer.location.${donationId}`;
     this.socket.on(event, callback);
     return () => { if (this.socket) this.socket.off(event, callback); };

@@ -607,9 +607,7 @@ export const enStrings: Record<string, string> = {
   minLabel: 'min',
   claimNow: 'Claim Now',
   alreadyClaimedStatus: 'Already Claimed',
-  noExpiringSoon: 'No donations expiring soon. All clear!',
-
-  // ── Leaderboards ──
+  // —— Leaderboards ——
   leaderboardsTitle: 'Leaderboards',
   leaderboardsDesc: 'Top contributors ranked by karma points and activity.',
   allTime: 'All Time',

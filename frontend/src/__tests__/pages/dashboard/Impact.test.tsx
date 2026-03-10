@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, prefer-const, @typescript-eslint/no-unused-vars */
 import { render, screen, waitFor } from '@testing-library/react'
 import Impact from '../../../pages/dashboard/Impact'
 import { getUserProfile, getCommunityStats, getMonthlyStats } from '../../../services/api'

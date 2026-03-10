@@ -57,11 +57,12 @@ export default function DashboardLayout() {
     return () => {
       unsubNotif();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const loadNotifications = async () => {
+  async function loadNotifications() {
     try {
-      const notifications = await getNotifications(user.id)
+      const notifications = await getNotifications()
       setUnreadCount(notifications.filter(n => !n.read).length)
     } catch (error) {
       console.error('Failed to load notifications:', error)

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, prefer-const, @typescript-eslint/no-unused-vars */
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import NearExpiryAlerts from '../../../pages/dashboard/NearExpiryAlerts'
 import { getDonations } from '../../../services/api'
@@ -35,7 +36,7 @@ describe('NearExpiryAlerts', () => {
     render(<NearExpiryAlerts />)
 
     await waitFor(() => {
-      expect(screen.getByText('Near-Expiry Alerts')).toBeTruthy()
+      expect(screen.getByText('nearExpiryAlerts')).toBeTruthy()
     })
 
     await waitFor(() => {

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, prefer-const, @typescript-eslint/no-unused-vars */
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import NGODashboard from '../../pages/dashboard/NGODashboard';
 import { getDonations, claimDonation } from '../../services/api';

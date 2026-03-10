@@ -227,7 +227,8 @@ export default function Profile() {
             })
 
             localStorage.setItem('seen-badges', JSON.stringify(currentBadges))
-        } catch (err: any) {
+        } catch (error: unknown) {
+            const err = error as { response?: { data?: { message?: string }, status?: number }, message?: string };
             const msg = err?.message || err?.response?.data?.message || 'Failed to load profile'
             setError(msg)
             if (err?.response?.status === 401 || msg.includes('token')) {
@@ -243,7 +244,8 @@ export default function Profile() {
         try {
             const updated = await updateUserProfile(formData)
             setUser(updated); localStorage.setItem('user', JSON.stringify(updated)); setEditing(false)
-        } catch (error: any) {
+        } catch (err: unknown) {
+            const error = err as { message?: string };
             alert('Failed to update profile: ' + (error.message || 'Unknown error'))
         } finally { setSaving(false) }
     }

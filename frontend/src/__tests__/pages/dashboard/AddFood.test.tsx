@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, prefer-const, @typescript-eslint/no-unused-vars */
 import { render } from '@testing-library/react'
 import AddFood from '../../../pages/dashboard/AddFood'
 

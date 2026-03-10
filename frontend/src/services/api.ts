@@ -113,8 +113,8 @@ export const loginUser = async (email: string, password?: string) => {
   return response.data.data;
 };
 
-export const registerUser = async (data: any) => {
-  let payload: any;
+export const registerUser = async (data: FormData | Record<string, string>) => {
+  let payload: FormData | Record<string, string>;
   const headers: Record<string, string> = {};
 
   if (data instanceof FormData) {
@@ -125,7 +125,7 @@ export const registerUser = async (data: any) => {
     payload = data;
     headers['Content-Type'] = 'multipart/form-data';
   } else {
-    payload = { ...data, role: data.role.toUpperCase() };
+    payload = { ...data, role: String((data as Record<string, string>).role).toUpperCase() };
   }
 
   const response = await api.post('/auth/register', payload, { headers });
@@ -165,13 +165,34 @@ export const getUserProfile = async (): Promise<User> => {
   return profile;
 };
 
-export const updateUserProfile = async (data: any) => {
+export const updateUserProfile = async (data: Partial<User>) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { impactStats, token, karmaPoints, badges, level, nextLevelPoints, ...updateData } = data;
   const response = await api.patch('/auth/profile', updateData);
   return response.data.data || response.data;
 };
 
 // Donations
+
+export interface RawDonation {
+  id?: string | number;
+  quantity?: string | number;
+  status?: string;
+  latitude?: string | number;
+  longitude?: string | number;
+  address?: string;
+  donorName?: string;
+  donorTrustScore?: string | number;
+  hygiene?: string | { keptCovered: boolean; containerClean: boolean };
+  foodType?: string;
+  expiryTime?: string | Date;
+  preparationTime?: string | Date;
+  createdAt?: string | Date;
+  deliveredAt?: string | Date;
+  imageUrls?: string | string[];
+  volunteerId?: string;
+  [key: string]: unknown;
+}
 
 export const getDonations = async (filters?: {
   status?: string[];
@@ -191,7 +212,7 @@ export const getDonations = async (filters?: {
       ? response.data.data
       : [];
 
-  let data = rawList.map((item: any) => ({
+  let data = rawList.map((item: RawDonation) => ({
     ...item,
     id: String(item.id),
     quantity: String(item.quantity),
@@ -223,7 +244,7 @@ export const getDonations = async (filters?: {
   }));
 
   // Filter out expired donations (by status or by time)
-  data = data.filter((d: any) => {
+  data = data.filter((d: Donation) => {
     if (d.status === 'EXPIRED') return false;
     if (d.expiryTime && new Date(d.expiryTime).getTime() < Date.now()) return false;
     return true;
@@ -232,7 +253,22 @@ export const getDonations = async (filters?: {
   return data;
 };
 
-export const createDonation = async (data: any, images: File[] = []) => {
+export interface CreateDonationPayload {
+  name: string;
+  foodType: string;
+  quantity: string | number;
+  unit: string;
+  description?: string;
+  preparationTime: Date | string;
+  expiryTime: Date | string;
+  donorId?: string;
+  donorName?: string;
+  donorTrustScore?: number;
+  location?: { lat: number; lng: number };
+  hygiene?: { keptCovered: boolean; containerClean: boolean };
+}
+
+export const createDonation = async (data: CreateDonationPayload, images: File[] = []) => {
   const formData = new FormData();
 
   formData.append('name', data.name);
@@ -294,15 +330,22 @@ export const markAsDelivered = async (id: string) => {
 
 // Notifications — persisted in backend DB
 
-export const getNotifications = async (_userId: string): Promise<Notification[]> => {
+export interface RawNotification {
+  id?: string;
+  type?: string;
+  createdAt?: string | Date;
+  [key: string]: unknown;
+}
+
+export const getNotifications = async (): Promise<Notification[]> => {
   const response = await api.get('/notifications');
   const raw = Array.isArray(response.data) ? response.data : (response.data?.data || []);
-  return raw.map((n: any) => ({
+  return raw.map((n: RawNotification) => ({
     ...n,
-    type: (['food_claimed', 'pickup_assigned', 'delivery_confirmed', 'near_expiry', 'new_food_nearby'].includes(n.type)
+    type: (['food_claimed', 'pickup_assigned', 'delivery_confirmed', 'near_expiry', 'new_food_nearby'].includes(n.type as string)
       ? n.type
       : 'new_food_nearby') as Notification['type'],
-    createdAt: new Date(n.createdAt),
+    createdAt: new Date(n.createdAt as string | number),
   }));
 };
 
@@ -384,8 +427,8 @@ export const getCompletedTrips = async (userId: string): Promise<Donation[]> => 
       ? response.data.data
       : [];
   return rawList
-    .filter((item: any) => item.volunteerId === userId && item.status === 'DELIVERED')
-    .map((item: any) => ({
+    .filter((item: RawDonation) => item.volunteerId === userId && item.status === 'DELIVERED')
+    .map((item: RawDonation) => ({
       ...item,
       id: String(item.id),
       quantity: String(item.quantity),

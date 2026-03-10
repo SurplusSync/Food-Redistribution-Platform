@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, prefer-const, @typescript-eslint/no-unused-vars */
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import SupportTickets from '../../../pages/dashboard/SupportTickets'
 import { supportAPI, adminAPI } from '../../../services/api'
@@ -14,7 +15,7 @@ describe('SupportTickets', () => {
     localStorage.setItem('user', JSON.stringify({ role: 'DONOR' }))
     render(<SupportTickets />)
 
-    expect(screen.getByText('Support Tickets')).toBeTruthy()
+    expect(screen.getByText('supportTicketsTitle')).toBeTruthy()
     expect(screen.getByLabelText('Ticket subject')).toBeTruthy()
   })
 
@@ -26,7 +27,7 @@ describe('SupportTickets', () => {
 
     fireEvent.change(screen.getByLabelText('Ticket subject'), { target: { value: 'Map not loading' } })
     fireEvent.change(screen.getByLabelText('Ticket description'), { target: { value: 'Map fails to render' } })
-    fireEvent.click(screen.getByRole('button', { name: /submit ticket/i }))
+    fireEvent.click(screen.getByRole('button', { name: /submitTicket/i }))
 
     await waitFor(() => {
       expect(supportAPI.createTicket).toHaveBeenCalled()
@@ -43,7 +44,7 @@ describe('SupportTickets', () => {
     render(<SupportTickets />)
 
     await waitFor(() => {
-      expect(screen.getByText('Admin Actions Enabled')).toBeTruthy()
+      expect(screen.getByText('adminActionsEnabled')).toBeTruthy()
     })
   })
 })

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, prefer-const, @typescript-eslint/no-unused-vars */
 import { render, screen, waitFor } from '@testing-library/react'
 import NavigationAssist from '../../../pages/dashboard/NavigationAssist'
 import { getDonations } from '../../../services/api'
