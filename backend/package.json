@@ -62,7 +62,7 @@
     "@types/streamifier": "^0.1.2",
     "@types/supertest": "^6.0.0",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
-    "@typescript-eslint/parser": "^6.21.0",
+    "@typescript-eslint/parser": "^8.57.0",
     "cache-manager-redis-store": "^3.0.1",
     "eslint": "^8.57.1",
     "eslint-config-prettier": "^9.1.2",
