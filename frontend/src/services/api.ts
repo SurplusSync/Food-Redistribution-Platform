@@ -434,6 +434,28 @@ export const adminAPI = {
   toggleUserStatus: (id: string) => api.patch(`/admin/users/${id}/toggle-status`),
 
   getAllDonations: () => api.get('/admin/donations'),
+
+  // Support Tickets (admin-only: view all, update status)
+  getAllTickets: () => api.get('/admin/tickets'),
+  updateTicket: (id: string, data: { status?: string; adminNote?: string }) =>
+    api.patch(`/admin/tickets/${id}`, data),
+
+  // Flagged Food
+  getFlaggedDonations: () => api.get('/admin/flagged'),
+  flagDonation: (donationId: string, reason: string) =>
+    api.post('/admin/flagged', { donationId, reason }),
+  updateFlaggedDonation: (id: string, data: { status: string; adminNote?: string }) =>
+    api.patch(`/admin/flagged/${id}`, data),
+
+  // Admin Notifications
+  getAdminNotifications: () => api.get('/admin/notifications'),
+};
+
+// ── User-facing support ticket API (any authenticated user) ────────────────
+export const supportAPI = {
+  getMyTickets: () => api.get('/support/tickets'),
+  createTicket: (data: { subject: string; description: string; priority?: string }) =>
+    api.post('/support/tickets', data),
 };
 
 // Feedback API
