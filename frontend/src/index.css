@@ -325,17 +325,62 @@
 }
 
 /* Accessibility toggles from preferences */
-.a11y-large-text body {
-  font-size: 1.05rem;
-}
 
+/* Large text mode */
+.a11y-large-text body,
+.a11y-large-text p,
+.a11y-large-text span,
+.a11y-large-text label,
+.a11y-large-text button,
+.a11y-large-text input,
+.a11y-large-text select,
+.a11y-large-text textarea {
+  font-size: 1.125rem !important;
+  line-height: 1.75 !important;
+}
+.a11y-large-text h1 { font-size: 1.875rem !important; }
+.a11y-large-text h2 { font-size: 1.5rem !important; }
+.a11y-large-text h3 { font-size: 1.25rem !important; }
+
+/* High contrast mode */
+.a11y-contrast {
+  --contrast-boost: 1.35;
+}
 .a11y-contrast body {
-  filter: contrast(1.2);
+  filter: contrast(var(--contrast-boost));
 }
-
 .a11y-contrast .card,
 .a11y-contrast .card-elevated {
-  border-color: rgba(148, 163, 184, 0.75);
+  border-color: rgba(255, 255, 255, 0.5) !important;
+  border-width: 2px !important;
+}
+.a11y-contrast a,
+.a11y-contrast button {
+  text-decoration-thickness: 2px;
+  outline-offset: 3px;
+}
+.a11y-contrast input,
+.a11y-contrast select,
+.a11y-contrast textarea {
+  border-color: rgba(255, 255, 255, 0.5) !important;
+  border-width: 2px !important;
+}
+
+/* Keyboard hints mode — enhanced focus rings + visible kbd indicators */
+.a11y-keyboard-hints *:focus-visible {
+  outline: 3px solid #34d399 !important;
+  outline-offset: 3px !important;
+  border-radius: 4px;
+}
+.a11y-keyboard-hints button:focus-visible::after,
+.a11y-keyboard-hints a:focus-visible::after {
+  content: ' [↵]';
+  font-size: 0.65em;
+  opacity: 0.7;
+  vertical-align: super;
+}
+.a11y-keyboard-hints [role="switch"]:focus-visible {
+  box-shadow: 0 0 0 3px #34d399 !important;
 }
 
 /* Progress bar */
