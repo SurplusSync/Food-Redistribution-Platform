@@ -59,6 +59,7 @@ export interface Donation {
   expiryTime: Date;
   createdAt: Date;
   status: DonationStatus;
+  claimedById?: string;
   claimedBy?: string;
   volunteerId?: string;
   imageUrls: string[];

@@ -29,8 +29,10 @@ export default function FeedbackRatings() {
     setError(null)
     try {
       const allDonations = await getDonations()
-      // Show delivered donations that the current NGO claimed
-      const delivered = allDonations.filter((d: Donation) => d.status === 'DELIVERED')
+      // Show only delivered donations that the current NGO claimed
+      const delivered = allDonations.filter((d: Donation) =>
+        d.status === 'DELIVERED' && (!isNGO || d.claimedById === user.id)
+      )
       setDeliveredDonations(delivered)
 
       // Load feedback for all delivered donations
