@@ -114,15 +114,17 @@ export default function NGODashboard() {
 
     // Listen for claimed donations
     const unsubscribeClaimed = socketService.onDonationClaimed((data) => {
-      // Remove the claimed donation from state and show its name
+      // Remove the claimed donation from state and show its name (skip toast for own claims)
       setDonations((prevDonations) => {
          const claimedDonation = prevDonations.find(d => d.id === data.donationId);
-         const name = claimedDonation ? claimedDonation.name : 'A donation';
 
-         toast.info(`🔔 ${t('foodClaimedAlert')}`, {
-           description: `${name} has been claimed`,
-           duration: 3000,
-         });
+         if (data.claimedBy !== user.id) {
+           const name = claimedDonation ? claimedDonation.name : 'A donation';
+           toast.info(`🔔 ${t('foodClaimedAlert')}`, {
+             description: `${name} has been claimed`,
+             duration: 3000,
+           });
+         }
 
          return prevDonations.filter((donation) => donation.id !== data.donationId);
       })
@@ -158,9 +160,14 @@ export default function NGODashboard() {
   }
 
   const handleClaim = async (donationId: string) => {
+    const donationName = donations.find(d => d.id === donationId)?.name || 'Donation';
     setClaiming(donationId)
     try {
       await claimDonation(donationId)
+      toast.success(`✅ ${t('foodClaimedAlert')}`, {
+        description: `${donationName} has been claimed successfully`,
+        duration: 3000,
+      })
       await load()
       setSelectedDonation(null)
     } catch (err: unknown) {
@@ -542,7 +549,7 @@ export default function NGODashboard() {
               <div className="mt-6 pt-4 border-t border-gray-200 dark:border-slate-800">
                 {!user.isVerified ? (
                   <div className="text-center p-3 bg-amber-500/10 text-amber-400 rounded-lg text-sm font-medium border border-amber-500/20">
-                    ⏳ {t('verificationPending')} — {t('verificationPendingDesc') || 'You cannot claim donations until your account is verified.'}
+                    ⏳ {t('verificationPending')} - {t('verificationPendingDesc') || 'You cannot claim donations until your account is verified.'}
                   </div>
                 ) : selectedDonation.status === 'AVAILABLE' ? (
                   <button

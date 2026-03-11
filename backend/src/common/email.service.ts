@@ -42,7 +42,7 @@ export class EmailService {
     if (!this.isConfigured || !this.transporter) {
       // Explicit log so devs know emails are not being sent
       this.logger.warn(
-        `[EMAIL NOT SENT — no SMTP config]\n  To: ${to}\n  Subject: ${subject}`,
+        `[EMAIL NOT SENT - no SMTP config]\n  To: ${to}\n  Subject: ${subject}`,
       );
       return;
     }
@@ -57,7 +57,7 @@ export class EmailService {
       this.logger.log(`✅ Email sent to ${to}: "${subject}"`);
     } catch (error) {
       this.logger.error(`❌ Failed to send email to ${to}: ${error.message}`);
-      // Don't throw — email failure should never crash the main flow
+      // Don't throw - email failure should never crash the main flow
     }
   }
 

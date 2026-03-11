@@ -136,7 +136,7 @@ export class AuthService {
     };
   }
 
-  // Shared badge catalog — must match donations.service.ts checkAndAwardBadges
+  // Shared badge catalog - must match donations.service.ts checkAndAwardBadges
   private static readonly BADGE_RULES = [
     {
       threshold: 10,

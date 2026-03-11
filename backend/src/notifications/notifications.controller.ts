@@ -20,20 +20,20 @@ export class NotificationsController {
   @Get()
   @ApiOperation({ summary: 'Get current user notifications' })
   async getMyNotifications(@Request() req: any) {
-    return this.notificationsService.findByUser(req.user.sub);
+    return this.notificationsService.findByUser(req.user.userId);
   }
 
   @Patch(':id/read')
   @ApiOperation({ summary: 'Mark a notification as read' })
   async markRead(@Param('id') id: string, @Request() req: any) {
-    await this.notificationsService.markRead(id, req.user.sub);
+    await this.notificationsService.markRead(id, req.user.userId);
     return { success: true };
   }
 
   @Patch('read-all')
   @ApiOperation({ summary: 'Mark all notifications as read' })
   async markAllRead(@Request() req: any) {
-    await this.notificationsService.markAllRead(req.user.sub);
+    await this.notificationsService.markAllRead(req.user.userId);
     return { success: true };
   }
 }

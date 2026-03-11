@@ -96,7 +96,7 @@ describe('AdminDashboard - Epic 7 User Story 1 & 2', () => {
 
       await waitFor(() => {
         expect(adminAPI.verifyNGO).toHaveBeenCalledWith('ngo-123');
-        expect(toast.success).toHaveBeenCalledWith('NGO verified — email sent');
+        expect(toast.success).toHaveBeenCalledWith('NGO verified - email sent');
       });
     });
   });

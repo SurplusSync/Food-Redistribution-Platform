@@ -194,7 +194,7 @@ describeIfServer('Real-Time Events – Socket.IO Client Tests', () => {
     expect(ngoEvent.data).toHaveProperty('name');
     expect(volunteerEvent.data).toHaveProperty('name');
 
-    // Latency check — event should arrive quickly
+    // Latency check - event should arrive quickly
     // Docker networking adds overhead; allow up to 500 ms
     const maxLatency = 500;
     expect(ngoEvent.latencyMs).toBeLessThan(maxLatency);
@@ -257,7 +257,7 @@ describeIfServer('Real-Time Events – Socket.IO Client Tests', () => {
     expect(volunteerEvent.data).toHaveProperty('donationId');
     expect(volunteerEvent.data.status).toBe('CLAIMED');
 
-    // Latency check — Docker networking adds overhead; allow up to 500 ms
+    // Latency check - Docker networking adds overhead; allow up to 500 ms
     const maxLatency = 500;
     expect(donorEvent.latencyMs).toBeLessThan(maxLatency);
     expect(volunteerEvent.latencyMs).toBeLessThan(maxLatency);
@@ -311,7 +311,7 @@ describeIfServer('Real-Time Events – Socket.IO Client Tests', () => {
       const maxLatency = 500;
       expect(latencyMs).toBeLessThan(maxLatency);
     } catch {
-      // Auto-assign may not fire if no volunteer is nearby — that's acceptable
+      // Auto-assign may not fire if no volunteer is nearby - that's acceptable
       console.warn('volunteer.assigned not received (no eligible volunteer nearby)');
     }
   }, 15_000);
@@ -426,7 +426,7 @@ describe('EventsGateway – NestJS Integration', () => {
         setTimeout(() => reject(new Error('Connection timeout')), 5_000);
       });
     } catch {
-      // AppModule may not compile without database — skip gracefully
+      // AppModule may not compile without database - skip gracefully
       console.warn('Skipping NestJS integration tests (AppModule requires database)');
     }
   }, 30_000);

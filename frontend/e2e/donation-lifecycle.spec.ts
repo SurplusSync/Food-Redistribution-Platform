@@ -148,7 +148,7 @@ test.describe('Donation Lifecycle – Full E2E', () => {
     await mapContainer.scrollIntoViewIfNeeded();
     await page.waitForTimeout(2_000);
 
-    // Click the map — offset from top-left to avoid zoom controls
+    // Click the map - offset from top-left to avoid zoom controls
     const box = await mapContainer.boundingBox();
     if (box) {
       await page.mouse.click(box.x + box.width * 0.6, box.y + box.height * 0.5);
@@ -178,7 +178,7 @@ test.describe('Donation Lifecycle – Full E2E', () => {
               if (hook.queue && hook.memoizedState === null && idx > 0) {
                 const dispatch = hook.queue.dispatch;
                 if (typeof dispatch === 'function') {
-                  // Try setting it — if this is the right hook, it'll set location
+                  // Try setting it - if this is the right hook, it'll set location
                   dispatch({ lat: 28.6139, lng: 77.2090 });
                   return true;
                 }
@@ -204,7 +204,7 @@ test.describe('Donation Lifecycle – Full E2E', () => {
     // Wait a moment for state to update
     await page.waitForTimeout(500);
 
-    // Submit the form — button should now be enabled
+    // Submit the form - button should now be enabled
     const submitBtn = page.getByRole('button', { name: /add food/i });
     await expect(submitBtn).toBeEnabled({ timeout: 15_000 });
     await submitBtn.click();

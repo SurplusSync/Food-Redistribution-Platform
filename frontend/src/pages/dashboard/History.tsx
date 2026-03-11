@@ -286,7 +286,7 @@ export default function History() {
                 ))}
             </div>
 
-            {/* Tab Toggle — Charts tab only for NGOs */}
+            {/* Tab Toggle - Charts tab only for NGOs */}
             {isNGO && (
                 <div className="flex gap-2 mb-6">
                     <button

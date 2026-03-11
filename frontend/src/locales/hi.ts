@@ -1,4 +1,4 @@
-// Hindi (हिन्दी) — Complete static translation dictionary
+// Hindi (हिन्दी) - Complete static translation dictionary
 
 const hi: Record<string, string> = {
   // —— Common / Shared ——
@@ -292,7 +292,7 @@ const hi: Record<string, string> = {
   nextBadge: 'अगला: {{name}}',
   pointsToGo: '{{points}} पॉइंट्स बाकी',
   allBadgesUnlocked: 'सभी बैज अनलॉक हो गए! आप सुपरहीरो हैं!',
-  communityImpact: 'सामुदायिक प्रभाव — प्लेटफ़ॉर्म व्यापी',
+  communityImpact: 'सामुदायिक प्रभाव - प्लेटृफ़ॉर्म व्यापी',
   communityImpactDesc: 'SurplusSync पर सभी दानदाताओं, एनजीओ और स्वयंसेवकों का लाइव कुल',
   co2Saved: 'CO₂ बचाया',
   totalDonationsProcessed: '{{count}} कुल दान प्रोसेस किए',
@@ -300,16 +300,16 @@ const hi: Record<string, string> = {
   currentlyActive: '{{count}} वर्तमान में सक्रिय',
   ngoGrowthReports: 'एनजीओ विकास रिपोर्ट',
   lastSixMonths: 'पिछले 6 महीने',
-  monthlyIntakeSummaries: 'मासिक खाद्य ग्रहण सारांश — इन्हें अनुदान और फंडिंग आवेदनों के लिए उपयोग करें',
+  monthlyIntakeSummaries: 'मासिक खाद्य ग्रहण सारांश - इन्हें अनुदान और फंडिंग आवेदनों के लिए उपयोग करें',
   totalReceivedMonth: 'प्रत्येक माह प्राप्त कुल दान',
   deliveryTrend: 'डिलीवरी रुझान',
   deliveriesPerMonth: 'प्रति माह सफल खाद्य डिलीवरी',
   claimsEachMonth: 'प्रत्येक माह क्लेम किए गए दान',
-  highDeliveryTip: 'उच्च डिलीवरी दर परिचालन दक्षता प्रदर्शित करती है — फंडिंग आवेदनों में इसे हाइलाइट करें',
+  highDeliveryTip: 'उच्च डिलीवरी दर परिचालन दक्षता प्रदर्शित करती है - फंडिंग आवेदनों में इसे हाइलाइट करें',
 
   // —— Notifications ——
   stayUpdated: 'अपने दान और डिलीवरी पर अपडेट रहें',
-  unread: 'अपठित {{count}}',
+  unread: 'अपठित',
   markAllRead: 'सभी को पढ़ा हुआ चिह्नित करें',
   loadingNotifications: 'सूचनाएँ लोड हो रही हैं...',
   noUnreadNotifications: 'कोई अपठित सूचना नहीं',
@@ -381,7 +381,7 @@ const hi: Record<string, string> = {
   activeTasks: 'सक्रिय कार्य',
   completedTrips: 'पूर्ण यात्राएँ',
   noActiveTasks: 'कोई सक्रिय कार्य नहीं',
-  waitingForAssignment: 'आप उपलब्ध हैं — असाइनमेंट की प्रतीक्षा में',
+  waitingForAssignment: 'आप उपलब्ध हैं - असाइनमेंट की प्रतीक्षा में',
   toggleAvailabilityHint: 'असाइनमेंट प्राप्त करने के लिए अपनी उपलब्धता टॉगल करें',
   enRoute: 'रास्ते में',
   awaitingPickup: 'पिकअप की प्रतीक्षा',
@@ -467,11 +467,11 @@ const hi: Record<string, string> = {
   karmaPointsLevel: '⭐ {{karma}} कर्मा पॉइंट्स · लेवल {{level}} योगदानकर्ता',
 
   // NGOGrowthCharts
-  ngoGrowthSubtitle: 'मासिक खाद्य ग्रहण सारांश — इन्हें अनुदान और फंडिंग आवेदनों के लिए उपयोग करें',
+  ngoGrowthSubtitle: 'मासिक खाद्य ग्रहण सारांश - इन्हें अनुदान और फंडिंग आवेदनों के लिए उपयोग करें',
   totalDonationsReceivedMonth: 'प्रत्येक माह प्राप्त कुल दान',
   successfulDeliveriesPerMonth: 'प्रति माह सफल खाद्य डिलीवरी',
   donationsClaimedMonth: 'प्रत्येक माह क्लेम किए गए दान',
-  highDeliveryRateTip: '💡 उच्च डिलीवरी दर परिचालन दक्षता प्रदर्शित करती है — फंडिंग आवेदनों में इसे हाइलाइट करें',
+  highDeliveryRateTip: '💡 उच्च डिलीवरी दर परिचालन दक्षता प्रदर्शित करती है - फंडिंग आवेदनों में इसे हाइलाइट करें',
 
   // Profile karma actions
   deliverDonation: 'दान डिलीवर करें',
@@ -533,7 +533,7 @@ const hi: Record<string, string> = {
   // —— Accessibility extras ——
   translating: 'अनुवाद हो रहा है...',
   translatingProgress: 'अनुवाद... {{done}}/{{total}}',
-  firstTimeTranslation: 'पहली बार अनुवाद — अगली बार तुरंत लोडिंग के लिए कैश किया गया',
+  firstTimeTranslation: 'पहली बार अनुवाद - अगली बार तुरंत लोडिंग के लिए कैश किया गया',
   toggleHighContrastDesc: 'बेहतर पठनीयता के लिए हाई-कॉन्ट्रास्ट डार्क मोड टॉगल करें।',
   translationCache: 'अनुवाद कैश',
   translationCacheDesc: 'अनुवाद तुरंत लोडिंग के लिए स्थानीय रूप से कैश किए जाते हैं। पुनः अनुवाद करने के लिए कैश साफ़ करें।',
@@ -593,7 +593,7 @@ const hi: Record<string, string> = {
 
   // —— Near-Expiry Alerts ——
   nearExpiryAlerts: 'समाप्ति निकट अलर्ट',
-  nearExpiryDesc: '2 घंटे के भीतर समाप्त होने वाले दान — बर्बादी रोकने के लिए जल्दी कार्रवाई करें।',
+  nearExpiryDesc: '2 घंटे के भीतर समाप्त होने वाले दान - बर्बादी रोकने के लिए जल्दी कार्रवाई करें।',
   refresh: 'रिफ़्रेश',
   urgencyFilter: 'तात्कालिकता फ़िल्टर',
   critical: 'गंभीर',
@@ -615,7 +615,7 @@ const hi: Record<string, string> = {
 
   // —— Feedback & Ratings ——
   ngoFeedbackRatings: 'एनजीओ प्रतिक्रिया और रेटिंग',
-  feedbackDesc: 'डिलीवरी के बाद की प्रतिक्रिया — भोजन गुणवत्ता और दानदाता विश्वसनीयता ट्रैक करें।',
+  feedbackDesc: 'डिलीवरी के बाद की प्रतिक्रिया - भोजन गुणवत्ता और दानदाता विश्वसनीयता ट्रैक करें।',
   yourDonorRating: 'आपकी दानदाता रेटिंग',
   basedOnReviews: 'एनजीओ की {{count}} समीक्षाओं पर आधारित',
   leaveReview: 'समीक्षा लिखें',
@@ -648,7 +648,7 @@ const hi: Record<string, string> = {
   loadingTickets: 'टिकट लोड हो रहे हैं…',
   noTicketsYet: 'अभी तक कोई टिकट नहीं। शुरू करने के लिए एक बनाएँ।',
   advance: 'आगे बढ़ाएँ',
-  ticketSubmitted: 'टिकट सबमिट किया गया — आपको ईमेल पुष्टि प्राप्त होगी',
+  ticketSubmitted: 'टिकट सबमिट किया गया - आपको ईमेल पुष्टि प्राप्त होगी',
   failedLoadTickets: 'टिकट लोड करने में विफल',
   failedSubmitTicket: 'टिकट सबमिट करने में विफल',
   failedUpdateTicket: 'टिकट अपडेट करने में विफल',

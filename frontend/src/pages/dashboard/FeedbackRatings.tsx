@@ -167,7 +167,7 @@ export default function FeedbackRatings() {
                   <option value="">{t('selectDeliveredDonation')}</option>
                   {unreviewedDonations.map(d => (
                     <option key={d.id} value={d.id}>
-                      {d.name} — {d.donorName || t('unknownDonor')}
+                      {d.name} - {d.donorName || t('unknownDonor')}
                     </option>
                   ))}
                 </select>
