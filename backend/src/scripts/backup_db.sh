@@ -35,7 +35,7 @@ else
   exit 1
 fi
 
-# 3. Rotate old backups — keep only the last MAX_BACKUPS files
+# 3. Rotate old backups - keep only the last MAX_BACKUPS files
 BACKUP_COUNT=$(ls -1 "$BACKUP_DIR"/*.sql 2>/dev/null | wc -l)
 if [ "$BACKUP_COUNT" -gt "$MAX_BACKUPS" ]; then
   echo "🧹 Rotating old backups (keeping last $MAX_BACKUPS)..."

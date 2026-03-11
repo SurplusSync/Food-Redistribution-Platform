@@ -79,7 +79,7 @@ function TicketModal({ ticket, onClose, onUpdate }: {
     setSaving(true);
     try {
       await adminAPI.updateTicket(ticket.id, { status, adminNote });
-      toast.success('Ticket updated — user notified by email if resolved');
+      toast.success('Ticket updated - user notified by email if resolved');
       onUpdate();
       onClose();
     } catch { toast.error('Failed to update ticket'); }
@@ -442,7 +442,7 @@ export default function AdminDashboard() {
                           <button
                             onClick={async () => {
                               await adminAPI.verifyNGO(item.id as string);
-                              toast.success('NGO verified — email sent');
+                              toast.success('NGO verified - email sent');
                               fetchData();
                             }}
                             className="text-emerald-400 hover:text-emerald-300 flex items-center gap-1 text-sm"

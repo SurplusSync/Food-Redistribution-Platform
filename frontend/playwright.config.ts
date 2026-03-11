@@ -3,7 +3,7 @@ import { defineConfig, devices } from '@playwright/test';
 export default defineConfig({
   testDir: './e2e',
   globalSetup: './e2e/global-setup.ts',
-  fullyParallel: false, // Run tests sequentially — donation lifecycle depends on order
+  fullyParallel: false, // Run tests sequentially - donation lifecycle depends on order
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
   workers: 1,

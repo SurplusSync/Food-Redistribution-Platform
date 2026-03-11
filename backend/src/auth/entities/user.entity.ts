@@ -88,7 +88,7 @@ export class User {
   @Column('simple-array', { default: '' })
   badges: string[];
 
-  // Timestamps — only once each ✅
+  // Timestamps - only once each ✅
   @CreateDateColumn()
   createdAt: Date;
 

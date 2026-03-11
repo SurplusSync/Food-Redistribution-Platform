@@ -35,7 +35,7 @@ function useCountUp(target: number, duration = 2000) {
 }
 
 // Dat
-// Data (keys only — translated inside component via t())
+// Data (keys only - translated inside component via t())
 const roleConfigs = [
     {
         titleKey: 'donor',

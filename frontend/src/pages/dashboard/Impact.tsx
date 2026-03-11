@@ -317,7 +317,7 @@ function KarmaProgress({ karma, badgeCatalog }: { karma: number; badgeCatalog?: 
                 <span className="text-2xl font-bold text-amber-400">{karma} pts</span>
             </div>
 
-            {/* Badge grid — all 5, earned/locked */}
+            {/* Badge grid - all 5, earned/locked */}
             <div className="grid grid-cols-5 gap-3 mb-6">
                 {catalog.map(b => {
                     const isEarned = karma >= b.threshold
@@ -553,7 +553,7 @@ export default function Impact() {
                 <p className="text-gray-500 dark:text-slate-400">{pageSubtitle}</p>
             </div>
 
-            {/* US1 — Personal Impact Stats */}
+            {/* US1 - Personal Impact Stats */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {[
                     { label: stat1Label, value: stats.totalDonations, icon: <Package className="w-6 h-6 text-white" />, grad: 'from-emerald-500 to-emerald-600', accent: 'text-emerald-400', sub: role === 'donor' ? t('foodItemsShared') : t('completed') },
@@ -594,13 +594,13 @@ export default function Impact() {
                 </div>
             </div>
 
-            {/* US2 — Badges & Gamification */}
+            {/* US2 - Badges & Gamification */}
             <KarmaProgress karma={karma} badgeCatalog={user.badgeCatalog} />
 
-            {/* US3/US5 — Community Counters */}
+            {/* US3/US5 - Community Counters */}
             {community && <CommunityCounters stats={community} />}
 
-            {/* US3/US5 — NGO Growth Charts */}
+            {/* US3/US5 - NGO Growth Charts */}
             {role === 'ngo' && monthly.length > 0 && <NGOGrowthCharts monthly={monthly} />}
 
             {/* Volunteer Performance (role-specific extra panel) */}
@@ -616,7 +616,7 @@ export default function Impact() {
                 </div>
             )}
 
-            {/* US4 — Certificate CTA */}
+            {/* US4 - Certificate CTA */}
             <div className={`bg-gradient-to-br ${role === 'ngo' ? 'from-blue-500/10 to-indigo-500/10 border-blue-500/20' : role === 'volunteer' ? 'from-purple-500/10 to-violet-500/10 border-purple-500/20' : 'from-emerald-500/10 to-teal-500/10 border-emerald-500/20'} border rounded-2xl p-6`}>
                 <div className="flex items-center justify-between mb-4">
                     <div>

@@ -17,7 +17,7 @@ api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   return config;
 });
 
-// Handle 401 responses — expired or invalid token → redirect to login
+// Handle 401 responses - expired or invalid token → redirect to login
 api.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -341,7 +341,7 @@ export const markAsDelivered = async (id: string) => {
   return response.data;
 };
 
-// Notifications — persisted in backend DB
+// Notifications - persisted in backend DB
 
 export interface RawNotification {
   id?: string;

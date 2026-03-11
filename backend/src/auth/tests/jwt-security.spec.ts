@@ -1,6 +1,6 @@
 import * as jwt from 'jsonwebtoken';
 
-// Uses the same signing approach as your JwtStrategy — only the secret matters.
+// Uses the same signing approach as your JwtStrategy - only the secret matters.
 // These tests run standalone: npx jest jwt-security --no-coverage
 const SECRET = 'test-jwt-secret-for-security-tests';
 
@@ -74,22 +74,22 @@ describe('JWT Security', () => {
       expiresIn: '1h',
     });
     const decoded = jwt.verify(donorToken, SECRET) as any;
-    // Role must stay DONOR — attacker cannot change it without re-signing
+    // Role must stay DONOR - attacker cannot change it without re-signing
     expect(decoded.role).toBe('DONOR');
     expect(decoded.role).not.toBe('ADMIN');
   });
 
   // ── 7. Token reuse (stateless note) ──────────────────────────────────────
-  // JWTs are stateless — a valid token stays valid until expiry.
+  // JWTs are stateless - a valid token stays valid until expiry.
   // To truly block reuse after logout, a Redis blacklist is required.
   // This test documents the known gap:
   it('documents that stateless JWT cannot be invalidated before expiry without a blacklist', () => {
     const token = jwt.sign({ sub: 'user-abc', role: 'DONOR' }, SECRET, {
       expiresIn: '1h',
     });
-    // Simulate logout — but the token is still cryptographically valid
+    // Simulate logout - but the token is still cryptographically valid
     const decoded = jwt.verify(token, SECRET) as any;
-    // Without a blacklist check, this still passes — expected behaviour to document
+    // Without a blacklist check, this still passes - expected behaviour to document
     expect(decoded.sub).toBe('user-abc');
     // RECOMMENDATION: Add Redis token blacklist in JwtAuthGuard for full logout security
   });

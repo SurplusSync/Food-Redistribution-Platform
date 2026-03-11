@@ -17,7 +17,7 @@ export function getCachedTranslations(lang: string): Record<string, string> | nu
 function saveCache(lang: string, data: Record<string, string>): void {
   try {
     localStorage.setItem(getCacheKey(lang), JSON.stringify(data));
-  } catch { /* localStorage full — ignore */ }
+  } catch { /* localStorage full - ignore */ }
 }
 
 /** Replace {{var}} placeholders with markers the translator won't touch */

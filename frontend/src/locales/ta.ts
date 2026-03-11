@@ -1,4 +1,4 @@
-// Tamil (தமிழ்) — Complete static translation dictionary
+// Tamil (தமிழ்) - Complete static translation dictionary
 
 const ta: Record<string, string> = {
   // —— Common / Shared ——
@@ -292,7 +292,7 @@ const ta: Record<string, string> = {
   nextBadge: 'அடுத்தது: {{name}}',
   pointsToGo: '{{points}} புள்ளிகள் மீதம்',
   allBadgesUnlocked: 'அனைத்து பேட்ஜ்களும் திறக்கப்பட்டன! நீங்கள் ஒரு சூப்பர் ஹீரோ!',
-  communityImpact: 'சமூக தாக்கம் — தளம் முழுவதும்',
+  communityImpact: 'சமூக தாக்கம் - தளம் முழுவதும்',
   communityImpactDesc: 'SurplusSync-இல் உள்ள அனைத்து நன்கொடையாளர்கள், NGO-கள் மற்றும் தன்னார்வலர்களின் நிகழ்நேர மொத்தங்கள்',
   co2Saved: 'CO₂ சேமிப்பு',
   totalDonationsProcessed: '{{count}} மொத்த நன்கொடைகள் செயலாக்கப்பட்டன',
@@ -300,16 +300,16 @@ const ta: Record<string, string> = {
   currentlyActive: '{{count}} தற்போது செயலில்',
   ngoGrowthReports: 'NGO வளர்ச்சி அறிக்கைகள்',
   lastSixMonths: 'கடந்த 6 மாதங்கள்',
-  monthlyIntakeSummaries: 'மாதாந்திர உணவு உள்ளெடுப்பு சுருக்கங்கள் — மானியம் மற்றும் நிதி விண்ணப்பங்களுக்கு இவற்றைப் பயன்படுத்துங்கள்',
+  monthlyIntakeSummaries: 'மாதாந்திர உணவு உள்ளெடுப்பு சுருக்கங்கள் - மானியம் மற்றும் நிதி விண்ணப்பங்களுக்கு இவற்றைப் பயன்படுத்துங்கள்',
   totalReceivedMonth: 'ஒவ்வொரு மாதமும் பெறப்பட்ட மொத்த நன்கொடைகள்',
   deliveryTrend: 'டெலிவரி போக்கு',
   deliveriesPerMonth: 'மாதத்திற்கு வெற்றிகரமான உணவு டெலிவரிகள்',
   claimsEachMonth: 'ஒவ்வொரு மாதமும் கோரப்பட்ட நன்கொடைகள்',
-  highDeliveryTip: 'உயர் டெலிவரி விகிதம் செயல்பாட்டு திறனை நிரூபிக்கிறது — நிதி விண்ணப்பங்களில் இதை முன்னிலைப்படுத்துங்கள்',
+  highDeliveryTip: 'உயர் டெலிவரி விகிதம் செயல்பாட்டு திறனை நிரூபிக்கிறது - நிதி விண்ணப்பங்களில் இதை முன்னிலைப்படுத்துங்கள்',
 
   // —— Notifications ——
   stayUpdated: 'உங்கள் நன்கொடைகள் மற்றும் டெலிவரிகளில் புதுப்பித்திருங்கள்',
-  unread: 'படிக்காதவை {{count}}',
+  unread: 'படிக்காதவை',
   markAllRead: 'அனைத்தையும் படித்ததாகக் குறி',
   loadingNotifications: 'அறிவிப்புகள் ஏற்றப்படுகின்றன...',
   noUnreadNotifications: 'படிக்காத அறிவிப்புகள் இல்லை',
@@ -381,7 +381,7 @@ const ta: Record<string, string> = {
   activeTasks: 'செயலில் உள்ள பணிகள்',
   completedTrips: 'முடிக்கப்பட்ட பயணங்கள்',
   noActiveTasks: 'செயலில் உள்ள பணிகள் இல்லை',
-  waitingForAssignment: 'நீங்கள் கிடைக்கிறீர்கள் — ஒதுக்கீட்டுக்கு காத்திருக்கிறது',
+  waitingForAssignment: 'நீங்கள் கிடைக்கிறீர்கள் - ஒதுக்கீட்டுக்கு காத்திருக்கிறது',
   toggleAvailabilityHint: 'ஒதுக்கீடுகளைப் பெற உங்கள் கிடைக்கும் நிலையை மாற்றவும்',
   enRoute: 'வழியில்',
   awaitingPickup: 'பிக்கப் காத்திருக்கிறது',
@@ -467,11 +467,11 @@ const ta: Record<string, string> = {
   karmaPointsLevel: '⭐ {{karma}} கர்மா புள்ளிகள் · நிலை {{level}} பங்களிப்பாளர்',
 
   // NGOGrowthCharts
-  ngoGrowthSubtitle: 'மாதாந்திர உணவு உள்ளெடுப்பு சுருக்கங்கள் — மானியம் மற்றும் நிதி விண்ணப்பங்களுக்கு இவற்றைப் பயன்படுத்துங்கள்',
+  ngoGrowthSubtitle: 'மாதாந்திர உணவு உள்ளெடுப்பு சுருக்கங்கள் - மானியம் மற்றும் நிதி விண்ணப்பங்களுக்கு இவற்றைப் பயன்படுத்துங்கள்',
   totalDonationsReceivedMonth: 'ஒவ்வொரு மாதமும் பெறப்பட்ட மொத்த நன்கொடைகள்',
   successfulDeliveriesPerMonth: 'மாதத்திற்கு வெற்றிகரமான உணவு டெலிவரிகள்',
   donationsClaimedMonth: 'ஒவ்வொரு மாதமும் கோரப்பட்ட நன்கொடைகள்',
-  highDeliveryRateTip: '💡 உயர் டெலிவரி விகிதம் செயல்பாட்டுத் திறனை நிரூபிக்கிறது — நிதி விண்ணப்பங்களில் இதை முன்னிலைப்படுத்துங்கள்',
+  highDeliveryRateTip: '💡 உயர் டெலிவரி விகிதம் செயல்பாட்டுத் திறனை நிரூபிக்கிறது - நிதி விண்ணப்பங்களில் இதை முன்னிலைப்படுத்துங்கள்',
 
   // Profile karma actions
   deliverDonation: 'நன்கொடையை வழங்கு',
@@ -533,7 +533,7 @@ const ta: Record<string, string> = {
   // —— Accessibility extras ——
   translating: 'மொழிபெயர்க்கிறது...',
   translatingProgress: 'மொழிபெயர்ப்பு... {{done}}/{{total}}',
-  firstTimeTranslation: 'முதல் முறை மொழிபெயர்ப்பு — அடுத்த முறை உடனடி ஏற்றத்திற்காக தற்காலிகமாகச் சேமிக்கப்பட்டது',
+  firstTimeTranslation: 'முதல் முறை மொழிபெயர்ப்பு - அடுத்த முறை உடனடி ஏற்றத்திற்காக தற்காலிகமாகச் சேமிக்கப்பட்டது',
   toggleHighContrastDesc: 'மேம்பட்ட படிக்கும் திறனுக்கு உயர்-மாறுபாடு இருண்ட பயன்முறையை மாற்றவும்.',
   translationCache: 'மொழிபெயர்ப்பு கேச்',
   translationCacheDesc: 'மொழிபெயர்ப்புகள் உடனடி ஏற்றத்திற்காக உள்ளூரில் தற்காலிகமாகச் சேமிக்கப்படுகின்றன. மீண்டும் மொழிபெயர்க்க கேச்சை அழிக்கவும்.',
@@ -593,7 +593,7 @@ const ta: Record<string, string> = {
 
   // —— Near-Expiry Alerts ——
   nearExpiryAlerts: 'காலாவதி நெருங்கும் எச்சரிக்கைகள்',
-  nearExpiryDesc: '2 மணி நேரத்திற்குள் காலாவதியாகும் நன்கொடைகள் — வீணாவதைத் தடுக்க விரைவாக செயல்படுங்கள்.',
+  nearExpiryDesc: '2 மணி நேரத்திற்குள் காலாவதியாகும் நன்கொடைகள் - வீணாவதைத் தடுக்க விரைவாக செயல்படுங்கள்.',
   refresh: 'புதுப்பி',
   urgencyFilter: 'அவசர வடிகட்டி',
   critical: 'அவசரம்',
@@ -615,7 +615,7 @@ const ta: Record<string, string> = {
 
   // —— Feedback & Ratings ——
   ngoFeedbackRatings: 'NGO கருத்து மற்றும் மதிப்பீடுகள்',
-  feedbackDesc: 'டெலிவரிக்குப் பிறகான கருத்து — உணவு தரம் மற்றும் நன்கொடையாளர் நம்பகத்தன்மையைக் கண்காணிக்கவும்.',
+  feedbackDesc: 'டெலிவரிக்குப் பிறகான கருத்து - உணவு தரம் மற்றும் நன்கொடையாளர் நம்பகத்தன்மையைக் கண்காணிக்கவும்.',
   yourDonorRating: 'உங்கள் நன்கொடையாளர் மதிப்பீடு',
   basedOnReviews: 'NGO-களின் {{count}} மதிப்புரை(களின்) அடிப்படையில்',
   leaveReview: 'மதிப்புரை எழுதுங்கள்',
@@ -648,7 +648,7 @@ const ta: Record<string, string> = {
   loadingTickets: 'டிக்கெட்டுகள் ஏற்றப்படுகின்றன…',
   noTicketsYet: 'இன்னும் டிக்கெட்டுகள் இல்லை. தொடங்க ஒன்றை உருவாக்குங்கள்.',
   advance: 'முன்னேற்று',
-  ticketSubmitted: 'டிக்கெட் சமர்ப்பிக்கப்பட்டது — மின்னஞ்சல் உறுதிப்படுத்தல் கிடைக்கும்',
+  ticketSubmitted: 'டிக்கெட் சமர்ப்பிக்கப்பட்டது - மின்னஞ்சல் உறுதிப்படுத்தல் கிடைக்கும்',
   failedLoadTickets: 'டிக்கெட்டுகளை ஏற்ற இயலவில்லை',
   failedSubmitTicket: 'டிக்கெட்டை சமர்ப்பிக்க இயலவில்லை',
   failedUpdateTicket: 'டிக்கெட்டை புதுப்பிக்க இயலவில்லை',

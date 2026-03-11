@@ -459,7 +459,7 @@ export default function Profile() {
                 </div>
             </div>
 
-            {/* Badge Guide — thresholds MUST match backend BADGE_RULES exactly */}
+            {/* Badge Guide - thresholds MUST match backend BADGE_RULES exactly */}
             <div className="bg-blue-900/20 border border-blue-500/30 rounded-xl p-6">
                 <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">📚 {t('badgeGuide')}</h2>
                 <div className="space-y-3">

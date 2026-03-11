@@ -3,7 +3,7 @@ import { initReactI18next } from 'react-i18next';
 import hiStrings from './locales/hi';
 import taStrings from './locales/ta';
 
-//â”€ English source strings (the ONLY static dictionary)â”€
+//─ English source strings (the ONLY static dictionary)─
 // Every other language is translated dynamically via API and cached in localStorage.
 
 export const enStrings: Record<string, string> = {
@@ -81,11 +81,11 @@ export const enStrings: Record<string, string> = {
   stepDeliverDesc: 'Food reaches the community through NGOs',
   threeRolesOneMission: 'Three roles, one mission',
   everyoneHasAPart: 'Everyone has a part to play',
-  donorSubtitle: 'Restaurants Â· Caterers Â· Individuals',
+  donorSubtitle: 'Restaurants · Caterers · Individuals',
   donorDesc: 'List surplus food in seconds. Upload photos, set quantities, and our safety engine auto-calculates expiry windows.',
-  ngoSubtitle: 'Food banks Â· Shelters Â· Charities',
+  ngoSubtitle: 'Food banks · Shelters · Charities',
   ngoDesc: 'Discover nearby donations on a live map. Claim food, track pickups, and manage your daily intake capacity.',
-  volunteerSubtitle: 'Drivers Â· Students Â· Community',
+  volunteerSubtitle: 'Drivers · Students · Community',
   volunteerDesc: 'Pick up claimed food from donors and deliver it to NGOs. Track your deliveries and build your impact score.',
   avgListingTime: 'Avg listing time',
   safetyValidated: 'Safety validated',
@@ -110,7 +110,7 @@ export const enStrings: Record<string, string> = {
   liveStatusTracking: 'Live status tracking',
   liveStatusDesc: 'Follow every donation from listing to delivery with real-time status updates.',
   impactDashboard: 'Impact dashboard',
-  impactDashboardDesc: 'Every meal saved is tracked. See your contribution to reducing COâ‚‚ emissions, total meals redistributed, and community impact over time.',
+  impactDashboardDesc: 'Every meal saved is tracked. See your contribution to reducing CO₂ emissions, total meals redistributed, and community impact over time.',
   emissionsTracked: 'Emissions tracked',
   perDonation: 'Per donation',
   foodSaved: 'Food saved',
@@ -231,10 +231,10 @@ export const enStrings: Record<string, string> = {
   descriptionPlaceholder: 'Any additional details (ingredients, dietary info, special instructions)...',
   foodImages: 'Food Images (Optional)',
   pickupLocationLabel: 'Pickup Location',
-  locationSelected: 'âœ“ Selected',
+  locationSelected: '✓ Selected',
   clickMapToSet: 'Click on the map to set pickup location',
   hygieneChecklist: 'Hygiene Checklist',
-  hygieneComplete: 'âœ“ Complete',
+  hygieneComplete: '✓ Complete',
   keptCoveredAlways: 'Food was kept covered at all times',
   cleanFoodSafe: 'Container is clean and food-safe',
   hygieneNote: 'Both hygiene requirements must be met to ensure food safety',
@@ -298,24 +298,24 @@ export const enStrings: Record<string, string> = {
   nextBadge: 'Next: {{name}}',
   pointsToGo: '{{points}} pts to go',
   allBadgesUnlocked: 'All badges unlocked! You\'re a Superhero!',
-  communityImpact: 'Community Impact â€” Platform Wide',
+  communityImpact: 'Community Impact - Platform Wide',
   communityImpactDesc: 'Live totals across all donors, NGOs and volunteers on SurplusSync',
-  co2Saved: 'COâ‚‚ Saved',
+  co2Saved: 'CO₂ Saved',
   totalDonationsProcessed: '{{count}} total donations processed',
   successfullyDelivered: '{{count}} successfully delivered',
   currentlyActive: '{{count}} currently active',
   ngoGrowthReports: 'NGO Growth Reports',
   lastSixMonths: 'Last 6 months',
-  monthlyIntakeSummaries: 'Monthly food intake summaries â€” use these for grant and funding applications',
+  monthlyIntakeSummaries: 'Monthly food intake summaries - use these for grant and funding applications',
   totalReceivedMonth: 'Total donations received each month',
   deliveryTrend: 'Delivery Trend',
   deliveriesPerMonth: 'Successful food deliveries per month',
   claimsEachMonth: 'Donations claimed each month',
-  highDeliveryTip: 'A high delivery rate demonstrates operational efficiency â€” highlight this in funding applications',
+  highDeliveryTip: 'A high delivery rate demonstrates operational efficiency - highlight this in funding applications',
 
   // Notifications
   stayUpdated: 'Stay updated on your donations and deliveries',
-  unread: 'Unread {{count}}',
+  unread: 'Unread',
   markAllRead: 'Mark all as read',
   loadingNotifications: 'Loading notifications...',
   noUnreadNotifications: 'No unread notifications',
@@ -331,7 +331,7 @@ export const enStrings: Record<string, string> = {
   backToLogin: 'Back to Login',
   manageAccount: 'Manage your account and view your impact',
   download: 'Download',
-  levelContributor: 'Level {{level}} â€¢ {{role}}',
+  levelContributor: 'Level {{level}} • {{role}}',
   progressToLevel: 'Progress to Level {{level}}',
   pointsToGoProfile: '{{points}} points to go',
   trophyCase: 'Trophy Case',
@@ -343,7 +343,7 @@ export const enStrings: Record<string, string> = {
   notProvided: 'Not provided',
   badgeGuide: 'Badge Guide',
   earnKarma: 'Earn {{points}} karma points',
-  earned: 'âœ“ Earned',
+  earned: '✓ Earned',
   howToEarnKarma: 'How to Earn Karma',
   createDonation: 'Create a Donation',
   createDonationDesc: 'Donor lists new food for redistribution',
@@ -387,7 +387,7 @@ export const enStrings: Record<string, string> = {
   activeTasks: 'Active Tasks',
   completedTrips: 'Completed Trips',
   noActiveTasks: 'No active tasks',
-  waitingForAssignment: "You're available — waiting for assignment",
+  waitingForAssignment: "You're available - waiting for assignment",
   toggleAvailabilityHint: 'Toggle your availability to receive assignments',
   enRoute: 'En Route',
   awaitingPickup: 'Awaiting Pickup',
@@ -473,11 +473,11 @@ export const enStrings: Record<string, string> = {
   karmaPointsLevel: '⭐ {{karma}} Karma Points · Level {{level}} Contributor',
 
   // NGOGrowthCharts (alternate key names used by component)
-  ngoGrowthSubtitle: 'Monthly food intake summaries — use these for grant and funding applications',
+  ngoGrowthSubtitle: 'Monthly food intake summaries - use these for grant and funding applications',
   totalDonationsReceivedMonth: 'Total donations received each month',
   successfulDeliveriesPerMonth: 'Successful food deliveries per month',
   donationsClaimedMonth: 'Donations claimed each month',
-  highDeliveryRateTip: '💡 A high delivery rate demonstrates operational efficiency — highlight this in funding applications',
+  highDeliveryRateTip: '💡 A high delivery rate demonstrates operational efficiency - highlight this in funding applications',
 
   // Profile karma actions
   deliverDonation: 'Deliver Donation',
@@ -539,7 +539,7 @@ export const enStrings: Record<string, string> = {
   // ── Accessibility extras ──
   translating: 'Translating...',
   translatingProgress: 'Translating... {{done}}/{{total}}',
-  firstTimeTranslation: 'First-time translation — cached for instant loading next time',
+  firstTimeTranslation: 'First-time translation - cached for instant loading next time',
   toggleHighContrastDesc: 'Toggle high-contrast dark mode for improved readability.',
   translationCache: 'Translation Cache',
   translationCacheDesc: 'Translations are cached locally for instant loading. Clear the cache to re-translate.',
@@ -599,7 +599,7 @@ export const enStrings: Record<string, string> = {
 
   // ── Near-Expiry Alerts ──
   nearExpiryAlerts: 'Near-Expiry Alerts',
-  nearExpiryDesc: 'Donations expiring within 2 hours — act fast to prevent waste.',
+  nearExpiryDesc: 'Donations expiring within 2 hours - act fast to prevent waste.',
   refresh: 'Refresh',
   urgencyFilter: 'Urgency Filter',
   critical: 'Critical',
@@ -654,7 +654,7 @@ export const enStrings: Record<string, string> = {
   loadingTickets: 'Loading tickets…',
   noTicketsYet: 'No tickets yet. Create one to get started.',
   advance: 'Advance',
-  ticketSubmitted: 'Ticket submitted — you will receive an email confirmation',
+  ticketSubmitted: 'Ticket submitted - you will receive an email confirmation',
   failedLoadTickets: 'Failed to load tickets',
   failedSubmitTicket: 'Failed to submit ticket',
   failedUpdateTicket: 'Failed to update ticket',

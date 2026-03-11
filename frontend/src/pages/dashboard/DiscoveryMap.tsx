@@ -61,12 +61,14 @@ export default function DiscoveryMap() {
         const unsubscribeClaimed = socketService.onDonationClaimed((data) => {
             setDonations((prevDonations) => {
                  const claimedDonation = prevDonations.find(d => d.id === data.donationId);
-                 const name = claimedDonation ? claimedDonation.name : 'A donation';
 
-                 toast.info(`🔔 ${t('foodClaimedAlert')}`, {
-                     description: `${name} has been claimed`,
-                     duration: 3000,
-                 });
+                 if (data.claimedBy !== user.id) {
+                     const name = claimedDonation ? claimedDonation.name : 'A donation';
+                     toast.info(`🔔 ${t('foodClaimedAlert')}`, {
+                         description: `${name} has been claimed`,
+                         duration: 3000,
+                     });
+                 }
 
                  return prevDonations.filter((donation) => donation.id !== data.donationId);
             });
@@ -97,9 +99,14 @@ export default function DiscoveryMap() {
     const handleClaim = async (donationId: string) => {
         if (!canClaim) return
 
+        const donationName = donations.find(d => d.id === donationId)?.name || 'Donation';
         setClaiming(donationId)
         try {
             await claimDonation(donationId)
+            toast.success(`✅ ${t('foodClaimedAlert')}`, {
+                description: `${donationName} has been claimed successfully`,
+                duration: 3000,
+            })
             await loadDonations()
             setSelectedDonation(null) // Close modal on success
             setCurrentImageIndex(0)
@@ -399,7 +406,7 @@ export default function DiscoveryMap() {
                                         </button>
                                     ) : userRole === 'ngo' && !isVerified ? (
                                         <div className="text-center p-3 bg-amber-500/10 text-amber-400 rounded-lg text-sm font-medium border border-amber-500/20">
-                                            ⏳ {t('verificationPending')} — Cannot claim until verified.
+                                            ⏳ {t('verificationPending')} - Cannot claim until verified.
                                         </div>
                                     ) : (
                                         <div className="text-center p-3 bg-gray-100 dark:bg-slate-800 rounded-lg text-gray-500 dark:text-slate-400 text-sm">

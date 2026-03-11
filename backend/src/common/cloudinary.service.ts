@@ -35,7 +35,7 @@ export class CloudinaryService {
   async uploadImage(file: Express.Multer.File): Promise<string> {
     if (this.isMockMode) {
       this.logger.warn(
-        `Mock upload for "${file.originalname}" — Cloudinary not configured`,
+        `Mock upload for "${file.originalname}" - Cloudinary not configured`,
       );
       return this.getMockUrl(file.originalname);
     }
