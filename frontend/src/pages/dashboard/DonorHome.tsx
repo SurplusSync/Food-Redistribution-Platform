@@ -279,7 +279,7 @@ export default function DonorHome() {
                     className="w-full h-full object-cover"
                   />
                   {/* Image Counter */}
-                  <div className="absolute bottom-4 right-4 bg-black/60 text-gray-900 dark:text-white text-xs px-3 py-1 rounded-full">
+                  <div className="absolute bottom-4 right-4 bg-black/60 text-white text-xs px-3 py-1 rounded-full">
                     {currentImageIndex + 1} / {selectedDonation.imageUrls.length}
                   </div>
                   {/* Navigation Buttons */}

@@ -1,4 +1,4 @@
-﻿import i18n from 'i18next';
+import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import hiStrings from './locales/hi';
 import taStrings from './locales/ta';
@@ -607,6 +607,7 @@ export const enStrings: Record<string, string> = {
   minLabel: 'min',
   claimNow: 'Claim Now',
   alreadyClaimedStatus: 'Already Claimed',
+  noExpiringSoon: 'No donations expiring soon. All good!',
   // —— Leaderboards ——
   leaderboardsTitle: 'Leaderboards',
   leaderboardsDesc: 'Top contributors ranked by karma points and activity.',

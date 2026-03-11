@@ -284,7 +284,7 @@ export default function DiscoveryMap() {
                                         className="w-full h-full object-cover"
                                     />
                                     {/* Image Counter */}
-                                    <div className="absolute bottom-4 right-4 bg-black/60 text-gray-900 dark:text-white text-xs px-3 py-1 rounded-full">
+                                    <div className="absolute bottom-4 right-4 bg-black/60 text-white text-xs px-3 py-1 rounded-full">
                                         {currentImageIndex + 1} / {selectedDonation.imageUrls.length}
                                     </div>
                                     {/* Navigation Buttons */}
@@ -292,13 +292,13 @@ export default function DiscoveryMap() {
                                         <>
                                             <button
                                                 onClick={() => setCurrentImageIndex((prev) => (prev - 1 + selectedDonation.imageUrls.length) % selectedDonation.imageUrls.length)}
-                                                className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-gray-900 dark:text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                                                className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
                                             >
                                                 <ChevronLeft className="w-5 h-5" />
                                             </button>
                                             <button
                                                 onClick={() => setCurrentImageIndex((prev) => (prev + 1) % selectedDonation.imageUrls.length)}
-                                                className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-gray-900 dark:text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                                                className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
                                             >
                                                 <ChevronRight className="w-5 h-5" />
                                             </button>

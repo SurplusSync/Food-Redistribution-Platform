@@ -20,7 +20,7 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 
-// ─── Helpers ────────────────────────────────────────────────────────────────
+
 
 const VEHICLE_ICONS: Record<string, string> = {
   bike: '🏍️', car: '🚗', van: '🚐', bicycle: '🚲', walk: '🚶',
@@ -41,7 +41,7 @@ function openGoogleMaps(address: string, lat?: number, lng?: number) {
   window.open(`https://www.google.com/maps/dir/?api=1&destination=${dest}`, '_blank')
 }
 
-// ─── Sub-components ──────────────────────────────────────────────────────────
+
 
 function StatCard({ icon, label, value, accent }: {
   icon: React.ReactNode; label: string; value: string | number; accent: string
@@ -59,7 +59,7 @@ function StatCard({ icon, label, value, accent }: {
   )
 }
 
-// ─── Availability Toggle ──────────────────────────────────────────────────────
+
 
 function AvailabilityToggle({ isAvailable, onToggle, loading, t }: {
   isAvailable: boolean; onToggle: () => void; loading: boolean; t: (key: string) => string
@@ -86,7 +86,7 @@ function AvailabilityToggle({ isAvailable, onToggle, loading, t }: {
   )
 }
 
-// ─── Vehicle Profile Card ─────────────────────────────────────────────────────
+
 
 function VehicleProfile({ user, onSave, t }: { user: User; onSave: (data: { vehicleType?: string; vehicleNumber?: string }) => Promise<void>; t: (key: string) => string }) {
   const [editing, setEditing] = useState(false)
@@ -202,7 +202,7 @@ function VehicleProfile({ user, onSave, t }: { user: User; onSave: (data: { vehi
   )
 }
 
-// ─── Task Card ────────────────────────────────────────────────────────────────
+
 
 function TaskCard({
   donation,
@@ -308,7 +308,7 @@ function TaskCard({
   )
 }
 
-// ─── Completed Trips Tab ─────────────────────────────────────────────────────
+
 
 function CompletedTrips({ userId, t }: { userId: string; t: (key: string) => string }) {
   const [trips, setTrips] = useState<Donation[]>([])
@@ -364,7 +364,7 @@ function CompletedTrips({ userId, t }: { userId: string; t: (key: string) => str
   )
 }
 
-// ─── Detail Modal ─────────────────────────────────────────────────────────────
+
 
 function DetailModal({
   donation,
@@ -508,7 +508,7 @@ function DetailModal({
   )
 }
 
-// ─── Main Component ───────────────────────────────────────────────────────────
+
 
 export default function VolunteerDashboard() {
   const { t } = useTranslation()

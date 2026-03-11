@@ -113,7 +113,7 @@ export default function VolunteerTracking() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-white">Volunteer Location Tracking</h1>
+          <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">Volunteer Location Tracking</h1>
           <p className="text-slate-400 mt-1">Share live location and monitor route progress for active deliveries.</p>
         </div>
         <button onClick={load} disabled={loading} className="p-2 text-slate-400 hover:text-emerald-400 rounded-lg">
@@ -125,7 +125,7 @@ export default function VolunteerTracking() {
         {/* Map Panel */}
         <div className="xl:col-span-2 card p-5">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-white font-semibold flex items-center gap-2">
+            <h2 className="text-gray-900 dark:text-white font-semibold flex items-center gap-2">
               <Navigation2 className="w-5 h-5 text-emerald-400" />
               Live Location
             </h2>
@@ -171,7 +171,7 @@ export default function VolunteerTracking() {
 
         {/* Deliveries Panel */}
         <div className="card p-5">
-          <h2 className="text-white font-semibold mb-4 flex items-center gap-2">
+          <h2 className="text-gray-900 dark:text-white font-semibold mb-4 flex items-center gap-2">
             <Timer className="w-5 h-5 text-amber-400" />
             Active Deliveries
           </h2>

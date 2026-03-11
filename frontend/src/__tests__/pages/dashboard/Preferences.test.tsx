@@ -13,7 +13,7 @@ describe('Preferences', () => {
   it('renders accessibility settings without a language selector', () => {
     render(<Preferences />)
 
-    expect(screen.getByText('Accessibility')).toBeTruthy()
+    expect(screen.getByText('Preferences')).toBeTruthy()
     expect(screen.getByText('High contrast mode')).toBeTruthy()
     expect(screen.getByText('Large text mode')).toBeTruthy()
     expect(screen.queryByDisplayValue('English')).toBeNull()

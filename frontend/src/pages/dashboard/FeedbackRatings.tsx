@@ -113,7 +113,7 @@ export default function FeedbackRatings() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold text-white">{t('ngoFeedbackRatings')}</h1>
+        <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">{t('ngoFeedbackRatings')}</h1>
         <p className="text-slate-400 mt-1">{t('feedbackDesc')}</p>
       </div>
 
@@ -141,7 +141,7 @@ export default function FeedbackRatings() {
               <div>
                 <p className="text-sm text-slate-400">{t('yourDonorRating')}</p>
                 <div className="flex items-center gap-3 mt-1">
-                  <span className="text-3xl font-bold text-white">{donorRating.averageScore.toFixed(1)}</span>
+                  <span className="text-3xl font-bold text-gray-900 dark:text-white">{donorRating.averageScore.toFixed(1)}</span>
                   <span className="text-amber-400 text-lg">{'★'.repeat(Math.round(donorRating.averageScore))}{'☆'.repeat(5 - Math.round(donorRating.averageScore))}</span>
                 </div>
                 <p className="text-xs text-slate-500 mt-1">{t('basedOnReviews', { count: donorRating.totalReviews })}</p>
@@ -151,7 +151,7 @@ export default function FeedbackRatings() {
         )}
         {isNGO && (
           <div className="card p-5 xl:col-span-1">
-            <h2 className="text-white font-semibold mb-4 flex items-center gap-2">
+            <h2 className="text-gray-900 dark:text-white font-semibold mb-4 flex items-center gap-2">
               <MessageCircle className="w-5 h-5 text-emerald-400" />
               {t('leaveReview')}
             </h2>
@@ -199,7 +199,7 @@ export default function FeedbackRatings() {
         {/* Rating Summary & Reviews */}
         <div className={`card p-5 space-y-4 ${isNGO ? 'xl:col-span-2' : 'xl:col-span-3'}`}>
           <div className="flex items-center justify-between">
-            <h2 className="text-white font-semibold">{t('ratingSummary')}</h2>
+            <h2 className="text-gray-900 dark:text-white font-semibold">{t('ratingSummary')}</h2>
             <span className="badge badge-success flex items-center gap-1">
               <Star className="w-3 h-3" />
               {avgRating.toFixed(1)} / 5

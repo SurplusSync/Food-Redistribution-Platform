@@ -128,7 +128,7 @@ export default function Notifications() {
                     <div className="text-center py-12 text-gray-500 dark:text-slate-500">{t('loadingNotifications')}</div>
                 ) : filtered.length === 0 ? (
                     <div className="text-center py-12">
-                        <Bell className="w-12 h-12 text-gray-300 dark:text-slate-700 mx-auto mb-3" />
+                        <Bell className="w-12 h-12 text-gray-700 dark:text-slate-300 mx-auto mb-3" />
                         <p className="text-gray-500 dark:text-slate-500">
                             {filter === 'unread' ? t('noUnreadNotifications') : t('noNotificationsYet')}
                         </p>
