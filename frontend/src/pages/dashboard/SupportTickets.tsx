@@ -25,6 +25,8 @@ export default function SupportTickets() {
   const [description, setDescription] = useState('')
   const [priority, setPriority] = useState<'LOW' | 'MEDIUM' | 'HIGH'>('MEDIUM')
   const [submitting, setSubmitting] = useState(false)
+  const [expandedId, setExpandedId] = useState<string | null>(null)
+  const [replyText, setReplyText] = useState('')
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -69,11 +71,18 @@ export default function SupportTickets() {
     }
   }
 
-  const advanceStatus = async (ticket: Ticket) => {
+  const advanceStatus = async (ticket: Ticket, note?: string) => {
     const next = ticket.status === 'OPEN' ? 'IN_PROGRESS' : 'RESOLVED'
+    const payload: { status: string; adminNote?: string } = { status: next }
+    if (note) payload.adminNote = note
+
     try {
-      await adminAPI.updateTicket(ticket.id, { status: next })
+      await adminAPI.updateTicket(ticket.id, payload)
       toast.success(`Ticket moved to ${next.replace('_', ' ').toLowerCase()}`)
+      if (next === 'RESOLVED') {
+        setExpandedId(null)
+        setReplyText('')
+      }
       load()
     } catch {
       toast.error(t('failedUpdateTicket'))
@@ -156,27 +165,74 @@ export default function SupportTickets() {
             <div className="text-center py-12 text-slate-500 text-sm">{t('noTicketsYet')}</div>
           ) : (
             <div className="space-y-3">
-              {tickets.map((ticket) => (
-                <div key={ticket.id} className="bg-slate-900 border border-slate-800 rounded-xl p-4">
-                  <div className="flex items-center justify-between gap-3">
-                    <div>
-                      <p className="text-white font-medium">{ticket.subject}</p>
-                      <p className="text-sm text-slate-400 mt-0.5 line-clamp-1">{ticket.description}</p>
-                      <p className="text-xs text-slate-500 mt-1">{new Date(ticket.createdAt).toLocaleDateString()} · {ticket.priority}</p>
+              {tickets.map((ticket) => {
+                const isExpanded = expandedId === ticket.id
+                return (
+                  <div key={ticket.id} className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden transition-all">
+                    <div 
+                      className={`p-4 cursor-pointer hover:bg-slate-800/50 flex items-center justify-between gap-3 ${isExpanded ? 'bg-slate-800/20' : ''}`}
+                      onClick={() => {
+                        setExpandedId(isExpanded ? null : ticket.id)
+                        if (!isExpanded) setReplyText('')
+                      }}
+                    >
+                      <div className="flex-1">
+                        <p className="text-white font-medium">{ticket.subject}</p>
+                        {!isExpanded && (
+                          <p className="text-sm text-slate-400 mt-0.5 line-clamp-1">{ticket.description}</p>
+                        )}
+                        <p className="text-xs text-slate-500 mt-1">{new Date(ticket.createdAt).toLocaleDateString()} · {ticket.priority}</p>
+                      </div>
+                      <div className="flex items-center gap-3 shrink-0">
+                        <span className={`badge ${statusBadge(ticket.status)}`}>
+                          {ticket.status.replace('_', ' ')}
+                        </span>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span className={`badge ${statusBadge(ticket.status)}`}>
-                        {ticket.status.replace('_', ' ')}
-                      </span>
-                      {isAdmin && ticket.status !== 'RESOLVED' && ticket.status !== 'CLOSED' && (
-                        <button type="button" onClick={() => advanceStatus(ticket)} className="btn-secondary py-2 px-3 text-xs">
-                          {t('advance')}
-                        </button>
-                      )}
-                    </div>
+                    
+                    {isExpanded && (
+                      <div className="p-4 border-t border-slate-800 bg-slate-800/20">
+                        <p className="text-xs text-slate-500 font-semibold mb-1 uppercase tracking-wider">Description</p>
+                        <p className="text-sm text-slate-300 mb-4 whitespace-pre-wrap">{ticket.description}</p>
+                        
+                        {ticket.adminNote && (
+                          <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-3 mt-4">
+                            <p className="text-xs text-emerald-400 font-semibold mb-1 uppercase tracking-wider">Admin Reply</p>
+                            <p className="text-sm text-slate-300 whitespace-pre-wrap">{ticket.adminNote}</p>
+                          </div>
+                        )}
+
+                        {isAdmin && ticket.status !== 'RESOLVED' && ticket.status !== 'CLOSED' && (
+                          <div className="mt-5 pt-4 border-t border-slate-700/50">
+                            {ticket.status === 'IN_PROGRESS' && (
+                              <textarea
+                                className="input-field resize-none text-sm mb-3 bg-slate-950/50 text-white placeholder-slate-500"
+                                placeholder="Type resolution reply to user..."
+                                rows={3}
+                                value={replyText}
+                                onClick={(e) => e.stopPropagation()}
+                                onChange={(e) => setReplyText(e.target.value)}
+                              />
+                            )}
+                            <div className="flex justify-end">
+                              <button 
+                                type="button" 
+                                onClick={(e) => { 
+                                  e.stopPropagation()
+                                  advanceStatus(ticket, ticket.status === 'IN_PROGRESS' ? replyText : undefined)
+                                }} 
+                                className="btn-secondary py-2 px-4 text-xs font-semibold"
+                              >
+                                {ticket.status === 'OPEN' ? 'Mark In Progress' : 'Resolve & Reply'}
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           )}
         </div>
