@@ -9,7 +9,7 @@ import {
   RefreshCw, MessageSquare,
 } from 'lucide-react';
 
-// ─── Types ───────────────────────────────────────────────────────────────────
+
 
 type AdminTab = 'notifications' | 'pending' | 'users' | 'donations' | 'flagged' | 'tickets';
 
@@ -43,7 +43,7 @@ interface FlaggedItem {
   createdAt: string;
 }
 
-// ─── Style Maps ──────────────────────────────────────────────────────────────
+
 
 const priorityStyle: Record<string, string> = {
   high: 'bg-red-500/10 text-red-400 border-red-500/20',
@@ -66,7 +66,7 @@ const statusStyle: Record<string, string> = {
   ESCALATED: 'bg-purple-500/10 text-purple-400 border-purple-500/20',
 };
 
-// ─── Ticket Modal ─────────────────────────────────────────────────────────────
+
 
 function TicketModal({ ticket, onClose, onUpdate }: {
   ticket: SupportTicket; onClose: () => void; onUpdate: () => void;
@@ -160,7 +160,7 @@ function TicketModal({ ticket, onClose, onUpdate }: {
   );
 }
 
-// ─── Main ─────────────────────────────────────────────────────────────────────
+
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState<AdminTab>('notifications');

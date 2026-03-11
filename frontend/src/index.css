@@ -351,6 +351,11 @@
 }
 .a11y-contrast .card,
 .a11y-contrast .card-elevated {
+  border-color: rgba(0, 0, 0, 0.5) !important;
+  border-width: 2px !important;
+}
+.dark.a11y-contrast .card,
+.dark.a11y-contrast .card-elevated {
   border-color: rgba(255, 255, 255, 0.5) !important;
   border-width: 2px !important;
 }
@@ -358,10 +363,21 @@
 .a11y-contrast button {
   text-decoration-thickness: 2px;
   outline-offset: 3px;
+  outline-color: rgba(0,0,0,0.8);
+}
+.dark.a11y-contrast a,
+.dark.a11y-contrast button {
+  outline-color: rgba(255,255,255,0.8);
 }
 .a11y-contrast input,
 .a11y-contrast select,
 .a11y-contrast textarea {
+  border-color: rgba(0, 0, 0, 0.5) !important;
+  border-width: 2px !important;
+}
+.dark.a11y-contrast input,
+.dark.a11y-contrast select,
+.dark.a11y-contrast textarea {
   border-color: rgba(255, 255, 255, 0.5) !important;
   border-width: 2px !important;
 }

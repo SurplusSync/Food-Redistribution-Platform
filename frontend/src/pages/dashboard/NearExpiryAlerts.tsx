@@ -115,7 +115,7 @@ export default function NearExpiryAlerts() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-white">{t('nearExpiryAlerts')}</h1>
+          <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">{t('nearExpiryAlerts')}</h1>
           <p className="text-slate-400 mt-1">{t('nearExpiryDesc')}</p>
         </div>
         <button onClick={loadAlerts} className="btn-secondary py-2 px-3 text-sm flex items-center gap-2">
@@ -134,7 +134,7 @@ export default function NearExpiryAlerts() {
               key={f}
               type="button"
               onClick={() => setUrgency(f)}
-              className={`px-3 py-1.5 rounded-md text-sm capitalize ${urgency === f ? 'bg-emerald-500 text-white' : 'bg-slate-900 border border-slate-800 text-slate-300'}`}
+              className={`px-3 py-1.5 rounded-md text-sm capitalize ${urgency === f ? 'bg-emerald-500 text-white' : 'bg-gray-100 dark:bg-slate-900 border border-gray-200 dark:border-slate-800 text-gray-700 dark:text-slate-300'}`}
             >
               {f === 'all' ? t('all') : f === 'critical' ? t('critical') : t('warning')}
             </button>
@@ -149,7 +149,7 @@ export default function NearExpiryAlerts() {
             <div key={alert.id} className={`card p-4 border ${critical ? 'border-red-500/40' : 'border-amber-500/30'}`}>
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <p className="text-white font-medium flex items-center gap-2">
+                  <p className="text-gray-900 dark:text-white font-medium flex items-center gap-2">
                     <AlertTriangle className={`w-4 h-4 ${critical ? 'text-red-400' : 'text-amber-400'}`} />
                     {alert.food}
                   </p>

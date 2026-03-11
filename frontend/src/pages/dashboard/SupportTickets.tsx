@@ -90,7 +90,7 @@ export default function SupportTickets() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-white">{t('supportTicketsTitle')}</h1>
+          <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">{t('supportTicketsTitle')}</h1>
           <p className="text-slate-400 mt-1">{t('supportDesc')}</p>
         </div>
         <button onClick={load} disabled={loading} className="p-2 text-slate-400 hover:text-emerald-400 rounded-lg">
@@ -100,7 +100,7 @@ export default function SupportTickets() {
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
         <form onSubmit={submitTicket} className="xl:col-span-1 card p-5 space-y-4">
-          <h2 className="text-white font-semibold flex items-center gap-2">
+          <h2 className="text-gray-900 dark:text-white font-semibold flex items-center gap-2">
             <MessageSquare className="w-5 h-5 text-amber-400" />
             {t('createTicket')}
           </h2>
@@ -132,7 +132,7 @@ export default function SupportTickets() {
 
         <div className="xl:col-span-2 card p-5">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-white font-semibold">{t('ticketInbox')}</h2>
+            <h2 className="text-gray-900 dark:text-white font-semibold">{t('ticketInbox')}</h2>
             {isAdmin && (
               <span className="badge badge-info flex items-center gap-1">
                 <ShieldCheck className="w-3 h-3" />

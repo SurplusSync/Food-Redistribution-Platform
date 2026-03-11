@@ -4,7 +4,7 @@ import { getUserProfile, updateUserProfile, type User } from '../../services/api
 import { User as UserIcon, Building, Phone, Mail, MapPin, Shield, Edit2, Check, Trophy, Star, AlertCircle, Loader2, Download, Award } from 'lucide-react'
 import { toast } from 'sonner'
 
-// ─── Certificate Modal (All Roles) ───────────────────────────────────────────
+
 
 interface CertificateProps {
     user: User
@@ -88,7 +88,7 @@ function CertificateModal({ user, onClose }: CertificateProps) {
 
                 {/* Toolbar */}
                 <div className="flex justify-between items-center px-6 py-4 border-b border-slate-200 bg-slate-50 rounded-t-2xl">
-                    <h3 className="text-lg font-semibold text-gray-200 dark:text-slate-800 flex items-center gap-2">
+                    <h3 className="text-lg font-semibold text-gray-800 dark:text-slate-200 flex items-center gap-2">
                         <Award className="w-5 h-5 text-emerald-600" />
                         {t('certificateOfAppreciation')}
                     </h3>
@@ -100,7 +100,7 @@ function CertificateModal({ user, onClose }: CertificateProps) {
                             <Download className="w-4 h-4" />
                             {t('printSavePDF')}
                         </button>
-                        <button onClick={onClose} className="bg-slate-200 hover:bg-slate-300 text-gray-300 dark:text-slate-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                        <button onClick={onClose} className="bg-slate-200 hover:bg-slate-300 text-gray-700 dark:text-slate-300 px-4 py-2 rounded-lg text-sm font-medium transition-colors">
                             {t('close')}
                         </button>
                     </div>
@@ -176,12 +176,12 @@ function CertificateModal({ user, onClose }: CertificateProps) {
                             <div>
                                 <div style={{ width: 160, borderBottom: '1px solid #d1d5db', marginBottom: 6 }} />
                                 <p className="text-xs text-gray-500 dark:text-slate-500" style={{ fontFamily: 'sans-serif' }}>{t('platformDirector')}</p>
-                                <p className="text-xs font-semibold text-gray-300 dark:text-slate-700" style={{ fontFamily: 'sans-serif' }}>{t('surplusSyncNetwork')}</p>
+                                <p className="text-xs font-semibold text-gray-700 dark:text-slate-300" style={{ fontFamily: 'sans-serif' }}>{t('surplusSyncNetwork')}</p>
                             </div>
                             <div className="text-2xl">🏅</div>
                             <div className="text-right">
                                 <p className="text-xs text-gray-500 dark:text-slate-500" style={{ fontFamily: 'sans-serif' }}>{t('dateOfIssue')}</p>
-                                <p className="text-sm font-semibold text-gray-300 dark:text-slate-700" style={{ fontFamily: 'sans-serif' }}>{today}</p>
+                                <p className="text-sm font-semibold text-gray-700 dark:text-slate-300" style={{ fontFamily: 'sans-serif' }}>{today}</p>
                             </div>
                         </div>
                     </div>
@@ -191,7 +191,7 @@ function CertificateModal({ user, onClose }: CertificateProps) {
     )
 }
 
-// ─── Main Profile Component ───────────────────────────────────────────────────
+
 
 export default function Profile() {
     const { t } = useTranslation()

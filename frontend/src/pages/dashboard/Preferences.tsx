@@ -24,8 +24,8 @@ export default function Preferences() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold text-white">Accessibility</h1>
-        <p className="text-slate-400 mt-1">Configure keyboard navigation and readability settings.</p>
+        <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">Preferences</h1>
+        <p className="text-gray-500 dark:text-slate-400 mt-1">Configure keyboard navigation and readability settings.</p>
       </div>
 
       <div className="card p-5 space-y-5">
@@ -59,12 +59,12 @@ export default function Preferences() {
       </div>
 
       {keyboardHints && (
-        <div className="card p-4 text-sm text-slate-300 space-y-2">
-          <div className="flex items-center gap-2 text-emerald-400 font-medium">
+        <div className="card p-4 text-sm text-gray-700 dark:text-slate-300 space-y-2">
+          <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-medium">
             <Accessibility className="w-4 h-4" />
             Keyboard Navigation
           </div>
-          <ul className="space-y-1 text-slate-400 ml-6 list-disc">
+          <ul className="space-y-1 text-gray-600 dark:text-slate-400 ml-6 list-disc">
             <li><kbd className="bg-slate-700 text-slate-200 px-1.5 py-0.5 rounded text-xs">Tab</kbd> — move focus forward</li>
             <li><kbd className="bg-slate-700 text-slate-200 px-1.5 py-0.5 rounded text-xs">Shift+Tab</kbd> — move focus backward</li>
             <li><kbd className="bg-slate-700 text-slate-200 px-1.5 py-0.5 rounded text-xs">Enter</kbd> / <kbd className="bg-slate-700 text-slate-200 px-1.5 py-0.5 rounded text-xs">Space</kbd> — activate buttons &amp; toggles</li>
@@ -88,18 +88,18 @@ function ToggleRow({ icon, label, desc, enabled, onToggle }: ToggleRowProps) {
   return (
     <div className="flex items-center justify-between gap-4">
       <div>
-        <p className="text-slate-200 flex items-center gap-2">
+        <p className="text-gray-900 dark:text-slate-200 flex items-center gap-2">
           {icon}
           {label}
         </p>
-        {desc && <p className="text-xs text-slate-500 mt-0.5 ml-6">{desc}</p>}
+        {desc && <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5 ml-6">{desc}</p>}
       </div>
       <button
         type="button"
         role="switch"
         aria-checked={enabled}
         onClick={onToggle}
-        className={`w-12 h-6 rounded-full p-1 transition ${enabled ? 'bg-emerald-500' : 'bg-slate-700'}`}
+        className={`w-12 h-6 rounded-full p-1 transition ${enabled ? 'bg-emerald-500' : 'bg-gray-300 dark:bg-slate-700'}`}
       >
         <span className={`block w-4 h-4 rounded-full bg-white transition ${enabled ? 'translate-x-6' : 'translate-x-0'}`} />
       </button>

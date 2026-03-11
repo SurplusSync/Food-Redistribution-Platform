@@ -9,7 +9,7 @@ import {
     Award, Download, Leaf, Droplets, Globe
 } from 'lucide-react'
 
-// ─── BADGE CATALOG (mirrors backend BADGE_RULES exactly) ─────────────────────
+
 
 const BADGE_CATALOG_KEYS = [
     { threshold: 10, nameKey: 'newcomer', icon: '🌱', descKey: 'newcomerDesc' },
@@ -19,7 +19,7 @@ const BADGE_CATALOG_KEYS = [
     { threshold: 500, nameKey: 'superhero', icon: '💫', descKey: 'superheroDesc' },
 ]
 
-// ─── INLINE SVG BAR CHART ─────────────────────────────────────────────────────
+
 
 function SvgBarChart({
     data, title, subtitle, color = '#10b981',
@@ -137,7 +137,7 @@ function SvgLineChart({
     )
 }
 
-// ─── CERTIFICATE MODAL ────────────────────────────────────────────────────────
+
 
 function CertificateModal({ user, role, onClose }: { user: User; role: string; onClose: () => void }) {
     const { t } = useTranslation()
@@ -208,7 +208,7 @@ function CertificateModal({ user, role, onClose }: { user: User; role: string; o
             <div className="w-full max-w-3xl bg-white rounded-2xl shadow-2xl overflow-auto max-h-[92vh]">
                 {/* Toolbar */}
                 <div className="flex justify-between items-center px-6 py-4 border-b border-slate-200 bg-slate-50 rounded-t-2xl">
-                    <h3 className="text-base font-semibold text-gray-200 dark:text-slate-800 flex items-center gap-2">
+                    <h3 className="text-base font-semibold text-gray-800 dark:text-slate-200 flex items-center gap-2">
                         <Award className="w-5 h-5 text-emerald-600" />
                         {t('certificateOfAppreciation')}
                     </h3>
@@ -218,7 +218,7 @@ function CertificateModal({ user, role, onClose }: { user: User; role: string; o
                             <Download className="w-4 h-4" />{t('printSavePDF')}
                         </button>
                         <button onClick={onClose}
-                            className="bg-slate-200 hover:bg-slate-300 text-gray-300 dark:text-slate-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                            className="bg-slate-200 hover:bg-slate-300 text-gray-700 dark:text-slate-300 px-4 py-2 rounded-lg text-sm font-medium transition-colors">
                             {t('close')}
                         </button>
                     </div>
@@ -275,12 +275,12 @@ function CertificateModal({ user, role, onClose }: { user: User; role: string; o
                             <div>
                                 <div style={{ width: 150, borderBottom: '1px solid #d1d5db', marginBottom: 5 }} />
                                 <p className="text-xs text-gray-500 dark:text-slate-500" style={{ fontFamily: 'sans-serif' }}>{t('platformDirector')}</p>
-                                <p className="text-xs font-semibold text-gray-300 dark:text-slate-700" style={{ fontFamily: 'sans-serif' }}>{t('surplusSyncNetwork')}</p>
+                                <p className="text-xs font-semibold text-gray-700 dark:text-slate-300" style={{ fontFamily: 'sans-serif' }}>{t('surplusSyncNetwork')}</p>
                             </div>
                             <div className="text-2xl">🏅</div>
                             <div className="text-right">
                                 <p className="text-xs text-gray-500 dark:text-slate-500" style={{ fontFamily: 'sans-serif' }}>{t('dateOfIssue')}</p>
-                                <p className="text-sm font-semibold text-gray-300 dark:text-slate-700" style={{ fontFamily: 'sans-serif' }}>{today}</p>
+                                <p className="text-sm font-semibold text-gray-700 dark:text-slate-300" style={{ fontFamily: 'sans-serif' }}>{today}</p>
                             </div>
                         </div>
                     </div>
@@ -290,7 +290,7 @@ function CertificateModal({ user, role, onClose }: { user: User; role: string; o
     )
 }
 
-// ─── GAMIFICATION: KARMA PROGRESS BAR ────────────────────────────────────────
+
 
 function KarmaProgress({ karma, badgeCatalog }: { karma: number; badgeCatalog?: { id: string; name: string; icon: string; description: string; earned: boolean; requirement: number }[] }) {
     const { t } = useTranslation()
@@ -373,7 +373,7 @@ function KarmaProgress({ karma, badgeCatalog }: { karma: number; badgeCatalog?: 
     )
 }
 
-// ─── COMMUNITY COUNTERS ───────────────────────────────────────────────────────
+
 
 function CommunityCounters({ stats }: { stats: CommunityStats }) {
     const { t } = useTranslation()
@@ -412,7 +412,7 @@ function CommunityCounters({ stats }: { stats: CommunityStats }) {
     )
 }
 
-// ─── NGO GROWTH CHARTS ────────────────────────────────────────────────────────
+
 
 function NGOGrowthCharts({ monthly }: { monthly: MonthlyStatPoint[] }) {
     const { t } = useTranslation()
@@ -476,7 +476,7 @@ function NGOGrowthCharts({ monthly }: { monthly: MonthlyStatPoint[] }) {
     )
 }
 
-// ─── MAIN IMPACT PAGE ─────────────────────────────────────────────────────────
+
 
 export default function Impact() {
     const { t } = useTranslation()

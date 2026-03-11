@@ -5,7 +5,7 @@ import type { Donation } from '../../services/api'
 import { socketService } from '../../services/socket'
 import { TrendingUp, BarChart2, Package } from 'lucide-react'
 
-// ─── Inline SVG Bar Chart ─────────────────────────────────────────────────────
+
 
 interface BarChartProps {
     data: { label: string; value: number; color?: string }[]
@@ -100,7 +100,7 @@ function BarChart({ data, height = 180, unit = '', title, subtitle, accentColor 
     )
 }
 
-// ─── Line/Area Trend Chart ────────────────────────────────────────────────────
+
 
 interface LineChartProps {
     data: { label: string; value: number }[]
@@ -183,7 +183,7 @@ function LineChart({ data, title, subtitle, accentColor = '#6366f1' }: LineChart
     )
 }
 
-// ─── Monthly Data Helpers ─────────────────────────────────────────────────────
+
 
 const MONTH_ABBR = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 const LAST_6_MONTHS = Array.from({ length: 6 }, (_, i) => {
@@ -202,7 +202,7 @@ function aggregateByMonth(donations: Donation[], statusFilter?: string) {
     })
 }
 
-// ─── Main History Component ───────────────────────────────────────────────────
+
 
 const userRole = (): string => {
     try {
