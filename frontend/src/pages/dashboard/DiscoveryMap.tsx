@@ -177,7 +177,8 @@ export default function DiscoveryMap() {
     }
 
     const getMarkerIcon = (donation: Donation) => {
-        if (donation.status === 'CLAIMED') return claimedIcon
+        if (donation.status === 'DELIVERED') return urgentIcon
+        if (donation.status === 'CLAIMED' || donation.status === 'PICKED_UP') return claimedIcon
         if (donation.status === 'AVAILABLE') {
             const timeRemaining = getTimeRemaining(donation.expiryTime)
             if (timeRemaining.urgent) return urgentIcon
