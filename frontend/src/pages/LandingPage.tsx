@@ -263,7 +263,7 @@ export default function LandingPage() {
             </section>
 
             {/* ════════ HOW IT WORKS ════════ */}
-            <section className="py-20 sm:py-28 px-4 sm:px-6">
+            <section id="how-it-works" className="py-20 sm:py-28 px-4 sm:px-6">
                 <div className="max-w-5xl mx-auto">
                     <div className="text-center mb-14 reveal-section">
                         <p className="text-sm font-medium text-emerald-400 uppercase tracking-widest mb-3">{t('howItWorks')}</p>
@@ -318,7 +318,7 @@ export default function LandingPage() {
             </section>
 
             {/* ════════ BENTO ROLE CARDS ════════ */}
-            <section className="py-20 sm:py-28 px-4 sm:px-6 relative">
+            <section id="roles" className="py-20 sm:py-28 px-4 sm:px-6 relative">
                 <div className="max-w-6xl mx-auto">
                     <div className="text-center mb-14 reveal-section">
                         <p className="text-sm font-medium text-emerald-400 uppercase tracking-widest mb-3">{t('threeRolesOneMission')}</p>
@@ -527,8 +527,15 @@ export default function LandingPage() {
                         <div>
                             <h4 className="text-sm font-semibold text-gray-700 dark:text-slate-300 uppercase tracking-wider mb-4">{t('platform')}</h4>
                             <div className="space-y-2.5">
-                                {[t('howItWorks'), t('forDonors'), t('forNGOs'), t('forVolunteers')].map(link => (
-                                    <p key={link} className="text-sm text-gray-500 dark:text-slate-500 hover:text-emerald-400 cursor-pointer transition-colors">{link}</p>
+                                {[
+                                    { label: t('howItWorks'), href: '#how-it-works' },
+                                    { label: t('forDonors'), href: '#roles' },
+                                    { label: t('forNGOs'), href: '#roles' },
+                                    { label: t('forVolunteers'), href: '#roles' }
+                                ].map(link => (
+                                    <a key={link.label} href={link.href} className="block text-sm text-gray-500 dark:text-slate-500 hover:text-emerald-400 cursor-pointer transition-colors">
+                                        {link.label}
+                                    </a>
                                 ))}
                             </div>
                         </div>
@@ -538,7 +545,9 @@ export default function LandingPage() {
                             <h4 className="text-sm font-semibold text-gray-700 dark:text-slate-300 uppercase tracking-wider mb-4">{t('connect')}</h4>
                             <div className="space-y-2.5">
                                 <p className="text-sm text-gray-500 dark:text-slate-500">{t('contactEmail')}</p>
-                                <p className="text-sm text-gray-500 dark:text-slate-500">{t('openSourceProject')}</p>
+                                <a href="https://github.com/SurplusSync/Food-Redistribution-Platform" target="_blank" rel="noopener noreferrer" className="block text-sm text-gray-500 dark:text-slate-500 hover:text-emerald-400 transition-colors">
+                                    {t('openSourceProject')}
+                                </a>
                                 <Link to="/register" className="inline-flex items-center gap-1.5 text-sm text-emerald-400 hover:text-emerald-300 font-medium transition-colors">
                                     {t('joinSurplusSync')} <ArrowRight className="w-3.5 h-3.5" />
                                 </Link>
